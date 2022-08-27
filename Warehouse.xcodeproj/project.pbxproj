@@ -11,6 +11,11 @@
 		A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4728B8038D00B792DE /* Assets.xcassets */; };
 		A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4928B8038D00B792DE /* MainMenu.xib */; };
 		A51F8E4E28B8038D00B792DE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E4D28B8038D00B792DE /* main.m */; };
+		A51F8E6128B813BF00B792DE /* WHDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6028B813BF00B792DE /* WHDatabase.m */; };
+		A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */; };
+		A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */; };
+		A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */; };
+		A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +27,14 @@
 		A51F8E4C28B8038D00B792DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A51F8E4D28B8038D00B792DE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A51F8E4F28B8038D00B792DE /* Warehouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Warehouse.entitlements; sourceTree = "<group>"; };
+		A51F8E5F28B813BF00B792DE /* WHDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHDatabase.h; sourceTree = "<group>"; };
+		A51F8E6028B813BF00B792DE /* WHDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHDatabase.m; sourceTree = "<group>"; };
+		A51F8E6728B81BD800B792DE /* WHPreferencesWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHPreferencesWindowController.h; sourceTree = "<group>"; };
+		A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHPreferencesWindowController.m; sourceTree = "<group>"; };
+		A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHPreferencesWindowController.xib; sourceTree = "<group>"; };
+		A51F8E6C28B91AB400B792DE /* WHMainWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHMainWindowController.h; sourceTree = "<group>"; };
+		A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHMainWindowController.m; sourceTree = "<group>"; };
+		A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHMainWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,15 +67,39 @@
 		A51F8E4328B8038800B792DE /* Warehouse */ = {
 			isa = PBXGroup;
 			children = (
+				A51F8ED528BA550000B792DE /* User Interface */,
 				A51F8E4428B8038800B792DE /* AppDelegate.h */,
 				A51F8E4528B8038800B792DE /* AppDelegate.m */,
-				A51F8E4728B8038D00B792DE /* Assets.xcassets */,
-				A51F8E4928B8038D00B792DE /* MainMenu.xib */,
-				A51F8E4C28B8038D00B792DE /* Info.plist */,
+				A51F8E5F28B813BF00B792DE /* WHDatabase.h */,
+				A51F8E6028B813BF00B792DE /* WHDatabase.m */,
 				A51F8E4D28B8038D00B792DE /* main.m */,
-				A51F8E4F28B8038D00B792DE /* Warehouse.entitlements */,
+				A51F8ED928BA577600B792DE /* Supporting Files */,
 			);
 			path = Warehouse;
+			sourceTree = "<group>";
+		};
+		A51F8ED528BA550000B792DE /* User Interface */ = {
+			isa = PBXGroup;
+			children = (
+				A51F8E4928B8038D00B792DE /* MainMenu.xib */,
+				A51F8E6C28B91AB400B792DE /* WHMainWindowController.h */,
+				A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */,
+				A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */,
+				A51F8E6728B81BD800B792DE /* WHPreferencesWindowController.h */,
+				A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */,
+				A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */,
+			);
+			name = "User Interface";
+			sourceTree = "<group>";
+		};
+		A51F8ED928BA577600B792DE /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A51F8E4C28B8038D00B792DE /* Info.plist */,
+				A51F8E4F28B8038D00B792DE /* Warehouse.entitlements */,
+				A51F8E4728B8038D00B792DE /* Assets.xcassets */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -91,6 +128,7 @@
 		A51F8E3928B8038800B792DE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = WH;
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Douglas Almeida";
 				TargetAttributes = {
@@ -122,6 +160,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */,
+				A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */,
 				A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */,
 				A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */,
 			);
@@ -136,6 +176,9 @@
 			files = (
 				A51F8E4E28B8038D00B792DE /* main.m in Sources */,
 				A51F8E4628B8038800B792DE /* AppDelegate.m in Sources */,
+				A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */,
+				A51F8E6128B813BF00B792DE /* WHDatabase.m in Sources */,
+				A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

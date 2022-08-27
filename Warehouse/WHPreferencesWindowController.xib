@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="WHPreferencesWindowController">
+            <connections>
+                <outlet property="window" destination="F0z-JX-Cv5" id="NpO-FI-A6O"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="F0z-JX-Cv5">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="100"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
+            <value key="minSize" type="size" width="480" height="100"/>
+            <value key="maxSize" type="size" width="480" height="100"/>
+            <view key="contentView" id="se5-gp-TjO">
+                <rect key="frame" x="0.0" y="0.0" width="480" height="100"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2qW-lP-xQA">
+                        <rect key="frame" x="18" y="64" width="142" height="16"/>
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Database File Location" id="jyg-TG-mhS">
+                            <font key="font" usesAppearanceFont="YES"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jh0-Nh-JJI">
+                        <rect key="frame" x="20" y="35" width="345" height="21"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="BVQ-zP-rfb">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="31b-xg-gIy" name="value" keyPath="values.kDBFileLocation" id="6PY-Mh-IbM"/>
+                        </connections>
+                    </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5d4-Pf-Bxt">
+                        <rect key="frame" x="367" y="28" width="99" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="87" id="6km-qF-jgH"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Change..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TOe-Dk-MOc">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="changeButtonClicked:" target="-2" id="HYj-w8-jPf"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="2qW-lP-xQA" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" symbolic="YES" id="HXX-RC-EMv"/>
+                    <constraint firstItem="jh0-Nh-JJI" firstAttribute="top" secondItem="2qW-lP-xQA" secondAttribute="bottom" constant="8" symbolic="YES" id="PpP-NB-Thk"/>
+                    <constraint firstItem="2qW-lP-xQA" firstAttribute="leading" secondItem="jh0-Nh-JJI" secondAttribute="leading" id="WYK-Xb-E4X"/>
+                    <constraint firstItem="jh0-Nh-JJI" firstAttribute="baseline" secondItem="5d4-Pf-Bxt" secondAttribute="baseline" id="f1z-I9-q9G"/>
+                    <constraint firstAttribute="trailing" secondItem="5d4-Pf-Bxt" secondAttribute="trailing" constant="20" symbolic="YES" id="gBA-GS-cRB"/>
+                    <constraint firstItem="2qW-lP-xQA" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" symbolic="YES" id="k4m-ZA-lpC"/>
+                    <constraint firstItem="5d4-Pf-Bxt" firstAttribute="leading" secondItem="jh0-Nh-JJI" secondAttribute="trailing" constant="8" symbolic="YES" id="xbY-Z8-YbN"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+            </connections>
+            <point key="canvasLocation" x="140" y="147"/>
+        </window>
+        <userDefaultsController representsSharedInstance="YES" id="31b-xg-gIy"/>
+    </objects>
+</document>
