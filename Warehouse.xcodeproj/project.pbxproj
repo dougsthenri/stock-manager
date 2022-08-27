@@ -11,11 +11,17 @@
 		A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4728B8038D00B792DE /* Assets.xcassets */; };
 		A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4928B8038D00B792DE /* MainMenu.xib */; };
 		A51F8E4E28B8038D00B792DE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E4D28B8038D00B792DE /* main.m */; };
-		A51F8E6128B813BF00B792DE /* WHDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6028B813BF00B792DE /* WHDatabase.m */; };
 		A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */; };
 		A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */; };
 		A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */; };
 		A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */; };
+		A51F8F3A28BA5EA800B792DE /* FMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F2E28BA5EA800B792DE /* FMDB.m */; };
+		A51F8F3B28BA5EA800B792DE /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F2F28BA5EA800B792DE /* FMDatabaseQueue.m */; };
+		A51F8F3C28BA5EA800B792DE /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3228BA5EA800B792DE /* FMDatabaseAdditions.m */; };
+		A51F8F3D28BA5EA800B792DE /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3328BA5EA800B792DE /* FMDatabase.m */; };
+		A51F8F3E28BA5EA800B792DE /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */; };
+		A51F8F3F28BA5EA800B792DE /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3828BA5EA800B792DE /* FMResultSet.m */; };
+		A51F8F4028BA5EA800B792DE /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A51F8F3928BA5EA800B792DE /* LICENSE.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,14 +33,25 @@
 		A51F8E4C28B8038D00B792DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A51F8E4D28B8038D00B792DE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A51F8E4F28B8038D00B792DE /* Warehouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Warehouse.entitlements; sourceTree = "<group>"; };
-		A51F8E5F28B813BF00B792DE /* WHDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHDatabase.h; sourceTree = "<group>"; };
-		A51F8E6028B813BF00B792DE /* WHDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHDatabase.m; sourceTree = "<group>"; };
 		A51F8E6728B81BD800B792DE /* WHPreferencesWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHPreferencesWindowController.h; sourceTree = "<group>"; };
 		A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHPreferencesWindowController.m; sourceTree = "<group>"; };
 		A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHPreferencesWindowController.xib; sourceTree = "<group>"; };
 		A51F8E6C28B91AB400B792DE /* WHMainWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHMainWindowController.h; sourceTree = "<group>"; };
 		A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHMainWindowController.m; sourceTree = "<group>"; };
 		A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHMainWindowController.xib; sourceTree = "<group>"; };
+		A51F8F2D28BA5EA800B792DE /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		A51F8F2E28BA5EA800B792DE /* FMDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDB.m; sourceTree = "<group>"; };
+		A51F8F2F28BA5EA800B792DE /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		A51F8F3028BA5EA800B792DE /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		A51F8F3128BA5EA800B792DE /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		A51F8F3228BA5EA800B792DE /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		A51F8F3328BA5EA800B792DE /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		A51F8F3428BA5EA800B792DE /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		A51F8F3528BA5EA800B792DE /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
+		A51F8F3628BA5EA800B792DE /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		A51F8F3828BA5EA800B792DE /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		A51F8F3928BA5EA800B792DE /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				A51F8E4328B8038800B792DE /* Warehouse */,
+				A51F8F2C28BA5EA800B792DE /* FMDB */,
 				A51F8E4228B8038800B792DE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,8 +88,6 @@
 				A51F8ED528BA550000B792DE /* User Interface */,
 				A51F8E4428B8038800B792DE /* AppDelegate.h */,
 				A51F8E4528B8038800B792DE /* AppDelegate.m */,
-				A51F8E5F28B813BF00B792DE /* WHDatabase.h */,
-				A51F8E6028B813BF00B792DE /* WHDatabase.m */,
 				A51F8E4D28B8038D00B792DE /* main.m */,
 				A51F8ED928BA577600B792DE /* Supporting Files */,
 			);
@@ -100,6 +116,26 @@
 				A51F8E4728B8038D00B792DE /* Assets.xcassets */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A51F8F2C28BA5EA800B792DE /* FMDB */ = {
+			isa = PBXGroup;
+			children = (
+				A51F8F3528BA5EA800B792DE /* FMDB.h */,
+				A51F8F2E28BA5EA800B792DE /* FMDB.m */,
+				A51F8F2D28BA5EA800B792DE /* FMDatabase.h */,
+				A51F8F3328BA5EA800B792DE /* FMDatabase.m */,
+				A51F8F3428BA5EA800B792DE /* FMDatabaseQueue.h */,
+				A51F8F2F28BA5EA800B792DE /* FMDatabaseQueue.m */,
+				A51F8F3028BA5EA800B792DE /* FMResultSet.h */,
+				A51F8F3828BA5EA800B792DE /* FMResultSet.m */,
+				A51F8F3128BA5EA800B792DE /* FMDatabasePool.h */,
+				A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */,
+				A51F8F3628BA5EA800B792DE /* FMDatabaseAdditions.h */,
+				A51F8F3228BA5EA800B792DE /* FMDatabaseAdditions.m */,
+				A51F8F3928BA5EA800B792DE /* LICENSE.txt */,
+			);
+			path = FMDB;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -163,6 +199,7 @@
 				A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */,
 				A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */,
 				A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */,
+				A51F8F4028BA5EA800B792DE /* LICENSE.txt in Resources */,
 				A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,11 +211,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A51F8F3A28BA5EA800B792DE /* FMDB.m in Sources */,
 				A51F8E4E28B8038D00B792DE /* main.m in Sources */,
 				A51F8E4628B8038800B792DE /* AppDelegate.m in Sources */,
 				A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */,
-				A51F8E6128B813BF00B792DE /* WHDatabase.m in Sources */,
+				A51F8F3F28BA5EA800B792DE /* FMResultSet.m in Sources */,
+				A51F8F3E28BA5EA800B792DE /* FMDatabasePool.m in Sources */,
 				A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */,
+				A51F8F3C28BA5EA800B792DE /* FMDatabaseAdditions.m in Sources */,
+				A51F8F3B28BA5EA800B792DE /* FMDatabaseQueue.m in Sources */,
+				A51F8F3D28BA5EA800B792DE /* FMDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

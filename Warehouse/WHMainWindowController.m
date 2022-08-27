@@ -24,6 +24,11 @@
 }
 
 
+- (IBAction)clearAllButtonClicked:(id)sender {
+    //...
+}
+
+
 - (IBAction)componentAdditionButtonClicked:(id)sender {
     //... Limpar campos e carregar auto-compleção para o campo origem
     [_componentAdditionPopover showRelativeToRect:[sender bounds]
@@ -40,7 +45,7 @@
 }
 
 
-- (IBAction)stockReplenishmentsButtonClicked:(id)sender {
+- (IBAction)replenishmentsButtonClicked:(id)sender {
     //... Popular tabela para o componente selecionado
     [_replenishmentsHistoryPopover showRelativeToRect:[sender bounds]
                                                ofView:sender
@@ -49,7 +54,7 @@
 
 
 
-- (IBAction)previousRetrievalsButtonClicked:(id)sender {
+- (IBAction)withdrawalsButtonClicked:(id)sender {
     //... Popular tabela para o componente selecionado
     [_withdrawalsHistoryPopover showRelativeToRect:[sender bounds]
                                             ofView:sender

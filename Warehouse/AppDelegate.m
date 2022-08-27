@@ -9,12 +9,14 @@
 #import "AppDelegate.h"
 #import "WHMainWindowController.h"
 #import "WHPreferencesWindowController.h"
+#import "FMDB.h"
 
 @interface AppDelegate ()
 
-@property (weak) IBOutlet NSWindow *mainWindow;
 @property (strong) WHMainWindowController *mainWindowController;
 @property (strong) WHPreferencesWindowController *preferencesWindowController;
+
+@property FMDatabase *db;
 
 @end
 
@@ -28,14 +30,30 @@
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
+    _db = [FMDatabase databaseWithPath:dbFilePath];
+    if (![_db open]) {
+        _db = nil;
+        return;
+    }
     _mainWindowController = [[WHMainWindowController alloc] initWithWindowNibName:@"WHMainWindowController"];
     [_mainWindowController showWindow:nil];
     
+    //***
+    FMResultSet *s = [_db executeQuery:@"SELECT * FROM stock WHERE component_type = ?", FMDB_SQL_NULLABLE(@"IC")];
+    while ([s next]) {
+        NSString *rowValue = [s stringForColumn:@"part_number"];
+        NSLog(@"Part#: %@", rowValue);
+    }
+    [s close];
+    //***
 }
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    // Insert code here to tear down your application
+    if (_db) {
+        [_db close];
+    }
 }
 
 
