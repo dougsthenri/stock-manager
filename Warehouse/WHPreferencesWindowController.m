@@ -14,6 +14,13 @@
 
 @implementation WHPreferencesWindowController
 
+- (instancetype)init
+{
+    self = [super initWithWindowNibName:@"WHPreferencesWindowController"];
+    return self;
+}
+
+
 - (void)windowDidLoad {
     [super windowDidLoad];
     [[self window] setContentMaxSize:NSMakeSize(FLT_MAX, 100.0)];

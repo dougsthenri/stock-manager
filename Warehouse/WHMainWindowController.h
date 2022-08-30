@@ -7,10 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
+@class AppDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHMainWindowController : NSWindowController
+@interface WHMainWindowController : NSWindowController <NSControlTextEditingDelegate, NSComboBoxDelegate, NSTableViewDataSource>
+
+@property AppDelegate *appDelegate;
+
+- (instancetype)initWithAppDelegate:(AppDelegate *)delegate;
 
 @end
 

@@ -9,14 +9,12 @@
 #import "AppDelegate.h"
 #import "WHMainWindowController.h"
 #import "WHPreferencesWindowController.h"
-#import "FMDB.h"
 
 @interface AppDelegate ()
 
+@property (readwrite) WHDatabaseController *databaseController;
 @property (strong) WHMainWindowController *mainWindowController;
 @property (strong) WHPreferencesWindowController *preferencesWindowController;
-
-@property FMDatabase *db;
 
 @end
 
@@ -31,29 +29,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
-    _db = [FMDatabase databaseWithPath:dbFilePath];
-    if (![_db open]) {
-        _db = nil;
-        return;
-    }
-    _mainWindowController = [[WHMainWindowController alloc] initWithWindowNibName:@"WHMainWindowController"];
-    [_mainWindowController showWindow:nil];
-    
-    //***
-    FMResultSet *s = [_db executeQuery:@"SELECT * FROM stock WHERE component_type = ?", FMDB_SQL_NULLABLE(@"IC")];
-    while ([s next]) {
-        NSString *rowValue = [s stringForColumn:@"part_number"];
-        NSLog(@"Part#: %@", rowValue);
-    }
-    [s close];
-    //***
-}
-
-
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (_db) {
-        [_db close];
-    }
+    _databaseController = [[WHDatabaseController alloc] initWithDatabasePath:dbFilePath];
+    [self showMainWindow];
 }
 
 
@@ -62,11 +39,26 @@
 }
 
 
+- (void)applicationWillTerminate:(NSNotification *)aNotification {
+    if (_databaseController) {
+        [_databaseController closeDatabase];
+    }
+}
+
+
 - (IBAction)preferencesMenuItemClicked:(NSMenuItem *)sender {
-    if (![self preferencesWindowController]) {
-        _preferencesWindowController = [[WHPreferencesWindowController alloc] initWithWindowNibName:@"WHPreferencesWindowController"];
+    if (!_preferencesWindowController) {
+        _preferencesWindowController = [[WHPreferencesWindowController alloc] init];
     }
     [_preferencesWindowController showWindow:nil];
+}
+
+
+- (void)showMainWindow {
+    if (!_mainWindowController) {
+        _mainWindowController = [[WHMainWindowController alloc] initWithAppDelegate:self];
+    }
+    [_mainWindowController showWindow:nil];
 }
 
 @end

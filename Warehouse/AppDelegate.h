@@ -7,9 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "WHDatabaseController.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
+@property (readonly) WHDatabaseController *databaseController;
 
 @end
-
