@@ -25,16 +25,21 @@
 
 @interface WHMainWindowController ()
 
-@property (weak) IBOutlet NSTextField *partNumberSearchField;
-@property (weak) IBOutlet NSComboBox *componentTypeSearchBox;
-@property (weak) IBOutlet NSPopover *selectedItemAdditionPopover;
-@property (weak) IBOutlet NSPopover *selectedItemRemovalPopover;
-@property (weak) IBOutlet NSPopover *stockHistoryPopover;
+@property (weak) IBOutlet NSSearchField *partNumberSearchField;
+@property (weak) IBOutlet NSPopUpButton *componentTypeSelectionButton;
+@property (weak) IBOutlet NSPopover *selectedStockIncrementPopover;
+@property (weak) IBOutlet NSPopover *selectedStockDecrementPopover;
+@property (weak) IBOutlet NSPopover *selectedStockHistoryPopover;
 @property (weak) IBOutlet NSTableView *searchResultsTableView;
+@property (weak) IBOutlet NSTableView *stockReplenishmentsTableView;
+@property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
+@property (weak) IBOutlet NSButton *increaseSelectedStockButton; //... Mover p/ WHStockIncrementViewController
+@property (weak) IBOutlet NSButton *decreaseSelectedStockButton; //... Mover p/ WHStockDecrementViewController
+@property (weak) IBOutlet NSButton *stockHistoryButton;
 @property WHRegistrationWindowController *registrationWindowController;
-@property NSString *lastSearchedPartNumber;
-@property NSString *lastSearchedComponentType;
 @property NSArray *searchResults;
+@property NSArray *stockReplenishments;
+@property NSArray *stockWithdrawals;
 
 @end
 
@@ -52,45 +57,83 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     NSArray *componentTypes = [[_appDelegate databaseController] componentTypes];
-    [_componentTypeSearchBox addItemsWithObjectValues:componentTypes];
-    [_componentTypeSearchBox setNumberOfVisibleItems:0.4 * [componentTypes count]];
+    [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
 }
 
 
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
     NSString *partNumber = [[_partNumberSearchField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
-        if (![partNumber isEqualToString:_lastSearchedPartNumber]) {
-            _lastSearchedPartNumber = partNumber;
-            NSString *manufacturer;
-            //... Verificar filtragem por fabricante
-            NSArray<NSDictionary *> *searchResults = [[_appDelegate databaseController] searchResultsForPartNumber:partNumber
-                                                                                 manufacturer:manufacturer];
-            [self updateSearchResults:searchResults];
-        }
+        NSString *manufacturer;
+        //... Verificar filtragem por fabricante
+        NSArray<NSDictionary *> *searchResults;
+        searchResults = [[_appDelegate databaseController] searchResultsForIncrementalPartNumber:partNumber
+                                                                                    manufacturer:manufacturer];
+        [self updateSearchResults:searchResults];
     } else {
         [_partNumberSearchField setStringValue:@""];
         [self clearSearchResults];
     }
 }
 
-
-- (IBAction)componentTypeSearchBoxEdited:(id)sender {
-    NSString *componentType = [[_componentTypeSearchBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if ([componentType length] > 0) {
-        if (![componentType isEqualToString:_lastSearchedComponentType]) {
-            _lastSearchedComponentType = componentType;
-            [_componentTypeSearchBox selectText:nil];
-            NSMutableDictionary *searchCriteria;
-            //... Levantar critérios de filtragem
-            NSArray<NSDictionary *> *searchResults = [[_appDelegate databaseController] searchResultsForComponentType:componentType
-                                                                                        criteria:searchCriteria];
-            [self updateSearchResults:searchResults];
-        }
+- (IBAction)componentTypePopupSelected:(id)sender {
+    [_partNumberSearchField abortEditing];
+    [_partNumberSearchField setStringValue:@""];
+    if ([_componentTypeSelectionButton indexOfSelectedItem] > 1) {
+        NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
+        NSMutableDictionary *searchCriteria;
+        //... Levantar critérios de filtragem
+        NSArray<NSDictionary *> *searchResults;
+        searchResults = [[_appDelegate databaseController] searchResultsForComponentType:componentType
+                                                                                criteria:searchCriteria];
+        [self updateSearchResults:searchResults];
     } else {
-        [_componentTypeSearchBox setStringValue:@""];
         [self clearSearchResults];
     }
+}
+
+
+- (IBAction)increaseSelectedStockButtonClicked:(id)sender {
+    //... Limpar campos e carregar auto-compleção para o campo origem
+    [_selectedStockIncrementPopover showRelativeToRect:[sender bounds]
+                                            ofView:sender
+                                     preferredEdge:NSMinYEdge];
+}
+
+
+- (IBAction)decreaseSelectedStockButtonClicked:(id)sender {
+    //... Limpar campos e carregar auto-compleção para o campo destino
+    [_selectedStockDecrementPopover showRelativeToRect:[sender bounds]
+                                            ofView:sender
+                                     preferredEdge:NSMinYEdge];
+}
+
+
+- (IBAction)stockHistoryButtonClicked:(id)sender {
+    NSInteger selectedRow = [_searchResultsTableView selectedRow];
+    NSString *partNumber = _searchResults[selectedRow][@"part_number"];
+    NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
+    _stockReplenishments = [[_appDelegate databaseController] stockReplenishmentsForPartNumber:partNumber
+                                                                                  manufacturer:manufacturer];
+    [_stockReplenishmentsTableView reloadData];
+    _stockWithdrawals = [[_appDelegate databaseController] stockWithdrawalsForPartNumber:partNumber
+                                                                            manufacturer:manufacturer];
+    [_stockWithdrawalsTableView reloadData];
+    [_selectedStockHistoryPopover showRelativeToRect:[sender bounds]
+                                      ofView:sender
+                               preferredEdge:NSMinYEdge];
+}
+
+
+- (IBAction)addToStockButtonClicked:(id)sender {
+    //... SQL UPDATE
+    [_selectedStockIncrementPopover close];
+}
+
+
+- (IBAction)deductFromStockButtonClicked:(id)sender {
+    //... SQL UPDATE
+    [_selectedStockDecrementPopover close];
 }
 
 
@@ -103,44 +146,9 @@
 }
 
 
-- (IBAction)selectedItemAdditionButtonClicked:(id)sender {
-    //... Limpar campos e carregar auto-compleção para o campo origem
-    [_selectedItemAdditionPopover showRelativeToRect:[sender bounds]
-                                            ofView:sender
-                                     preferredEdge:NSMinYEdge];
-}
-
-
-- (IBAction)selectedItemRemovalButtonClicked:(id)sender {
-    //... Limpar campos e carregar auto-compleção para o campo destino
-    [_selectedItemRemovalPopover showRelativeToRect:[sender bounds]
-                                            ofView:sender
-                                     preferredEdge:NSMinYEdge];
-}
-
-
-- (IBAction)stockHistoryButtonClicked:(id)sender {
-    //... Popular tabelas
-    [_stockHistoryPopover showRelativeToRect:[sender bounds]
-                                      ofView:sender
-                               preferredEdge:NSMinYEdge];
-}
-
-
-- (IBAction)addToStockButtonClicked:(id)sender {
-    //... SQL UPDATE
-    [_selectedItemAdditionPopover close];
-}
-
-
-- (IBAction)deductFromStockButtonClicked:(id)sender {
-    //... SQL UPDATE
-    [_selectedItemRemovalPopover close];
-}
-
-
 - (void)updateSearchResults:(NSArray<NSDictionary *> *)results {
     _searchResults = results;
+    [_searchResultsTableView deselectAll:nil];
     for (NSString *columnID in WH_NULLABLE_COLUMNS) {
         NSTableColumn *column = [_searchResultsTableView tableColumnWithIdentifier:columnID];
         [column setHidden:YES];
@@ -156,58 +164,69 @@
 
 - (void)clearSearchResults {
     _searchResults = nil;
+    [_searchResultsTableView deselectAll:nil];
     for (NSString *columnID in WH_NULLABLE_COLUMNS) {
         NSTableColumn *tableColumn = [_searchResultsTableView tableColumnWithIdentifier:columnID];
         [tableColumn setHidden:YES];
     }
     [_searchResultsTableView reloadData];
-    [_partNumberSearchField setStringValue:@""];
-    [_componentTypeSearchBox setStringValue:@""];
 }
 
 #pragma mark - NSControlTextEditingDelegate
 
--(BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector {
-    if (commandSelector == @selector(cancelOperation:)) {
-        // Tecla ESC pressionada na caixa de texto
-        [self clearSearchResults];
-        return YES;
-    }
-    return NO; //Ação não tratada aqui
-}
-
-
 -(void)controlTextDidBeginEditing:(NSNotification *)obj {
     NSString *controlID = [[obj object] identifier];
     if ([controlID isEqualToString:[_partNumberSearchField identifier]]) {
-        [_componentTypeSearchBox setStringValue:@""];
-    } else if ([controlID isEqualToString:[_componentTypeSearchBox identifier]]) {
-        [_partNumberSearchField setStringValue:@""];
-    }
-}
-
-#pragma mark - NSComboBoxDelegate
-
--(void)comboBoxSelectionDidChange:(NSNotification *)notification {
-    NSString *controlID = [[notification object] identifier];
-    if ([controlID isEqualToString:[_componentTypeSearchBox identifier]]) {
-        [_partNumberSearchField setStringValue:@""];
+        [_componentTypeSelectionButton selectItemAtIndex:0];
     }
 }
 
 #pragma mark - NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return [_searchResults count]; //Tabela de resultados de pesquisa
+    NSString *tableID = [tableView identifier];
+    if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
+        return [_stockReplenishments count];
+    } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
+        return [_stockWithdrawals count];
+    } else /* Tabela de resultados de busca */ {
+        return [_searchResults count];
+    }
 }
 
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    // Tabela de resultados de pesquisa
-    NSDictionary *result = [_searchResults objectAtIndex:row];
+    NSString *tableID = [tableView identifier];
     NSString *columnID = [tableColumn identifier];
-    id tableCell = result[columnID];
-    return [tableCell isEqual:[NSNull null]] ? @"" : tableCell;
+    id value;
+    if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
+        NSDictionary *entry = _stockReplenishments[row];
+        value = entry[columnID];
+    } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
+        NSDictionary *entry = _stockWithdrawals[row];
+        value = entry[columnID];
+    } else /* Tabela de resultados de busca */ {
+        NSDictionary *result = _searchResults[row];
+        value = result[columnID];
+    }
+    //... Criar NSDates para um grupo seleto de colunas
+    return [value isEqual:[NSNull null]] ? @"" : value;
+}
+
+#pragma mark - NSTableViewDelegate
+
+-(void)tableViewSelectionDidChange:(NSNotification *)notification {
+    // Tabela de resultados de busca
+    NSInteger selectedRow = [_searchResultsTableView selectedRow];
+    if (selectedRow < 0) {
+        [_stockHistoryButton setEnabled:NO];
+        [_increaseSelectedStockButton setEnabled:NO];
+        [_decreaseSelectedStockButton setEnabled:NO];
+    } else {
+        [_stockHistoryButton setEnabled:YES];
+        [_increaseSelectedStockButton setEnabled:YES];
+        [_decreaseSelectedStockButton setEnabled:YES];
+    }
 }
 
 @end

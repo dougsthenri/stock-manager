@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHMainWindowController : NSWindowController <NSControlTextEditingDelegate, NSComboBoxDelegate, NSTableViewDataSource>
+@interface WHMainWindowController : NSWindowController <NSControlTextEditingDelegate, NSTableViewDataSource, NSTableViewDelegate>
 
 @property AppDelegate *appDelegate;
 

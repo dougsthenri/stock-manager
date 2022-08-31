@@ -46,10 +46,10 @@
 }
 
 
-- (NSArray<NSDictionary *> *)searchResultsForPartNumber:(NSString *)partNumber
-                                           manufacturer:(NSString *)manufacturer {
+- (NSArray<NSDictionary *> *)searchResultsForIncrementalPartNumber:(NSString *)partNumber
+                                                      manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
-    NSMutableString *query = [NSMutableString stringWithFormat:@"SELECT * FROM stock WHERE part_number = '%@'", partNumber];
+    NSMutableString *query = [NSMutableString stringWithFormat:@"SELECT * FROM stock WHERE part_number LIKE '%@%%'", partNumber];
     if (manufacturer) {
         [query appendFormat:@" AND manufacturer = '%@'", manufacturer];
     }
@@ -85,7 +85,7 @@
 - (NSArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
                                                  manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, origin FROM acquisitions WHERE part_number = '%@' AND manufacturer = '%@'", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, origin FROM acquisitions WHERE part_number = %@ AND manufacturer = %@", partNumber, manufacturer];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [queryResults addObject:result];
@@ -98,7 +98,7 @@
 - (NSArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
                                               manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, destination FROM expenditures WHERE part_number = '%@' AND manufacturer = '%@'", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, destination FROM expenditures WHERE part_number = %@ AND manufacturer = %@", partNumber, manufacturer];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [queryResults addObject:result];

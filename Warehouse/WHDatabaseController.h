@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)closeDatabase;
 - (nonnull NSArray *)componentTypes;
 
-- (nonnull NSArray<NSDictionary *> *)searchResultsForPartNumber:(nonnull NSString *)partNumber
-                                                   manufacturer:(nullable NSString *)manufacturer;
+- (nonnull NSArray<NSDictionary *> *)searchResultsForIncrementalPartNumber:(nonnull NSString *)partNumber
+                                                              manufacturer:(nullable NSString *)manufacturer;
 
 - (nonnull NSArray<NSDictionary *> *)searchResultsForComponentType:(nonnull NSString *)type
                                                           criteria:(nullable NSDictionary *)criteria;
