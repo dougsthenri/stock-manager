@@ -35,7 +35,7 @@
     if ([filePicker runModal] == NSModalResponseOK) {
         NSString *filePath = [NSString stringWithUTF8String:[[filePicker URL] fileSystemRepresentation]];
         [[NSUserDefaults standardUserDefaults] setObject:filePath forKey:@"kDBFileLocation"];
-        //... Conscientizar o aplicativo da mudança
+        //... Conscientizar o aplicativo da mudança (registrar AppDelegate como observador de NSUserDefaultsDidChangeNotification com defaultCenter)
     }
 }
 

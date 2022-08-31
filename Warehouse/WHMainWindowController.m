@@ -9,6 +9,7 @@
 #import "WHMainWindowController.h"
 #import "WHDatabaseController.h"
 #import "WHRegistrationWindowController.h"
+//...
 
 #define WH_NULLABLE_COLUMNS @[  \
     @"voltage_rating",          \
