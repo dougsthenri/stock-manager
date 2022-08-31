@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "WHDatabaseController.h"
 #import "WHMainWindowController.h"
 #import "WHPreferencesWindowController.h"
 
@@ -56,7 +57,7 @@
 
 - (void)showMainWindow {
     if (!_mainWindowController) {
-        _mainWindowController = [[WHMainWindowController alloc] initWithAppDelegate:self];
+        _mainWindowController = [[WHMainWindowController alloc] initWithDatabaseController:_databaseController];
     }
     [_mainWindowController showWindow:nil];
 }

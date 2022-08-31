@@ -7,17 +7,22 @@
 //
 
 #import "WHRegistrationWindowController.h"
-#import "AppDelegate.h"
+#import "WHDatabaseController.h"
 
 @interface WHRegistrationWindowController ()
+
+@property WHDatabaseController *databaseController;
 
 @end
 
 @implementation WHRegistrationWindowController
 
-- (instancetype)init
+- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller
 {
     self = [super initWithWindowNibName:@"WHRegistrationWindowController"];
+    if (self) {
+        _databaseController = controller;
+    }
     return self;
 }
 

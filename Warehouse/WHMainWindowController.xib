@@ -422,6 +422,9 @@
                     <buttonCell key="cell" type="push" title="Deduct from Stock" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zIZ-nk-mca">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
                     </buttonCell>
                     <connections>
                         <action selector="deductFromStockButtonClicked:" target="-2" id="B1F-Uf-9lL"/>
@@ -806,6 +809,9 @@
                     <buttonCell key="cell" type="push" title="Add to Stock" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GVR-Oj-CMN">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
                     </buttonCell>
                     <connections>
                         <action selector="addToStockButtonClicked:" target="-2" id="5Bb-UI-CK0"/>

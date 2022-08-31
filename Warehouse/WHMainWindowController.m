@@ -7,8 +7,8 @@
 //
 
 #import "WHMainWindowController.h"
+#import "WHDatabaseController.h"
 #import "WHRegistrationWindowController.h"
-#import "AppDelegate.h"
 
 #define WH_NULLABLE_COLUMNS @[  \
     @"voltage_rating",          \
@@ -25,6 +25,8 @@
 
 @interface WHMainWindowController ()
 
+@property WHDatabaseController *databaseController;
+
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
 @property (weak) IBOutlet NSPopUpButton *componentTypeSelectionButton;
 @property (weak) IBOutlet NSPopover *selectedStockIncrementPopover;
@@ -36,6 +38,7 @@
 @property (weak) IBOutlet NSButton *increaseSelectedStockButton; //... Mover p/ WHStockIncrementViewController
 @property (weak) IBOutlet NSButton *decreaseSelectedStockButton; //... Mover p/ WHStockDecrementViewController
 @property (weak) IBOutlet NSButton *stockHistoryButton;
+
 @property WHRegistrationWindowController *registrationWindowController;
 @property NSArray *searchResults;
 @property NSArray *stockReplenishments;
@@ -45,10 +48,10 @@
 
 @implementation WHMainWindowController
 
-- (instancetype)initWithAppDelegate:(AppDelegate *)delegate {
+- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller {
     self = [super initWithWindowNibName:@"WHMainWindowController"];
     if (self) {
-        _appDelegate = delegate;
+        _databaseController = controller;
     }
     return self;
 }
@@ -56,7 +59,7 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
-    NSArray *componentTypes = [[_appDelegate databaseController] componentTypes];
+    NSArray *componentTypes = [_databaseController componentTypes];
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
 }
 
@@ -67,8 +70,8 @@
         NSString *manufacturer;
         //... Verificar filtragem por fabricante
         NSArray<NSDictionary *> *searchResults;
-        searchResults = [[_appDelegate databaseController] searchResultsForIncrementalPartNumber:partNumber
-                                                                                    manufacturer:manufacturer];
+        searchResults = [_databaseController searchResultsForIncrementalPartNumber:partNumber
+                                                                      manufacturer:manufacturer];
         [self updateSearchResults:searchResults];
     } else {
         [_partNumberSearchField setStringValue:@""];
@@ -84,8 +87,8 @@
         NSMutableDictionary *searchCriteria;
         //... Levantar critérios de filtragem
         NSArray<NSDictionary *> *searchResults;
-        searchResults = [[_appDelegate databaseController] searchResultsForComponentType:componentType
-                                                                                criteria:searchCriteria];
+        searchResults = [_databaseController searchResultsForComponentType:componentType
+                                                                  criteria:searchCriteria];
         [self updateSearchResults:searchResults];
     } else {
         [self clearSearchResults];
@@ -94,18 +97,20 @@
 
 
 - (IBAction)increaseSelectedStockButtonClicked:(id)sender {
-    //... Limpar campos e carregar auto-compleção para o campo origem
+    //... Criar vista/controlador
+        //... Limpar campos e carregar auto-compleção para o campo origem
     [_selectedStockIncrementPopover showRelativeToRect:[sender bounds]
-                                            ofView:sender
-                                     preferredEdge:NSMinYEdge];
+                                                ofView:sender
+                                         preferredEdge:NSMinYEdge];
 }
 
 
 - (IBAction)decreaseSelectedStockButtonClicked:(id)sender {
+    //... Criar vista/controlador
     //... Limpar campos e carregar auto-compleção para o campo destino
     [_selectedStockDecrementPopover showRelativeToRect:[sender bounds]
-                                            ofView:sender
-                                     preferredEdge:NSMinYEdge];
+                                                ofView:sender
+                                         preferredEdge:NSMinYEdge];
 }
 
 
@@ -113,11 +118,11 @@
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     NSString *partNumber = _searchResults[selectedRow][@"part_number"];
     NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
-    _stockReplenishments = [[_appDelegate databaseController] stockReplenishmentsForPartNumber:partNumber
-                                                                                  manufacturer:manufacturer];
+    _stockReplenishments = [_databaseController stockReplenishmentsForPartNumber:partNumber
+                                                                    manufacturer:manufacturer];
     [_stockReplenishmentsTableView reloadData];
-    _stockWithdrawals = [[_appDelegate databaseController] stockWithdrawalsForPartNumber:partNumber
-                                                                            manufacturer:manufacturer];
+    _stockWithdrawals = [_databaseController stockWithdrawalsForPartNumber:partNumber
+                                                              manufacturer:manufacturer];
     [_stockWithdrawalsTableView reloadData];
     [_selectedStockHistoryPopover showRelativeToRect:[sender bounds]
                                       ofView:sender

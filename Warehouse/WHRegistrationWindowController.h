@@ -7,13 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
-@class AppDelegate;
+@class WHDatabaseController;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WHRegistrationWindowController : NSWindowController
 
-@property AppDelegate *appDelegate;
+-(instancetype)initWithDatabaseController:(WHDatabaseController *)controller;
 
 @end
 
