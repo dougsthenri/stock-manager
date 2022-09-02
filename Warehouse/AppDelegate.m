@@ -13,7 +13,7 @@
 
 @interface AppDelegate ()
 
-@property (readwrite) WHDatabaseController *databaseController;
+@property (strong) WHDatabaseController *databaseController;
 @property (strong) WHMainWindowController *mainWindowController;
 @property (strong) WHPreferencesWindowController *preferencesWindowController;
 

@@ -8,15 +8,40 @@
 
 #import <Foundation/Foundation.h>
 
+#define WH_NULLABLE_COLUMNS_STOCK @[ \
+    @"voltage_rating",               \
+    @"current_rating",               \
+    @"power_rating",                 \
+    @"resistance_rating",            \
+    @"inductance_rating",            \
+    @"capacitance_rating",           \
+    @"frequency_rating",             \
+    @"tolerance_rating",             \
+    @"package_code",                 \
+    @"comments"                      \
+]
+
+#define WH_DATE_COLUMNS @[ \
+    @"date_spent",         \
+    @"date_acquired",      \
+]
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WHDatabaseController : NSObject
 
 - (instancetype)initWithDatabasePath:(NSString *)path;
 - (void)closeDatabase;
-- (nonnull NSArray *)componentTypes;
+- (nullable NSDate *)decodeDate:(NSString *)date;
+- (nullable NSString *)encodeDate:(NSDate *)date;
+- (NSArray *)componentTypes;
+- (NSArray *)manufacturers;
+- (NSArray *)packageCodes;
 
-- (nonnull NSArray<NSDictionary *> *)searchResultsForIncrementalPartNumber:(nonnull NSString *)partNumber
+- (BOOL)databaseKnowsPartNumber:(NSString *)partNumber
+             fromManufacturer:(NSString *)manufacturer;
+
+- (nonnull NSArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(nonnull NSString *)partNumber
                                                               manufacturer:(nullable NSString *)manufacturer;
 
 - (nonnull NSArray<NSDictionary *> *)searchResultsForComponentType:(nonnull NSString *)type

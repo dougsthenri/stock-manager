@@ -11,9 +11,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHRegistrationWindowController : NSWindowController
+@interface WHRegistrationWindowController : NSWindowController <NSControlTextEditingDelegate>
 
--(instancetype)initWithDatabaseController:(WHDatabaseController *)controller;
+@property NSString *partNumber;
+
+- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller;
+- (void)clearInputForm;
 
 @end
 

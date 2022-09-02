@@ -9,24 +9,10 @@
 #import "WHMainWindowController.h"
 #import "WHDatabaseController.h"
 #import "WHRegistrationWindowController.h"
-//...
-
-#define WH_NULLABLE_COLUMNS @[  \
-    @"voltage_rating",          \
-    @"current_rating",          \
-    @"power_rating",            \
-    @"resistance_rating",       \
-    @"inductance_rating",       \
-    @"capacitance_rating",      \
-    @"frequency_rating",        \
-    @"tolerance_rating",        \
-    @"package_code",            \
-    @"comments"                 \
-]
+#import "WHStockIncrementViewController.h"
+#import "WHStockDecrementViewController.h"
 
 @interface WHMainWindowController ()
-
-@property WHDatabaseController *databaseController;
 
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
 @property (weak) IBOutlet NSPopUpButton *componentTypeSelectionButton;
@@ -36,10 +22,12 @@
 @property (weak) IBOutlet NSTableView *searchResultsTableView;
 @property (weak) IBOutlet NSTableView *stockReplenishmentsTableView;
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
-@property (weak) IBOutlet NSButton *increaseSelectedStockButton; //... Mover p/ WHStockIncrementViewController
-@property (weak) IBOutlet NSButton *decreaseSelectedStockButton; //... Mover p/ WHStockDecrementViewController
+@property (weak) IBOutlet NSButton *addPartNumberButton;
+@property (weak) IBOutlet NSButton *increaseSelectedStockButton;
+@property (weak) IBOutlet NSButton *decreaseSelectedStockButton;
 @property (weak) IBOutlet NSButton *stockHistoryButton;
 
+@property (weak) WHDatabaseController *databaseController; //... IBOutlet para dbCtlr de janelas e vistas filhas? Ou usar classe "singleton" para o gerenciador do banco de dados inicializado em AppDelegate
 @property WHRegistrationWindowController *registrationWindowController;
 @property NSArray *searchResults;
 @property NSArray *stockReplenishments;
@@ -68,15 +56,17 @@
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
     NSString *partNumber = [[_partNumberSearchField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
-        NSString *manufacturer;
-        //... Verificar filtragem por fabricante
+        [_addPartNumberButton setEnabled:YES];
+        NSString *manufacturer; //... Será sempre "nil" aqui. A filtragem por "manufacturer" ocorre após a busca por Part#
+        //... Verificar filtragem por fabricante, apenas. Limpar todos os [outros] filtros?
         NSArray<NSDictionary *> *searchResults;
-        searchResults = [_databaseController searchResultsForIncrementalPartNumber:partNumber
+        searchResults = [_databaseController incrementalSearchResultsForPartNumber:partNumber
                                                                       manufacturer:manufacturer];
         [self updateSearchResults:searchResults];
     } else {
+        [_addPartNumberButton setEnabled:NO];
         [_partNumberSearchField setStringValue:@""];
-        [self clearSearchResults];
+        [self updateSearchResults:nil];
     }
 }
 
@@ -92,14 +82,12 @@
                                                                   criteria:searchCriteria];
         [self updateSearchResults:searchResults];
     } else {
-        [self clearSearchResults];
+        [self updateSearchResults:nil];
     }
 }
 
 
 - (IBAction)increaseSelectedStockButtonClicked:(id)sender {
-    //... Criar vista/controlador
-        //... Limpar campos e carregar auto-compleção para o campo origem
     [_selectedStockIncrementPopover showRelativeToRect:[sender bounds]
                                                 ofView:sender
                                          preferredEdge:NSMinYEdge];
@@ -107,8 +95,6 @@
 
 
 - (IBAction)decreaseSelectedStockButtonClicked:(id)sender {
-    //... Criar vista/controlador
-    //... Limpar campos e carregar auto-compleção para o campo destino
     [_selectedStockDecrementPopover showRelativeToRect:[sender bounds]
                                                 ofView:sender
                                          preferredEdge:NSMinYEdge];
@@ -122,32 +108,23 @@
     _stockReplenishments = [_databaseController stockReplenishmentsForPartNumber:partNumber
                                                                     manufacturer:manufacturer];
     [_stockReplenishmentsTableView reloadData];
+    [_stockReplenishmentsTableView deselectAll:nil];
     _stockWithdrawals = [_databaseController stockWithdrawalsForPartNumber:partNumber
                                                               manufacturer:manufacturer];
     [_stockWithdrawalsTableView reloadData];
+    [_stockWithdrawalsTableView deselectAll:nil];
     [_selectedStockHistoryPopover showRelativeToRect:[sender bounds]
-                                      ofView:sender
-                               preferredEdge:NSMinYEdge];
+                                              ofView:sender
+                                       preferredEdge:NSMinYEdge];
 }
 
 
-- (IBAction)addToStockButtonClicked:(id)sender {
-    //... SQL UPDATE
-    [_selectedStockIncrementPopover close];
-}
-
-
-- (IBAction)deductFromStockButtonClicked:(id)sender {
-    //... SQL UPDATE
-    [_selectedStockDecrementPopover close];
-}
-
-
-- (IBAction)enrollComponentButtonClicked:(id)sender {
+- (IBAction)addPartNumberButtonClicked:(id)sender {
     if (!_registrationWindowController) {
-        _registrationWindowController = [[WHRegistrationWindowController alloc] init];
+        _registrationWindowController = [[WHRegistrationWindowController alloc] initWithDatabaseController:_databaseController];
     }
-    //... Limpar/preencher campos (obter dicas de campos preenchidos dajanela principal) e popular auto-compleção
+    [_registrationWindowController clearInputForm];
+    [_registrationWindowController setPartNumber:[_partNumberSearchField stringValue]];
     [_registrationWindowController showWindow:nil];
 }
 
@@ -155,7 +132,7 @@
 - (void)updateSearchResults:(NSArray<NSDictionary *> *)results {
     _searchResults = results;
     [_searchResultsTableView deselectAll:nil];
-    for (NSString *columnID in WH_NULLABLE_COLUMNS) {
+    for (NSString *columnID in WH_NULLABLE_COLUMNS_STOCK) {
         NSTableColumn *column = [_searchResultsTableView tableColumnWithIdentifier:columnID];
         [column setHidden:YES];
         for (NSDictionary *row in results) {
@@ -165,17 +142,11 @@
         }
     }
     [_searchResultsTableView reloadData];
-}
-
-
-- (void)clearSearchResults {
-    _searchResults = nil;
-    [_searchResultsTableView deselectAll:nil];
-    for (NSString *columnID in WH_NULLABLE_COLUMNS) {
-        NSTableColumn *tableColumn = [_searchResultsTableView tableColumnWithIdentifier:columnID];
-        [tableColumn setHidden:YES];
+    if (_searchResults) {
+        //... Habilitar seleção de filtros?
+    } else {
+        //... Limpar todos os filtros [e desabilitar seleção deles]?
     }
-    [_searchResultsTableView reloadData];
 }
 
 #pragma mark - NSControlTextEditingDelegate
@@ -215,8 +186,14 @@
         NSDictionary *result = _searchResults[row];
         value = result[columnID];
     }
-    //... Criar NSDates para um grupo seleto de colunas
-    return [value isEqual:[NSNull null]] ? @"" : value;
+    // Condicionar valor para exibição
+    if ([value isEqual:[NSNull null]]) {
+        value = @"";
+    } else if ([WH_DATE_COLUMNS containsObject:columnID]) {
+        NSDate *date = [_databaseController decodeDate:value];
+        value = date;
+    }
+    return value;
 }
 
 #pragma mark - NSTableViewDelegate

@@ -13,14 +13,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FMDatabase () {
-    void*               _db;
-    BOOL                _isExecutingStatement;
-    NSTimeInterval      _startBusyRetryTime;
+    void                    *_db;
+    BOOL                    _isExecutingStatement;
+    NSTimeInterval          _startBusyRetryTime;
     
-    NSMutableSet        *_openResultSets;
-    NSMutableSet        *_openFunctions;
+    NSMutableSet            *_openResultSets;
+    NSMutableSet            *_openFunctions;
     
-    NSDateFormatter     *_dateFormat;
+    NSISO8601DateFormatter  *_dateFormat;
 }
 
 - (FMResultSet * _Nullable)executeQuery:(NSString *)sql withArgumentsInArray:(NSArray * _Nullable)arrayArgs orDictionary:(NSDictionary * _Nullable)dictionaryArgs orVAList:(va_list)args shouldBind:(BOOL)shouldBind;
@@ -480,12 +480,9 @@ static int FMDBDatabaseBusyHandler(void *f, int count) {
 
 #pragma mark Date routines
 
-+ (NSDateFormatter *)storeableDateFormat:(NSString *)format {
-    
-    NSDateFormatter *result = FMDBReturnAutoreleased([[NSDateFormatter alloc] init]);
-    result.dateFormat = format;
-    result.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-    result.locale = FMDBReturnAutoreleased([[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]);
++ (NSISO8601DateFormatter *)storeableDateFormatISO8601 {
+    NSISO8601DateFormatter *result = FMDBReturnAutoreleased([[NSISO8601DateFormatter alloc] init]);
+    result.timeZone = [NSTimeZone localTimeZone];
     return result;
 }
 
@@ -494,7 +491,7 @@ static int FMDBDatabaseBusyHandler(void *f, int count) {
     return _dateFormat != nil;
 }
 
-- (void)setDateFormat:(NSDateFormatter *)format {
+- (void)setDateFormat:(NSISO8601DateFormatter *)format {
     FMDBAutorelease(_dateFormat);
     _dateFormat = FMDBReturnRetained(format);
 }

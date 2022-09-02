@@ -21,11 +21,25 @@
     self = [super init];
     if (self) {
         _database = [FMDatabase databaseWithPath:path];
+        NSISO8601DateFormatter *dateFormatter = [FMDatabase storeableDateFormatISO8601];
+        [_database setDateFormat:dateFormatter];
         if (![_database open]) {
+            return nil;
+        }
+        if (![self enableCaseSensitiveLike]) {
+            [_database close];
             return nil;
         }
     }
     return self;
+}
+
+
+- (BOOL)enableCaseSensitiveLike {
+    FMResultSet *resultSet = [_database executeQuery:@"PRAGMA case_sensitive_like=ON"];
+    BOOL querySucceeded = resultSet && ![_database hadError];
+    [resultSet close];
+    return querySucceeded;
 }
 
 
@@ -34,19 +48,57 @@
 }
 
 
-- (NSArray *)componentTypes {
-    NSMutableArray<NSString *> *componentTypes = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQuery:@"SELECT component_type FROM stock GROUP BY component_type"];
-    while ([resultSet next]) {
-        NSString *type = [resultSet stringForColumnIndex:0];
-        [componentTypes addObject:type];
-    }
-    [resultSet close];
-    return componentTypes;
+- (NSDate *)decodeDate:(NSString *)date {
+    return [_database dateFromString:date];
 }
 
 
-- (NSArray<NSDictionary *> *)searchResultsForIncrementalPartNumber:(NSString *)partNumber
+- (NSString *)encodeDate:(NSDate *)date {
+    return [_database stringFromDate:date];
+}
+
+
+- (NSArray *)groupsFromColumn:(NSString *)columnName table:(NSString *)tableName {
+    NSMutableArray<NSString *> *groups = [[NSMutableArray alloc] init];
+    NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM %@ GROUP BY %@", columnName, tableName, columnName];
+    FMResultSet *resultSet = [_database executeQuery:query];
+    while ([resultSet next]) {
+        NSString *groupName = [resultSet stringForColumnIndex:0];
+        if (groupName) {
+            [groups addObject:groupName];
+        }
+    }
+    [resultSet close];
+    return groups;
+}
+
+
+- (NSArray *)componentTypes {
+    return [self groupsFromColumn:@"component_type" table:@"stock"];
+}
+
+
+- (NSArray *)manufacturers {
+    return [self groupsFromColumn:@"manufacturer" table:@"stock"];
+}
+
+
+- (NSArray *)packageCodes {
+    return [self groupsFromColumn:@"package_code" table:@"stock"];
+}
+
+
+- (BOOL)databaseKnowsPartNumber:(NSString *)partNumber
+               fromManufacturer:(NSString *)manufacturer {
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT part_number FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer];
+    BOOL hasMatch = [resultSet next];
+    [resultSet close];
+    //... Gera uma notificação em caso positivo? A janela de busca e de registro, subscritoras da notificação, serão afetadas
+    return hasMatch;
+}
+
+
+- (NSArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
                                                       manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
     NSMutableString *query = [NSMutableString stringWithFormat:@"SELECT * FROM stock WHERE part_number LIKE '%@%%'", partNumber];
@@ -69,7 +121,7 @@
     NSMutableString *query = [[NSMutableString alloc] initWithFormat:@"SELECT * FROM stock WHERE component_type = '%@'", type];
     if (criteria) {
         for (NSString *columnName in criteria) {
-            [query appendFormat:@" AND %@ %@", columnName, criteria[columnName]]; //... Critério deve incluir operador relacional! e.g.: "voltage_rating <= 90"
+            [query appendFormat:@" AND %@ %@", columnName, criteria[columnName]]; //... Critério deve incluir operador relacional! e.g.: "voltage_rating <= 90". Cogitar um objeto WHSearchCriteria
         }
     }
     FMResultSet *resultSet = [_database executeQuery:query];
@@ -85,7 +137,7 @@
 - (NSArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
                                                  manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, origin FROM acquisitions WHERE part_number = %@ AND manufacturer = %@", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_acquired, origin FROM acquisitions WHERE part_number = ? AND manufacturer = ? ORDER BY date_acquired DESC", partNumber, manufacturer];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [queryResults addObject:result];
@@ -98,7 +150,7 @@
 - (NSArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
                                               manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQueryWithFormat:@"SELECT quantity, date, destination FROM expenditures WHERE part_number = %@ AND manufacturer = %@", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_spent, destination FROM expenditures WHERE part_number = ? AND manufacturer = ? ORDER BY date_spent DESC", partNumber, manufacturer];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [queryResults addObject:result];

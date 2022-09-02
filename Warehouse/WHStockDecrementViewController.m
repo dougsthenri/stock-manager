@@ -1,39 +1,40 @@
 //
-//  WHStockIncrementViewController.m
+//  WHStockDecrementViewController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 31/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHStockIncrementViewController.h"
+#import "WHStockDecrementViewController.h"
+#import "WHMainWindowController.h"
 #import "WHDatabaseController.h"
 
-@interface WHStockIncrementViewController ()
+@interface WHStockDecrementViewController ()
 
 @property (weak) IBOutlet NSPopover *popover;
 @property (weak) IBOutlet NSTextField *quantityTextField;
 @property (weak) IBOutlet NSStepper *quantityStepper;
-@property (weak) IBOutlet NSTextField *originTextField;
-@property (weak) IBOutlet NSDatePicker *acquisitionDatePicker;
+@property (weak) IBOutlet NSTextField *destinationTextField;
+@property (weak) IBOutlet NSDatePicker *expenditureDatePicker;
 @property (weak) IBOutlet NSButton *dateUnknownCheckbox;
 @property (weak) IBOutlet NSLayoutConstraint *variableHeightConstraint;
 
 @end
 
-@implementation WHStockIncrementViewController
+@implementation WHStockDecrementViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [_variableHeightConstraint setConstant:20]; //Campo de data inicialmente escondido
     [_quantityStepper setMaxValue:FLT_MAX];
     [self resetQuantity];
-    [_acquisitionDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+    [_expenditureDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
 }
 
 
 - (void)viewWillAppear {
-    // Manter últimas entradas de origem e data para adicionar sequencialmente itens de mesma origem
+    // Manter últimas entradas de destino e data para remover sequencialmente itens com mesma destinação
     [self resetQuantity];
     [super viewWillAppear];
 }
@@ -48,17 +49,17 @@
 - (IBAction)unknownDateCheckboxClicked:(id)sender {
     BOOL hideDatePicker = [_dateUnknownCheckbox state] == NSControlStateValueOn ? YES : NO;
     if (hideDatePicker) {
-        [_acquisitionDatePicker setHidden:YES];
+        [_expenditureDatePicker setHidden:YES];
         [_variableHeightConstraint setConstant:20];
     } else {
         [_variableHeightConstraint setConstant:51];
-        [_acquisitionDatePicker setHidden:NO];
+        [_expenditureDatePicker setHidden:NO];
     }
     //... Animar exibição/ocultação do campo de seleção de data
 }
 
 
-- (IBAction)addToStockButtonClicked:(id)sender {
+- (IBAction)deductFromStockButtonClicked:(id)sender {
     //... SQL UPDATE
     [_popover close];
 }
