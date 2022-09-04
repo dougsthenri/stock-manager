@@ -50,6 +50,7 @@
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setDateStyle:NSDateFormatterMediumStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+        [_dateFormatter setDoesRelativeDateFormatting:YES];
         _percentFormatter = [[NSNumberFormatter alloc] init];
         [_percentFormatter setNumberStyle:NSNumberFormatterPercentStyle];
         [_percentFormatter setMultiplier:@1.0];
@@ -128,10 +129,12 @@
                                                                     manufacturer:manufacturer];
     [_stockReplenishmentsTableView reloadData];
     [_stockReplenishmentsTableView deselectAll:nil];
+    [_stockReplenishmentsTableView sizeToFit];
     _stockWithdrawals = [_databaseController stockWithdrawalsForPartNumber:partNumber
                                                               manufacturer:manufacturer];
     [_stockWithdrawalsTableView reloadData];
     [_stockWithdrawalsTableView deselectAll:nil];
+    [_stockWithdrawalsTableView sizeToFit];
     [_selectedStockHistoryPopover showRelativeToRect:[sender bounds]
                                               ofView:sender
                                        preferredEdge:NSMinYEdge];
