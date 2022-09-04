@@ -15,13 +15,17 @@
 @interface WHMainWindowController ()
 
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
+
 @property (weak) IBOutlet NSPopUpButton *componentTypeSelectionButton;
+
 @property (weak) IBOutlet NSPopover *selectedStockIncrementPopover;
 @property (weak) IBOutlet NSPopover *selectedStockDecrementPopover;
 @property (weak) IBOutlet NSPopover *selectedStockHistoryPopover;
+
 @property (weak) IBOutlet NSTableView *searchResultsTableView;
 @property (weak) IBOutlet NSTableView *stockReplenishmentsTableView;
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
+
 @property (weak) IBOutlet NSButton *addPartNumberButton;
 @property (weak) IBOutlet NSButton *increaseSelectedStockButton;
 @property (weak) IBOutlet NSButton *decreaseSelectedStockButton;
@@ -29,9 +33,11 @@
 
 @property (weak) WHDatabaseController *databaseController; //... IBOutlet para dbCtlr de janelas e vistas filhas? Ou usar classe "singleton" para o gerenciador do banco de dados inicializado em AppDelegate
 @property WHRegistrationWindowController *registrationWindowController;
-@property NSArray *searchResults;
-@property NSArray *stockReplenishments;
-@property NSArray *stockWithdrawals;
+@property NSMutableArray *searchResults;
+@property NSMutableArray *stockReplenishments;
+@property NSMutableArray *stockWithdrawals;
+@property NSDateFormatter *dateFormatter;
+@property NSNumberFormatter *percentFormatter;
 
 @end
 
@@ -41,6 +47,12 @@
     self = [super initWithWindowNibName:@"WHMainWindowController"];
     if (self) {
         _databaseController = controller;
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        [_dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+        _percentFormatter = [[NSNumberFormatter alloc] init];
+        [_percentFormatter setNumberStyle:NSNumberFormatterPercentStyle];
+        [_percentFormatter setMultiplier:@1.0];
     }
     return self;
 }
@@ -50,6 +62,13 @@
     [super windowDidLoad];
     NSArray *componentTypes = [_databaseController componentTypes];
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
+    // Ocultar colunas anuláveis dos resultados de busca
+    for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
+        if ([_databaseController isNullableColumn:[column identifier] table:@"stock"]) {
+            [column setHidden:YES];
+        }
+    }
+    [_searchResultsTableView sizeToFit];
 }
 
 
@@ -59,14 +78,14 @@
         [_addPartNumberButton setEnabled:YES];
         NSString *manufacturer; //... Será sempre "nil" aqui. A filtragem por "manufacturer" ocorre após a busca por Part#
         //... Verificar filtragem por fabricante, apenas. Limpar todos os [outros] filtros?
-        NSArray<NSDictionary *> *searchResults;
-        searchResults = [_databaseController incrementalSearchResultsForPartNumber:partNumber
-                                                                      manufacturer:manufacturer];
-        [self updateSearchResults:searchResults];
+        _searchResults = [_databaseController incrementalSearchResultsForPartNumber:partNumber
+                                                                       manufacturer:manufacturer];
+        [self updateSearchResults];
     } else {
         [_addPartNumberButton setEnabled:NO];
         [_partNumberSearchField setStringValue:@""];
-        [self updateSearchResults:nil];
+        _searchResults = nil;
+        [self updateSearchResults];
     }
 }
 
@@ -77,12 +96,12 @@
         NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
         NSMutableDictionary *searchCriteria;
         //... Levantar critérios de filtragem
-        NSArray<NSDictionary *> *searchResults;
-        searchResults = [_databaseController searchResultsForComponentType:componentType
-                                                                  criteria:searchCriteria];
-        [self updateSearchResults:searchResults];
+        _searchResults = [_databaseController searchResultsForComponentType:componentType
+                                                                   criteria:searchCriteria];
+        [self updateSearchResults];
     } else {
-        [self updateSearchResults:nil];
+        _searchResults = nil;
+        [self updateSearchResults];
     }
 }
 
@@ -129,19 +148,24 @@
 }
 
 
-- (void)updateSearchResults:(NSArray<NSDictionary *> *)results {
-    _searchResults = results;
+- (void)updateSearchResults {
+    [_searchResultsTableView reloadData];
     [_searchResultsTableView deselectAll:nil];
-    for (NSString *columnID in WH_NULLABLE_COLUMNS_STOCK) {
-        NSTableColumn *column = [_searchResultsTableView tableColumnWithIdentifier:columnID];
-        [column setHidden:YES];
-        for (NSDictionary *row in results) {
-            if (![row[columnID] isEqual:[NSNull null]]) {
-                [column setHidden:NO];
+    // Ocultar colunas inteiramente vazias
+    for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
+        NSString *columnID = [column identifier];
+        if ([_databaseController isNullableColumn:columnID table:@"stock"]) {
+            [column setHidden:YES];
+            for (NSDictionary *result in _searchResults) {
+                id value = result[columnID];
+                if (![value isEqual:[NSNull null]]) {
+                    [column setHidden:NO];
+                    break;
+                }
             }
         }
     }
-    [_searchResultsTableView reloadData];
+    [_searchResultsTableView sizeToFit];
     if (_searchResults) {
         //... Habilitar seleção de filtros?
     } else {
@@ -162,38 +186,148 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     NSString *tableID = [tableView identifier];
-    if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
-        return [_stockReplenishments count];
-    } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
-        return [_stockWithdrawals count];
-    } else /* Tabela de resultados de busca */ {
+    if ([tableID isEqualToString:[_searchResultsTableView identifier]]) {
         return [_searchResults count];
     }
+    if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
+        return [_stockReplenishments count];
+    }
+    if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
+        return [_stockWithdrawals count];
+    }
+    return 0; //Tabela desconhecida
 }
 
 
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+/*
+ Os identificadores das colunas e de suas respectivas vistas são idênticos e correspondem aos nomes das colunas no banco de dados
+ */
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     NSString *tableID = [tableView identifier];
     NSString *columnID = [tableColumn identifier];
-    id value;
-    if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
-        NSDictionary *entry = _stockReplenishments[row];
-        value = entry[columnID];
+    NSTableCellView *cellView;
+    if ([tableID isEqualToString:[_searchResultsTableView identifier]]) {
+        id value = _searchResults[row][columnID];
+        if ([columnID isEqualToString:@"part_number"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:_searchResults[row][columnID]];
+        } else if ([columnID isEqualToString:@"manufacturer"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:_searchResults[row][columnID]];
+        } else if ([columnID isEqualToString:@"component_type"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:_searchResults[row][columnID]];
+        } else if ([columnID isEqualToString:@"quantity"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            NSNumber *numericValue = _searchResults[row][columnID];
+            [textField setIntegerValue:[numericValue integerValue]];
+        } else if ([columnID isEqualToString:@"voltage_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"current_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"power_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"resistance_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"inductance_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"capacitance_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"frequency_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
+            }
+        } else if ([columnID isEqualToString:@"tolerance_rating"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[_percentFormatter stringFromNumber:(NSNumber *)value]];
+            }
+        } else if ([columnID isEqualToString:@"package_code"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:value];
+            }
+        } else if ([columnID isEqualToString:@"comments"]) {
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:value];
+            }
+        }
+    } else if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
+        id value = _stockReplenishments[row][columnID];
+        if ([columnID isEqualToString:@"date_acquired"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            if ([value isEqualTo:[NSNull null]]) {
+                [textField setStringValue:@"Unknown"];
+            } else {
+                NSDate *dateValue = [_databaseController decodeDate:value];
+                [textField setStringValue:[_dateFormatter stringFromDate:dateValue]];
+            }
+        } else if ([columnID isEqualToString:@"quantity"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
+        } else if ([columnID isEqualToString:@"origin"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
+        }
     } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
-        NSDictionary *entry = _stockWithdrawals[row];
-        value = entry[columnID];
-    } else /* Tabela de resultados de busca */ {
-        NSDictionary *result = _searchResults[row];
-        value = result[columnID];
+        id value = _stockWithdrawals[row][columnID];
+        if ([columnID isEqualToString:@"date_spent"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            if ([value isEqualTo:[NSNull null]]) {
+                [textField setStringValue:@"Unknown"];
+            } else {
+                NSDate *dateValue = [_databaseController decodeDate:value];
+                [textField setStringValue:[_dateFormatter stringFromDate:dateValue]];
+            }
+        } else if ([columnID isEqualToString:@"quantity"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
+        } else if ([columnID isEqualToString:@"destination"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
+        }
     }
-    // Condicionar valor para exibição
-    if ([value isEqual:[NSNull null]]) {
-        value = @"";
-    } else if ([WH_DATE_COLUMNS containsObject:columnID]) {
-        NSDate *date = [_databaseController decodeDate:value];
-        value = date;
-    }
-    return value;
+    return cellView;
 }
 
 #pragma mark - NSTableViewDelegate
@@ -208,7 +342,8 @@
     } else {
         [_stockHistoryButton setEnabled:YES];
         [_increaseSelectedStockButton setEnabled:YES];
-        [_decreaseSelectedStockButton setEnabled:YES];
+        NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
+        [_decreaseSelectedStockButton setEnabled:selectedQuantity > 0];
     }
 }
 

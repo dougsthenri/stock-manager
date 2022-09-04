@@ -8,27 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#define WH_NULLABLE_COLUMNS_STOCK @[ \
-    @"voltage_rating",               \
-    @"current_rating",               \
-    @"power_rating",                 \
-    @"resistance_rating",            \
-    @"inductance_rating",            \
-    @"capacitance_rating",           \
-    @"frequency_rating",             \
-    @"tolerance_rating",             \
-    @"package_code",                 \
-    @"comments"                      \
-]
-
-#define WH_DATE_COLUMNS @[ \
-    @"date_spent",         \
-    @"date_acquired",      \
-]
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WHDatabaseController : NSObject
+
+@property (readonly) NSArray<NSString *> *dateColumns;
 
 - (instancetype)initWithDatabasePath:(NSString *)path;
 - (void)closeDatabase;
@@ -39,19 +23,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)packageCodes;
 
 - (BOOL)databaseKnowsPartNumber:(NSString *)partNumber
-             fromManufacturer:(NSString *)manufacturer;
+               fromManufacturer:(NSString *)manufacturer;
 
-- (nonnull NSArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(nonnull NSString *)partNumber
-                                                              manufacturer:(nullable NSString *)manufacturer;
+- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
+                                                             manufacturer:(nullable NSString *)manufacturer;
 
-- (nonnull NSArray<NSDictionary *> *)searchResultsForComponentType:(nonnull NSString *)type
-                                                          criteria:(nullable NSDictionary *)criteria;
+- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type
+                                                         criteria:(nullable NSDictionary *)criteria;
 
-- (NSArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
-                                                 manufacturer:(NSString *)manufacturer;
+- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
+                                                        manufacturer:(NSString *)manufacturer;
 
-- (NSArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
-                                              manufacturer:(NSString *)manufacturer;
+- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
+                                                     manufacturer:(NSString *)manufacturer;
+
+- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table;
 
 @end
 

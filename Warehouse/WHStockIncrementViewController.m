@@ -54,7 +54,6 @@
         [_variableHeightConstraint setConstant:51];
         [_acquisitionDatePicker setHidden:NO];
     }
-    //... Animar exibição/ocultação do campo de seleção de data
 }
 
 

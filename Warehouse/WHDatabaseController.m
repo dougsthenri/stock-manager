@@ -12,6 +12,7 @@
 @interface WHDatabaseController ()
 
 @property FMDatabase *database;
+@property (readwrite) NSArray<NSString *> *dateColumns;
 
 @end
 
@@ -30,6 +31,10 @@
             [_database close];
             return nil;
         }
+        _dateColumns = @[
+            @"date_acquired",
+            @"date_spent"
+        ];
     }
     return self;
 }
@@ -69,7 +74,7 @@
         }
     }
     [resultSet close];
-    return groups;
+    return [groups copy];
 }
 
 
@@ -98,8 +103,8 @@
 }
 
 
-- (NSArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
-                                                      manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
+                                                             manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
     NSMutableString *query = [NSMutableString stringWithFormat:@"SELECT * FROM stock WHERE part_number LIKE '%@%%'", partNumber];
     if (manufacturer) {
@@ -115,8 +120,8 @@
 }
 
 
-- (NSArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type
-                                                  criteria:(NSDictionary *)criteria {
+- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type
+                                                         criteria:(NSDictionary *)criteria {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
     NSMutableString *query = [[NSMutableString alloc] initWithFormat:@"SELECT * FROM stock WHERE component_type = '%@'", type];
     if (criteria) {
@@ -134,8 +139,8 @@
 }
 
 
-- (NSArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
-                                                 manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
+                                                        manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_acquired, origin FROM acquisitions WHERE part_number = ? AND manufacturer = ? ORDER BY date_acquired DESC", partNumber, manufacturer];
     while ([resultSet next]) {
@@ -147,8 +152,8 @@
 }
 
 
-- (NSArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
-                                              manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
+                                                     manufacturer:(NSString *)manufacturer {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_spent, destination FROM expenditures WHERE part_number = ? AND manufacturer = ? ORDER BY date_spent DESC", partNumber, manufacturer];
     while ([resultSet next]) {
@@ -157,6 +162,21 @@
     }
     [resultSet close];
     return queryResults;
+}
+
+
+- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table {
+    BOOL isNullable = NO;
+    FMResultSet *resultSet = [_database getTableSchema:table];
+    while ([resultSet next]) {
+        NSString *columnName = [resultSet stringForColumn:@"name"];
+        if ([columnName isEqualToString:column]) {
+            isNullable = ![resultSet boolForColumn:@"notnull"];
+            break;
+        }
+    }
+    [resultSet close];
+    return isNullable;
 }
 
 @end

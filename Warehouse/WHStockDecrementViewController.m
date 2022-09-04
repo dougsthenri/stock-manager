@@ -55,7 +55,6 @@
         [_variableHeightConstraint setConstant:51];
         [_expenditureDatePicker setHidden:NO];
     }
-    //... Animar exibição/ocultação do campo de seleção de data
 }
 
 
