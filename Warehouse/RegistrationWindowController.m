@@ -1,18 +1,18 @@
 //
-//  WHRegistrationWindowController.m
+//  RegistrationWindowController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 28/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHRegistrationWindowController.h"
-#import "WHMainWindowController.h"
-#import "WHDatabaseController.h"
+#import "RegistrationWindowController.h"
+#import "MainWindowController.h"
+#import "DatabaseController.h"
 
-@interface WHRegistrationWindowController ()
+@interface RegistrationWindowController ()
 
-@property (weak) WHDatabaseController *databaseController;
+@property (weak) DatabaseController *databaseController;
 
 @property (weak) IBOutlet NSComboBox *manufacturerComboBox;
 @property (weak) IBOutlet NSComboBox *componentTypeComboBox;
@@ -21,10 +21,10 @@
 
 @end
 
-@implementation WHRegistrationWindowController
+@implementation RegistrationWindowController
 
-- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller {
-    self = [super initWithWindowNibName:@"WHRegistrationWindowController"];
+- (instancetype)initWithDatabaseController:(DatabaseController *)controller {
+    self = [super initWithWindowNibName:@"RegistrationWindowController"];
     if (self) {
         _databaseController = controller;
     }

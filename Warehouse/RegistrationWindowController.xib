@@ -6,7 +6,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="WHRegistrationWindowController">
+        <customObject id="-2" userLabel="File's Owner" customClass="RegistrationWindowController">
             <connections>
                 <outlet property="commentsTextField" destination="cf8-xa-mSK" id="cQJ-Yh-S1J"/>
                 <outlet property="componentTypeComboBox" destination="zTj-8J-AEW" id="iqg-Kj-CuG"/>

@@ -1,18 +1,18 @@
 //
-//  WHMainWindowController.m
+//  MainWindowController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 26/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHMainWindowController.h"
-#import "WHDatabaseController.h"
-#import "WHRegistrationWindowController.h"
-#import "WHStockIncrementViewController.h"
-#import "WHStockDecrementViewController.h"
+#import "MainWindowController.h"
+#import "DatabaseController.h"
+#import "RegistrationWindowController.h"
+#import "StockIncrementViewController.h"
+#import "StockDecrementViewController.h"
 
-@interface WHMainWindowController ()
+@interface MainWindowController ()
 
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
 
@@ -31,8 +31,8 @@
 @property (weak) IBOutlet NSButton *decreaseSelectedStockButton;
 @property (weak) IBOutlet NSButton *stockHistoryButton;
 
-@property (weak) WHDatabaseController *databaseController; //... IBOutlet para dbCtlr de janelas e vistas filhas? Ou usar classe "singleton" para o gerenciador do banco de dados inicializado em AppDelegate
-@property WHRegistrationWindowController *registrationWindowController;
+@property (weak) DatabaseController *databaseController; //... IBOutlet para dbCtlr de janelas e vistas filhas? Ou usar classe "singleton" para o gerenciador do banco de dados inicializado em AppDelegate
+@property RegistrationWindowController *registrationWindowController;
 @property NSMutableArray *searchResults;
 @property NSMutableArray *stockReplenishments;
 @property NSMutableArray *stockWithdrawals;
@@ -41,10 +41,10 @@
 
 @end
 
-@implementation WHMainWindowController
+@implementation MainWindowController
 
-- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller {
-    self = [super initWithWindowNibName:@"WHMainWindowController"];
+- (instancetype)initWithDatabaseController:(DatabaseController *)controller {
+    self = [super initWithWindowNibName:@"MainWindowController"];
     if (self) {
         _databaseController = controller;
         _dateFormatter = [[NSDateFormatter alloc] init];
@@ -140,7 +140,7 @@
 
 - (IBAction)addPartNumberButtonClicked:(id)sender {
     if (!_registrationWindowController) {
-        _registrationWindowController = [[WHRegistrationWindowController alloc] initWithDatabaseController:_databaseController];
+        _registrationWindowController = [[RegistrationWindowController alloc] initWithDatabaseController:_databaseController];
     }
     [_registrationWindowController clearInputForm];
     [_registrationWindowController setPartNumber:[_partNumberSearchField stringValue]];

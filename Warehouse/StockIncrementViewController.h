@@ -1,5 +1,5 @@
 //
-//  WHStockDecrementViewController.h
+//  StockIncrementViewController.h
 //  Warehouse
 //
 //  Created by Douglas Almeida on 31/08/22.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHStockDecrementViewController : NSViewController <NSTextFieldDelegate>
+@interface StockIncrementViewController : NSViewController <NSTextFieldDelegate>
 
 @end
 

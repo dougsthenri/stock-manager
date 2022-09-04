@@ -1,5 +1,5 @@
 //
-//  WHDatabaseController.h
+//  DatabaseController.h
 //  Warehouse
 //
 //  Created by Douglas Almeida on 30/08/22.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHDatabaseController : NSObject
+@interface DatabaseController : NSObject
 
 @property (readonly) NSArray<NSString *> *dateColumns;
 
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol WHDatabaseObserver <NSObject>
+@protocol DatabaseObserver <NSObject>
 
 //... DATABASE UPDATED NOTIFICATION
 

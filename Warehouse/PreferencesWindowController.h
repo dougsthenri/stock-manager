@@ -1,5 +1,5 @@
 //
-//  WHPreferencesWindowController.h
+//  PreferencesWindowController.h
 //  Warehouse
 //
 //  Created by Douglas Almeida on 25/08/22.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHPreferencesWindowController : NSWindowController
+@interface PreferencesWindowController : NSWindowController
 
 @end
 

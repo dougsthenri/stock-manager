@@ -11,10 +11,10 @@
 		A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4728B8038D00B792DE /* Assets.xcassets */; };
 		A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E4928B8038D00B792DE /* MainMenu.xib */; };
 		A51F8E4E28B8038D00B792DE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E4D28B8038D00B792DE /* main.m */; };
-		A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */; };
-		A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */; };
-		A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */; };
-		A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */; };
+		A51F8E6A28B81BD800B792DE /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6828B81BD800B792DE /* PreferencesWindowController.m */; };
+		A51F8E6B28B81BD800B792DE /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6928B81BD800B792DE /* PreferencesWindowController.xib */; };
+		A51F8E6F28B91AB400B792DE /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8E6D28B91AB400B792DE /* MainWindowController.m */; };
+		A51F8E7028B91AB400B792DE /* MainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51F8E6E28B91AB400B792DE /* MainWindowController.xib */; };
 		A51F8F3A28BA5EA800B792DE /* FMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F2E28BA5EA800B792DE /* FMDB.m */; };
 		A51F8F3B28BA5EA800B792DE /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F2F28BA5EA800B792DE /* FMDatabaseQueue.m */; };
 		A51F8F3C28BA5EA800B792DE /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3228BA5EA800B792DE /* FMDatabaseAdditions.m */; };
@@ -22,13 +22,13 @@
 		A51F8F3E28BA5EA800B792DE /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */; };
 		A51F8F3F28BA5EA800B792DE /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3828BA5EA800B792DE /* FMResultSet.m */; };
 		A51F8F4028BA5EA800B792DE /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A51F8F3928BA5EA800B792DE /* LICENSE.txt */; };
-		A5E94A4C28BE78AC00CE2ADD /* WHDatabaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A4B28BE78AC00CE2ADD /* WHDatabaseController.m */; };
-		A5E94A5028C0150700CE2ADD /* WHStockIncrementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A4E28C0150700CE2ADD /* WHStockIncrementViewController.m */; };
-		A5E94A5128C0150700CE2ADD /* WHStockIncrementViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5E94A4F28C0150700CE2ADD /* WHStockIncrementViewController.xib */; };
-		A5E94A5528C0194600CE2ADD /* WHStockDecrementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A5328C0194600CE2ADD /* WHStockDecrementViewController.m */; };
-		A5E94A5628C0194600CE2ADD /* WHStockDecrementViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5E94A5428C0194600CE2ADD /* WHStockDecrementViewController.xib */; };
-		A5FE89B628BC49010073E153 /* WHRegistrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FE89B428BC49010073E153 /* WHRegistrationWindowController.m */; };
-		A5FE89B728BC49010073E153 /* WHRegistrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FE89B528BC49010073E153 /* WHRegistrationWindowController.xib */; };
+		A5E94A4C28BE78AC00CE2ADD /* DatabaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A4B28BE78AC00CE2ADD /* DatabaseController.m */; };
+		A5E94A5028C0150700CE2ADD /* StockIncrementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A4E28C0150700CE2ADD /* StockIncrementViewController.m */; };
+		A5E94A5128C0150700CE2ADD /* StockIncrementViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5E94A4F28C0150700CE2ADD /* StockIncrementViewController.xib */; };
+		A5E94A5528C0194600CE2ADD /* StockDecrementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A5328C0194600CE2ADD /* StockDecrementViewController.m */; };
+		A5E94A5628C0194600CE2ADD /* StockDecrementViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5E94A5428C0194600CE2ADD /* StockDecrementViewController.xib */; };
+		A5FE89B628BC49010073E153 /* RegistrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FE89B428BC49010073E153 /* RegistrationWindowController.m */; };
+		A5FE89B728BC49010073E153 /* RegistrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FE89B528BC49010073E153 /* RegistrationWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,12 +40,12 @@
 		A51F8E4C28B8038D00B792DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A51F8E4D28B8038D00B792DE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A51F8E4F28B8038D00B792DE /* Warehouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Warehouse.entitlements; sourceTree = "<group>"; };
-		A51F8E6728B81BD800B792DE /* WHPreferencesWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHPreferencesWindowController.h; sourceTree = "<group>"; };
-		A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHPreferencesWindowController.m; sourceTree = "<group>"; };
-		A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHPreferencesWindowController.xib; sourceTree = "<group>"; };
-		A51F8E6C28B91AB400B792DE /* WHMainWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHMainWindowController.h; sourceTree = "<group>"; };
-		A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHMainWindowController.m; sourceTree = "<group>"; };
-		A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHMainWindowController.xib; sourceTree = "<group>"; };
+		A51F8E6728B81BD800B792DE /* PreferencesWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
+		A51F8E6828B81BD800B792DE /* PreferencesWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
+		A51F8E6928B81BD800B792DE /* PreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindowController.xib; sourceTree = "<group>"; };
+		A51F8E6C28B91AB400B792DE /* MainWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
+		A51F8E6D28B91AB400B792DE /* MainWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainWindowController.m; sourceTree = "<group>"; };
+		A51F8E6E28B91AB400B792DE /* MainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindowController.xib; sourceTree = "<group>"; };
 		A51F8F2D28BA5EA800B792DE /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
 		A51F8F2E28BA5EA800B792DE /* FMDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDB.m; sourceTree = "<group>"; };
 		A51F8F2F28BA5EA800B792DE /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
@@ -59,17 +59,17 @@
 		A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
 		A51F8F3828BA5EA800B792DE /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		A51F8F3928BA5EA800B792DE /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		A5E94A4A28BE78AC00CE2ADD /* WHDatabaseController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHDatabaseController.h; sourceTree = "<group>"; };
-		A5E94A4B28BE78AC00CE2ADD /* WHDatabaseController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHDatabaseController.m; sourceTree = "<group>"; };
-		A5E94A4D28C0150700CE2ADD /* WHStockIncrementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHStockIncrementViewController.h; sourceTree = "<group>"; };
-		A5E94A4E28C0150700CE2ADD /* WHStockIncrementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHStockIncrementViewController.m; sourceTree = "<group>"; };
-		A5E94A4F28C0150700CE2ADD /* WHStockIncrementViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHStockIncrementViewController.xib; sourceTree = "<group>"; };
-		A5E94A5228C0194600CE2ADD /* WHStockDecrementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHStockDecrementViewController.h; sourceTree = "<group>"; };
-		A5E94A5328C0194600CE2ADD /* WHStockDecrementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHStockDecrementViewController.m; sourceTree = "<group>"; };
-		A5E94A5428C0194600CE2ADD /* WHStockDecrementViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHStockDecrementViewController.xib; sourceTree = "<group>"; };
-		A5FE89B328BC49010073E153 /* WHRegistrationWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHRegistrationWindowController.h; sourceTree = "<group>"; };
-		A5FE89B428BC49010073E153 /* WHRegistrationWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WHRegistrationWindowController.m; sourceTree = "<group>"; };
-		A5FE89B528BC49010073E153 /* WHRegistrationWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WHRegistrationWindowController.xib; sourceTree = "<group>"; };
+		A5E94A4A28BE78AC00CE2ADD /* DatabaseController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DatabaseController.h; sourceTree = "<group>"; };
+		A5E94A4B28BE78AC00CE2ADD /* DatabaseController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatabaseController.m; sourceTree = "<group>"; };
+		A5E94A4D28C0150700CE2ADD /* StockIncrementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockIncrementViewController.h; sourceTree = "<group>"; };
+		A5E94A4E28C0150700CE2ADD /* StockIncrementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StockIncrementViewController.m; sourceTree = "<group>"; };
+		A5E94A4F28C0150700CE2ADD /* StockIncrementViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StockIncrementViewController.xib; sourceTree = "<group>"; };
+		A5E94A5228C0194600CE2ADD /* StockDecrementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockDecrementViewController.h; sourceTree = "<group>"; };
+		A5E94A5328C0194600CE2ADD /* StockDecrementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StockDecrementViewController.m; sourceTree = "<group>"; };
+		A5E94A5428C0194600CE2ADD /* StockDecrementViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StockDecrementViewController.xib; sourceTree = "<group>"; };
+		A5FE89B328BC49010073E153 /* RegistrationWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RegistrationWindowController.h; sourceTree = "<group>"; };
+		A5FE89B428BC49010073E153 /* RegistrationWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RegistrationWindowController.m; sourceTree = "<group>"; };
+		A5FE89B528BC49010073E153 /* RegistrationWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RegistrationWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,8 +106,8 @@
 				A51F8E4D28B8038D00B792DE /* main.m */,
 				A51F8E4428B8038800B792DE /* AppDelegate.h */,
 				A51F8E4528B8038800B792DE /* AppDelegate.m */,
-				A5E94A4A28BE78AC00CE2ADD /* WHDatabaseController.h */,
-				A5E94A4B28BE78AC00CE2ADD /* WHDatabaseController.m */,
+				A5E94A4A28BE78AC00CE2ADD /* DatabaseController.h */,
+				A5E94A4B28BE78AC00CE2ADD /* DatabaseController.m */,
 				A51F8ED528BA550000B792DE /* User Interface */,
 				A51F8ED928BA577600B792DE /* Supporting Files */,
 			);
@@ -118,21 +118,21 @@
 			isa = PBXGroup;
 			children = (
 				A51F8E4928B8038D00B792DE /* MainMenu.xib */,
-				A51F8E6728B81BD800B792DE /* WHPreferencesWindowController.h */,
-				A51F8E6828B81BD800B792DE /* WHPreferencesWindowController.m */,
-				A51F8E6928B81BD800B792DE /* WHPreferencesWindowController.xib */,
-				A51F8E6C28B91AB400B792DE /* WHMainWindowController.h */,
-				A51F8E6D28B91AB400B792DE /* WHMainWindowController.m */,
-				A51F8E6E28B91AB400B792DE /* WHMainWindowController.xib */,
-				A5E94A4D28C0150700CE2ADD /* WHStockIncrementViewController.h */,
-				A5E94A4E28C0150700CE2ADD /* WHStockIncrementViewController.m */,
-				A5E94A4F28C0150700CE2ADD /* WHStockIncrementViewController.xib */,
-				A5E94A5228C0194600CE2ADD /* WHStockDecrementViewController.h */,
-				A5E94A5328C0194600CE2ADD /* WHStockDecrementViewController.m */,
-				A5E94A5428C0194600CE2ADD /* WHStockDecrementViewController.xib */,
-				A5FE89B328BC49010073E153 /* WHRegistrationWindowController.h */,
-				A5FE89B428BC49010073E153 /* WHRegistrationWindowController.m */,
-				A5FE89B528BC49010073E153 /* WHRegistrationWindowController.xib */,
+				A51F8E6728B81BD800B792DE /* PreferencesWindowController.h */,
+				A51F8E6828B81BD800B792DE /* PreferencesWindowController.m */,
+				A51F8E6928B81BD800B792DE /* PreferencesWindowController.xib */,
+				A51F8E6C28B91AB400B792DE /* MainWindowController.h */,
+				A51F8E6D28B91AB400B792DE /* MainWindowController.m */,
+				A51F8E6E28B91AB400B792DE /* MainWindowController.xib */,
+				A5E94A4D28C0150700CE2ADD /* StockIncrementViewController.h */,
+				A5E94A4E28C0150700CE2ADD /* StockIncrementViewController.m */,
+				A5E94A4F28C0150700CE2ADD /* StockIncrementViewController.xib */,
+				A5E94A5228C0194600CE2ADD /* StockDecrementViewController.h */,
+				A5E94A5328C0194600CE2ADD /* StockDecrementViewController.m */,
+				A5E94A5428C0194600CE2ADD /* StockDecrementViewController.xib */,
+				A5FE89B328BC49010073E153 /* RegistrationWindowController.h */,
+				A5FE89B428BC49010073E153 /* RegistrationWindowController.m */,
+				A5FE89B528BC49010073E153 /* RegistrationWindowController.xib */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";
@@ -193,7 +193,7 @@
 		A51F8E3928B8038800B792DE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = WH;
+				CLASSPREFIX = "";
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Douglas Almeida";
 				TargetAttributes = {
@@ -225,14 +225,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A51F8E6B28B81BD800B792DE /* WHPreferencesWindowController.xib in Resources */,
-				A51F8E7028B91AB400B792DE /* WHMainWindowController.xib in Resources */,
+				A51F8E6B28B81BD800B792DE /* PreferencesWindowController.xib in Resources */,
+				A51F8E7028B91AB400B792DE /* MainWindowController.xib in Resources */,
 				A51F8E4828B8038D00B792DE /* Assets.xcassets in Resources */,
-				A5E94A5128C0150700CE2ADD /* WHStockIncrementViewController.xib in Resources */,
-				A5E94A5628C0194600CE2ADD /* WHStockDecrementViewController.xib in Resources */,
+				A5E94A5128C0150700CE2ADD /* StockIncrementViewController.xib in Resources */,
+				A5E94A5628C0194600CE2ADD /* StockDecrementViewController.xib in Resources */,
 				A51F8F4028BA5EA800B792DE /* LICENSE.txt in Resources */,
 				A51F8E4B28B8038D00B792DE /* MainMenu.xib in Resources */,
-				A5FE89B728BC49010073E153 /* WHRegistrationWindowController.xib in Resources */,
+				A5FE89B728BC49010073E153 /* RegistrationWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,19 +243,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5E94A5528C0194600CE2ADD /* WHStockDecrementViewController.m in Sources */,
-				A5FE89B628BC49010073E153 /* WHRegistrationWindowController.m in Sources */,
+				A5E94A5528C0194600CE2ADD /* StockDecrementViewController.m in Sources */,
+				A5FE89B628BC49010073E153 /* RegistrationWindowController.m in Sources */,
 				A51F8F3A28BA5EA800B792DE /* FMDB.m in Sources */,
 				A51F8E4E28B8038D00B792DE /* main.m in Sources */,
 				A51F8E4628B8038800B792DE /* AppDelegate.m in Sources */,
-				A51F8E6A28B81BD800B792DE /* WHPreferencesWindowController.m in Sources */,
+				A51F8E6A28B81BD800B792DE /* PreferencesWindowController.m in Sources */,
 				A51F8F3F28BA5EA800B792DE /* FMResultSet.m in Sources */,
 				A51F8F3E28BA5EA800B792DE /* FMDatabasePool.m in Sources */,
-				A51F8E6F28B91AB400B792DE /* WHMainWindowController.m in Sources */,
+				A51F8E6F28B91AB400B792DE /* MainWindowController.m in Sources */,
 				A51F8F3C28BA5EA800B792DE /* FMDatabaseAdditions.m in Sources */,
-				A5E94A4C28BE78AC00CE2ADD /* WHDatabaseController.m in Sources */,
+				A5E94A4C28BE78AC00CE2ADD /* DatabaseController.m in Sources */,
 				A51F8F3B28BA5EA800B792DE /* FMDatabaseQueue.m in Sources */,
-				A5E94A5028C0150700CE2ADD /* WHStockIncrementViewController.m in Sources */,
+				A5E94A5028C0150700CE2ADD /* StockIncrementViewController.m in Sources */,
 				A51F8F3D28BA5EA800B792DE /* FMDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

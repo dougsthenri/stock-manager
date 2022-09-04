@@ -1,15 +1,15 @@
 //
-//  WHStockIncrementViewController.m
+//  StockIncrementViewController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 31/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHStockIncrementViewController.h"
-#import "WHDatabaseController.h"
+#import "StockIncrementViewController.h"
+#import "DatabaseController.h"
 
-@interface WHStockIncrementViewController ()
+@interface StockIncrementViewController ()
 
 @property (weak) IBOutlet NSPopover *popover;
 @property (weak) IBOutlet NSTextField *quantityTextField;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation WHStockIncrementViewController
+@implementation StockIncrementViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

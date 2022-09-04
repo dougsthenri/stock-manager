@@ -7,15 +7,15 @@
 //
 
 #import "AppDelegate.h"
-#import "WHDatabaseController.h"
-#import "WHMainWindowController.h"
-#import "WHPreferencesWindowController.h"
+#import "DatabaseController.h"
+#import "MainWindowController.h"
+#import "PreferencesWindowController.h"
 
 @interface AppDelegate ()
 
-@property (strong) WHDatabaseController *databaseController;
-@property (strong) WHMainWindowController *mainWindowController;
-@property (strong) WHPreferencesWindowController *preferencesWindowController;
+@property (strong) DatabaseController *databaseController;
+@property (strong) MainWindowController *mainWindowController;
+@property (strong) PreferencesWindowController *preferencesWindowController;
 
 @end
 
@@ -30,7 +30,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
-    _databaseController = [[WHDatabaseController alloc] initWithDatabasePath:dbFilePath];
+    _databaseController = [[DatabaseController alloc] initWithDatabasePath:dbFilePath];
     [self showMainWindow];
 }
 
@@ -49,7 +49,7 @@
 
 - (IBAction)preferencesMenuItemClicked:(NSMenuItem *)sender {
     if (!_preferencesWindowController) {
-        _preferencesWindowController = [[WHPreferencesWindowController alloc] init];
+        _preferencesWindowController = [[PreferencesWindowController alloc] init];
     }
     [_preferencesWindowController showWindow:nil];
 }
@@ -57,7 +57,7 @@
 
 - (void)showMainWindow {
     if (!_mainWindowController) {
-        _mainWindowController = [[WHMainWindowController alloc] initWithDatabaseController:_databaseController];
+        _mainWindowController = [[MainWindowController alloc] initWithDatabaseController:_databaseController];
     }
     [_mainWindowController showWindow:nil];
 }

@@ -1,22 +1,22 @@
 //
-//  WHPreferencesWindowController.m
+//  PreferencesWindowController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 25/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHPreferencesWindowController.h"
+#import "PreferencesWindowController.h"
 
-@interface WHPreferencesWindowController ()
+@interface PreferencesWindowController ()
 
 @end
 
-@implementation WHPreferencesWindowController
+@implementation PreferencesWindowController
 
 - (instancetype)init
 {
-    self = [super initWithWindowNibName:@"WHPreferencesWindowController"];
+    self = [super initWithWindowNibName:@"PreferencesWindowController"];
     return self;
 }
 

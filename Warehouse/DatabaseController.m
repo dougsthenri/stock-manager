@@ -1,22 +1,22 @@
 //
-//  WHDatabaseController.m
+//  DatabaseController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 30/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHDatabaseController.h"
+#import "DatabaseController.h"
 #import "FMDB.h"
 
-@interface WHDatabaseController ()
+@interface DatabaseController ()
 
 @property FMDatabase *database;
 @property (readwrite) NSArray<NSString *> *dateColumns;
 
 @end
 
-@implementation WHDatabaseController
+@implementation DatabaseController
 
 - (instancetype)initWithDatabasePath:(NSString *)path {
     self = [super init];
@@ -126,7 +126,7 @@
     NSMutableString *query = [[NSMutableString alloc] initWithFormat:@"SELECT * FROM stock WHERE component_type = '%@'", type];
     if (criteria) {
         for (NSString *columnName in criteria) {
-            [query appendFormat:@" AND %@ %@", columnName, criteria[columnName]]; //... Critério deve incluir operador relacional! e.g.: "voltage_rating <= 90". Cogitar um objeto WHSearchCriteria
+            [query appendFormat:@" AND %@ %@", columnName, criteria[columnName]]; //... Critério deve incluir operador relacional! e.g.: "voltage_rating <= 90". Cogitar um objeto SearchCriteria
         }
     }
     FMResultSet *resultSet = [_database executeQuery:query];

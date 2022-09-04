@@ -6,7 +6,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="WHStockDecrementViewController">
+        <customObject id="-2" userLabel="File's Owner" customClass="StockDecrementViewController">
             <connections>
                 <outlet property="dateUnknownCheckbox" destination="Tl5-54-h1m" id="Dlj-Vl-KTW"/>
                 <outlet property="destinationTextField" destination="9s9-Hn-I5s" id="nFt-PU-s3B"/>
@@ -73,7 +73,7 @@ DQ
                     <constraints>
                         <constraint firstAttribute="height" constant="42" id="sXK-Yc-dXu"/>
                     </constraints>
-                    <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="v2f-2C-RXr">
+                    <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="Unknown" drawsBackground="YES" id="v2f-2C-RXr">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

@@ -1,16 +1,16 @@
 //
-//  WHStockDecrementViewController.m
+//  StockDecrementViewController.m
 //  Warehouse
 //
 //  Created by Douglas Almeida on 31/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
 //
 
-#import "WHStockDecrementViewController.h"
-#import "WHMainWindowController.h"
-#import "WHDatabaseController.h"
+#import "StockDecrementViewController.h"
+#import "MainWindowController.h"
+#import "DatabaseController.h"
 
-@interface WHStockDecrementViewController ()
+@interface StockDecrementViewController ()
 
 @property (weak) IBOutlet NSPopover *popover;
 @property (weak) IBOutlet NSTextField *quantityTextField;
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation WHStockDecrementViewController
+@implementation StockDecrementViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

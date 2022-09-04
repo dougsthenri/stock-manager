@@ -6,7 +6,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="WHMainWindowController">
+        <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController">
             <connections>
                 <outlet property="addPartNumberButton" destination="qYf-og-CRs" id="JFy-UD-shp"/>
                 <outlet property="componentTypeSelectionButton" destination="MS2-l8-0bU" id="xdt-aW-gz6"/>
@@ -751,7 +751,7 @@
             </connections>
             <point key="canvasLocation" x="-1179" y="159"/>
         </window>
-        <viewController nibName="WHStockIncrementViewController" id="VG5-us-wmV" userLabel="Popover View Controller" customClass="WHStockIncrementViewController">
+        <viewController nibName="StockIncrementViewController" id="VG5-us-wmV" userLabel="Popover View Controller" customClass="StockIncrementViewController">
             <connections>
                 <outlet property="popover" destination="jmu-jB-rcG" id="k4J-2M-Crx"/>
             </connections>
@@ -761,7 +761,7 @@
                 <outlet property="contentViewController" destination="VG5-us-wmV" id="luz-ga-R32"/>
             </connections>
         </popover>
-        <viewController nibName="WHStockDecrementViewController" id="qK8-9D-5Th" userLabel="Popover View Controller" customClass="WHStockDecrementViewController">
+        <viewController nibName="StockDecrementViewController" id="qK8-9D-5Th" userLabel="Popover View Controller" customClass="StockDecrementViewController">
             <connections>
                 <outlet property="popover" destination="oSL-xc-Myp" id="TcP-fH-4uT"/>
             </connections>

@@ -1,5 +1,5 @@
 //
-//  WHRegistrationWindowController.h
+//  RegistrationWindowController.h
 //  Warehouse
 //
 //  Created by Douglas Almeida on 28/08/22.
@@ -7,15 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
-@class WHDatabaseController;
+@class DatabaseController;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WHRegistrationWindowController : NSWindowController <NSControlTextEditingDelegate>
+@interface RegistrationWindowController : NSWindowController <NSControlTextEditingDelegate>
 
 @property NSString *partNumber;
 
-- (instancetype)initWithDatabaseController:(WHDatabaseController *)controller;
+- (instancetype)initWithDatabaseController:(DatabaseController *)controller;
 - (void)clearInputForm;
 
 @end
