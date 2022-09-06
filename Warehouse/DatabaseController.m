@@ -53,13 +53,18 @@
 }
 
 
-- (NSDate *)decodeDate:(NSString *)date {
-    return [_database dateFromString:date];
-}
-
-
-- (NSString *)encodeDate:(NSDate *)date {
-    return [_database stringFromDate:date];
+- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table {
+    BOOL isNullable = NO;
+    FMResultSet *resultSet = [_database getTableSchema:table];
+    while ([resultSet next]) {
+        NSString *columnName = [resultSet stringForColumn:@"name"];
+        if ([columnName isEqualToString:column]) {
+            isNullable = ![resultSet boolForColumn:@"notnull"];
+            break;
+        }
+    }
+    [resultSet close];
+    return isNullable;
 }
 
 
@@ -90,16 +95,6 @@
 
 - (NSArray *)packageCodes {
     return [self groupsFromColumn:@"package_code" table:@"stock"];
-}
-
-
-- (BOOL)databaseKnowsPartNumber:(NSString *)partNumber
-               fromManufacturer:(NSString *)manufacturer {
-    FMResultSet *resultSet = [_database executeQuery:@"SELECT part_number FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer];
-    BOOL hasMatch = [resultSet next];
-    [resultSet close];
-    //... Gera uma notificação em caso positivo? A janela de busca e de registro, subscritoras da notificação, serão afetadas
-    return hasMatch;
 }
 
 
@@ -144,7 +139,14 @@
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_acquired, origin FROM acquisitions WHERE part_number = ? AND manufacturer = ? ORDER BY date_acquired DESC", partNumber, manufacturer];
     while ([resultSet next]) {
-        NSDictionary *result = [resultSet resultDictionary];
+        NSNumber *quantity = [NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]];
+        NSDate *dateAcquired = [resultSet dateForColumn:@"date_acquired"];
+        NSString *origin = [resultSet stringForColumn:@"origin"];
+        NSDictionary *result = [NSDictionary dictionaryWithObjectsAndKeys:
+                                quantity, @"quantity",
+                                dateAcquired ?: [NSNull null], @"date_acquired",
+                                origin ?: [NSNull null], @"origin",
+                                nil];
         [queryResults addObject:result];
     }
     [resultSet close];
@@ -157,7 +159,14 @@
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_spent, destination FROM expenditures WHERE part_number = ? AND manufacturer = ? ORDER BY date_spent DESC", partNumber, manufacturer];
     while ([resultSet next]) {
-        NSDictionary *result = [resultSet resultDictionary];
+        NSNumber *quantity = [NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]];
+        NSDate *dateSpent = [resultSet dateForColumn:@"date_spent"];
+        NSString *destination = [resultSet stringForColumn:@"destination"];
+        NSDictionary *result = [NSDictionary dictionaryWithObjectsAndKeys:
+                                quantity, @"quantity",
+                                dateSpent ?: [NSNull null], @"date_spent",
+                                destination ?: [NSNull null], @"destination",
+                                nil];
         [queryResults addObject:result];
     }
     [resultSet close];
@@ -165,18 +174,14 @@
 }
 
 
-- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table {
-    BOOL isNullable = NO;
-    FMResultSet *resultSet = [_database getTableSchema:table];
-    while ([resultSet next]) {
-        NSString *columnName = [resultSet stringForColumn:@"name"];
-        if ([columnName isEqualToString:column]) {
-            isNullable = ![resultSet boolForColumn:@"notnull"];
-            break;
-        }
-    }
+- (BOOL)isRegisteredPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT part_number FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer];
+    BOOL isRegistered = [resultSet next];
     [resultSet close];
-    return isNullable;
+    return isRegistered;
 }
+
+
+//... INSERT/UPDATE em múltiplas tabelas dentro de uma TRANSACTION
 
 @end

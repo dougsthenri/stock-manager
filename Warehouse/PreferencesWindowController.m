@@ -36,6 +36,7 @@
         NSString *filePath = [NSString stringWithUTF8String:[[filePicker URL] fileSystemRepresentation]];
         [[NSUserDefaults standardUserDefaults] setObject:filePath forKey:@"kDBFileLocation"];
         //... Conscientizar o aplicativo da mudança (registrar AppDelegate como observador de NSUserDefaultsDidChangeNotification com defaultCenter)
+        //... Usar NSURL e persistir referência a arquivo (vide https://developer.apple.com/documentation/foundation/nsuserdefaults)
     }
 }
 

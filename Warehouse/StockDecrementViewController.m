@@ -29,7 +29,7 @@
     [_variableHeightConstraint setConstant:20]; //Campo de data inicialmente escondido
     [_quantityStepper setMaxValue:FLT_MAX];
     [self resetQuantity];
-    [_expenditureDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+    [self loadPersistedInput];
 }
 
 
@@ -60,6 +60,7 @@
 
 - (IBAction)deductFromStockButtonClicked:(id)sender {
     //... SQL UPDATE
+    [self persistLastExpenditureInput]; //Para retirada sequencial de componentes com uma mesma destinação
     [_popover close];
 }
 
@@ -67,6 +68,49 @@
 - (void)resetQuantity {
     [_quantityStepper setIntValue:1];
     [_quantityTextField setIntValue:1];
+}
+
+
+- (void)setExpenditureDatePickerHidden:(BOOL)hidden {
+    if (hidden) {
+        [_expenditureDatePicker setHidden:YES];
+        [_variableHeightConstraint setConstant:20];
+    } else {
+        [_variableHeightConstraint setConstant:51];
+        [_expenditureDatePicker setHidden:NO];
+    }
+}
+
+
+- (void)persistLastExpenditureInput {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    if ([_dateUnknownCheckbox state] == NSControlStateValueOff) {
+        [userDefaults setObject:[_expenditureDatePicker dateValue] forKey:@"kLastExpenditureDate"];
+    } else {
+        [userDefaults removeObjectForKey:@"kLastExpenditureDate"];
+    }
+    NSString *destination = [[_destinationTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([[_destinationTextField stringValue] length] > 0) {
+        [userDefaults setObject:destination forKey:@"kLastExpenditureDestination"];
+    } else {
+        [userDefaults removeObjectForKey:@"kLastExpenditureDestination"];
+    }
+}
+
+
+- (void)loadPersistedInput {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSDate *lastWithdrawalDate = [userDefaults objectForKey:@"kLastExpenditureDate"];
+    if (lastWithdrawalDate) {
+        [_dateUnknownCheckbox setState:NSControlStateValueOff];
+        [_expenditureDatePicker setDateValue:lastWithdrawalDate];
+        [self setExpenditureDatePickerHidden:NO];
+    } else {
+        [_expenditureDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+        [self setExpenditureDatePickerHidden:YES];
+    }
+    NSString *lastDestination = [userDefaults stringForKey:@"kLastExpenditureDestination"];
+    [_destinationTextField setStringValue:lastDestination ?: @""];
 }
 
 #pragma mark - NSTextFieldDelegate

@@ -118,9 +118,6 @@
 			isa = PBXGroup;
 			children = (
 				A51F8E4928B8038D00B792DE /* MainMenu.xib */,
-				A51F8E6728B81BD800B792DE /* PreferencesWindowController.h */,
-				A51F8E6828B81BD800B792DE /* PreferencesWindowController.m */,
-				A51F8E6928B81BD800B792DE /* PreferencesWindowController.xib */,
 				A51F8E6C28B91AB400B792DE /* MainWindowController.h */,
 				A51F8E6D28B91AB400B792DE /* MainWindowController.m */,
 				A51F8E6E28B91AB400B792DE /* MainWindowController.xib */,
@@ -133,6 +130,9 @@
 				A5FE89B328BC49010073E153 /* RegistrationWindowController.h */,
 				A5FE89B428BC49010073E153 /* RegistrationWindowController.m */,
 				A5FE89B528BC49010073E153 /* RegistrationWindowController.xib */,
+				A51F8E6728B81BD800B792DE /* PreferencesWindowController.h */,
+				A51F8E6828B81BD800B792DE /* PreferencesWindowController.m */,
+				A51F8E6928B81BD800B792DE /* PreferencesWindowController.xib */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";

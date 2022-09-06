@@ -16,14 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDatabasePath:(NSString *)path;
 - (void)closeDatabase;
-- (nullable NSDate *)decodeDate:(NSString *)date;
-- (nullable NSString *)encodeDate:(NSDate *)date;
+- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table;
 - (NSArray *)componentTypes;
 - (NSArray *)manufacturers;
 - (NSArray *)packageCodes;
-
-- (BOOL)databaseKnowsPartNumber:(NSString *)partNumber
-               fromManufacturer:(NSString *)manufacturer;
 
 - (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
                                                              manufacturer:(nullable NSString *)manufacturer;
@@ -37,13 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSMutableArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
                                                      manufacturer:(NSString *)manufacturer;
 
-- (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table;
+- (BOOL)isRegisteredPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer;
 
 @end
 
 @protocol DatabaseObserver <NSObject>
 
-//... DATABASE UPDATED NOTIFICATION
+//... Notificação de atualização do banco
 
 @end
 

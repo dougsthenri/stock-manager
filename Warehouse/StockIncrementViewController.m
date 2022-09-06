@@ -28,12 +28,12 @@
     [_variableHeightConstraint setConstant:20]; //Campo de data inicialmente escondido
     [_quantityStepper setMaxValue:FLT_MAX];
     [self resetQuantity];
-    [_acquisitionDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+    [self loadPersistedInput];
 }
 
 
 - (void)viewWillAppear {
-    // Manter últimas entradas de origem e data para adicionar sequencialmente itens de mesma origem
+    [self loadPersistedInput];
     [self resetQuantity];
     [super viewWillAppear];
 }
@@ -47,7 +47,25 @@
 
 - (IBAction)unknownDateCheckboxClicked:(id)sender {
     BOOL hideDatePicker = [_dateUnknownCheckbox state] == NSControlStateValueOn ? YES : NO;
-    if (hideDatePicker) {
+    [self setAcquisitionDatePickerHidden:hideDatePicker];
+}
+
+
+- (IBAction)addToStockButtonClicked:(id)sender {
+    //... SQL UPDATE
+    [self persistLastAcquisitionInput]; //Para adição sequencial de componentes de uma mesma origem
+    [_popover close];
+}
+
+
+- (void)resetQuantity {
+    [_quantityStepper setIntValue:1];
+    [_quantityTextField setIntValue:1];
+}
+
+
+- (void)setAcquisitionDatePickerHidden:(BOOL)hidden {
+    if (hidden) {
         [_acquisitionDatePicker setHidden:YES];
         [_variableHeightConstraint setConstant:20];
     } else {
@@ -57,15 +75,36 @@
 }
 
 
-- (IBAction)addToStockButtonClicked:(id)sender {
-    //... SQL UPDATE
-    [_popover close];
+- (void)persistLastAcquisitionInput {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    if ([_dateUnknownCheckbox state] == NSControlStateValueOff) {
+        [userDefaults setObject:[_acquisitionDatePicker dateValue] forKey:@"kLastAcquisitionDate"];
+    } else {
+        [userDefaults removeObjectForKey:@"kLastAcquisitionDate"];
+    }
+    NSString *origin = [[_originTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([[_originTextField stringValue] length] > 0) {
+        [userDefaults setObject:origin forKey:@"kLastAcquisitionOrigin"];
+    } else {
+        [userDefaults removeObjectForKey:@"kLastAcquisitionOrigin"];
+    }
 }
 
 
-- (void)resetQuantity {
-    [_quantityStepper setIntValue:1];
-    [_quantityTextField setIntValue:1];
+- (void)loadPersistedInput {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSDate *lastAcquisitionDate = [userDefaults objectForKey:@"kLastAcquisitionDate"];
+    if (lastAcquisitionDate) {
+        [_dateUnknownCheckbox setState:NSControlStateValueOff];
+        [_acquisitionDatePicker setDateValue:lastAcquisitionDate];
+        [self setAcquisitionDatePickerHidden:NO];
+    } else {
+        [_dateUnknownCheckbox setState:NSControlStateValueOn];
+        [_acquisitionDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+        [self setAcquisitionDatePickerHidden:YES];
+    }
+    NSString *lastOrigin = [userDefaults stringForKey:@"kLastAcquisitionOrigin"];
+    [_originTextField setStringValue:lastOrigin ?: @""];
 }
 
 #pragma mark - NSTextFieldDelegate

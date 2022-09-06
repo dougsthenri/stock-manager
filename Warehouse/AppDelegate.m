@@ -23,8 +23,16 @@
 
 + (void)initialize {
     // Resgistrar configuração
-    NSDictionary *defaultValues = @{ @"kDBFileLocation" : @"" }; //... Usar NSURL e persistir referência a arquivo (https://developer.apple.com/documentation/foundation/nsuserdefaults)
+    NSDictionary *defaultValues = @{ @"kDBFileLocation" : @"" };
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
+    
+    /*
+     Chaves opcionais para persistência de estado do aplicativo:
+     kLastAcquisitionDate
+     kLastAcquisitionOrigin
+     kLastExpenditureDate
+     kLastExpenditureDestination
+     */
 }
 
 

@@ -10,14 +10,12 @@
             <connections>
                 <outlet property="addPartNumberButton" destination="qYf-og-CRs" id="JFy-UD-shp"/>
                 <outlet property="componentTypeSelectionButton" destination="MS2-l8-0bU" id="xdt-aW-gz6"/>
-                <outlet property="decreaseSelectedStockButton" destination="hwk-ja-TcH" id="AXK-jq-cnL"/>
-                <outlet property="increaseSelectedStockButton" destination="Qn4-gh-Pa8" id="efe-Vg-cQ0"/>
                 <outlet property="partNumberSearchField" destination="QHn-mM-Zae" id="Ibq-0Y-xI6"/>
                 <outlet property="searchResultsTableView" destination="R8y-cI-HC2" id="BEI-5R-G1t"/>
                 <outlet property="selectedStockDecrementPopover" destination="oSL-xc-Myp" id="oFv-XC-2yA"/>
                 <outlet property="selectedStockHistoryPopover" destination="m7b-tp-fjb" id="06S-Ie-ddT"/>
                 <outlet property="selectedStockIncrementPopover" destination="jmu-jB-rcG" id="2Dt-T2-oa1"/>
-                <outlet property="stockHistoryButton" destination="HWV-TA-Rv9" id="jks-rF-oV1"/>
+                <outlet property="stockActionsSegmentedControl" destination="Q4J-HJ-36W" id="Zdf-vi-yEF"/>
                 <outlet property="stockReplenishmentsTableView" destination="DGu-Fu-dlP" id="v1d-nD-YdP"/>
                 <outlet property="stockWithdrawalsTableView" destination="hUS-dh-NBw" id="WTy-Ud-2DA"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
@@ -35,15 +33,60 @@
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QHn-mM-Zae">
+                        <rect key="frame" x="20" y="558" width="209" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="209" id="Pi9-rr-3Ow"/>
+                        </constraints>
+                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Enter a Part Number" usesSingleLineMode="YES" bezelStyle="round" id="cdA-Lq-gRS">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </searchFieldCell>
+                        <connections>
+                            <action selector="partNumberSearchFieldEdited:" target="-2" id="ReU-pW-h7f"/>
+                            <outlet property="delegate" destination="-2" id="j9M-OS-k13"/>
+                        </connections>
+                    </searchField>
+                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MS2-l8-0bU">
+                        <rect key="frame" x="18" y="526" width="214" height="25"/>
+                        <popUpButtonCell key="cell" type="push" title="Select a Component Type" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" autoenablesItems="NO" selectedItem="gG6-n6-DoX" id="EGY-7l-ami">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" autoenablesItems="NO" id="8iv-GV-kdG">
+                                <items>
+                                    <menuItem title="Select a Component Type" state="on" enabled="NO" id="gG6-n6-DoX"/>
+                                    <menuItem isSeparatorItem="YES" id="54F-jP-xOd"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="componentTypePopupSelected:" target="-2" id="UhG-d8-Ngk"/>
+                        </connections>
+                    </popUpButton>
+                    <button toolTip="Add New Part Number" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qYf-og-CRs">
+                        <rect key="frame" x="233" y="557" width="27" height="23"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="27" id="1g8-R5-KUD"/>
+                            <constraint firstAttribute="height" constant="22" id="UY7-V7-9hf"/>
+                        </constraints>
+                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSAddTemplate" imagePosition="only" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pfJ-JG-SxZ">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="addPartNumberButtonClicked:" target="-2" id="ElK-Ef-EeG"/>
+                        </connections>
+                    </button>
                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="kik-ui-GAE">
-                        <rect key="frame" x="268" y="49" width="512" height="531"/>
+                        <rect key="frame" x="268" y="40" width="512" height="540"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="XZ7-eJ-6Dp">
-                            <rect key="frame" x="1" y="0.0" width="510" height="515"/>
+                            <rect key="frame" x="1" y="0.0" width="510" height="524"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="RvO-dB-Hjx" viewBased="YES" id="R8y-cI-HC2">
-                                    <rect key="frame" x="0.0" y="0.0" width="1802" height="490"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1802" height="499"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -579,8 +622,8 @@
                                 </tableView>
                             </subviews>
                         </clipView>
-                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="fJF-k4-B2f">
-                            <rect key="frame" x="1" y="515" width="510" height="15"/>
+                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="fJF-k4-B2f">
+                            <rect key="frame" x="1" y="524" width="510" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Dj1-bb-DWP">
@@ -592,164 +635,54 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
-                    <button toolTip="Stock Replenishments for Selected Item" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HWV-TA-Rv9">
-                        <rect key="frame" x="664" y="13" width="122" height="32"/>
-                        <buttonCell key="cell" type="push" title="Stock History" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vFY-xj-bdq">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="stockHistoryButtonClicked:" target="-2" id="zs3-ru-Llb"/>
-                        </connections>
-                    </button>
-                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RPm-Nz-fDE">
-                        <rect key="frame" x="17" y="485" width="160" height="25"/>
-                        <popUpButtonCell key="cell" type="push" title="Add Search Filter" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="x7z-Cs-kNt">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
-                            <menu key="menu" id="L5s-aq-juq">
-                                <items>
-                                    <menuItem title="Add Search Filter" state="on" hidden="YES" id="glf-5G-obd"/>
-                                    <menuItem title="Manufacturer" id="7Fc-09-ddy"/>
-                                    <menuItem title="Package Code" id="cig-Gt-6HS"/>
-                                    <menuItem title="Voltage Rating" id="R5q-ss-E7v">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Current Rating" id="e2S-0v-Sb4">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Power Rating" id="j7G-sM-i0b">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Resistance Rating" id="Zxj-sk-Ff9">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Inductance Rating" id="Sbg-Id-ekF">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Capacitance Rating" id="yIX-XV-5Oe">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Frequency Rating" id="UsO-cg-gTV">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Tolerance Rating" id="DqQ-y1-LVo">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                    <menuItem title="Comments" id="UDc-zp-3qf">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                </items>
-                            </menu>
-                        </popUpButtonCell>
-                    </popUpButton>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PUG-Qt-961">
-                        <rect key="frame" x="176" y="481" width="90" height="32"/>
+                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Q4J-HJ-36W">
+                        <rect key="frame" x="268" y="19" width="85" height="23"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="78" id="OTG-Kb-OAk"/>
+                            <constraint firstAttribute="width" constant="85" id="MLZ-jZ-yp9"/>
                         </constraints>
-                        <buttonCell key="cell" type="push" title="Clear All" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zwB-ch-2rg">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="jLI-Zm-29K">
                             <font key="font" metaFont="system"/>
-                        </buttonCell>
-                    </button>
-                    <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QHn-mM-Zae">
-                        <rect key="frame" x="20" y="558" width="211" height="22"/>
+                            <segments>
+                                <segment toolTip="Increase Stocked Amount" image="NSAddTemplate" imageScaling="none" width="27" enabled="NO"/>
+                                <segment toolTip="Decrease Stocked Amount" image="NSRemoveTemplate" imageScaling="none" width="27" enabled="NO" tag="1"/>
+                                <segment toolTip="Stock History" image="NSListViewTemplate" width="27" enabled="NO" tag="2"/>
+                            </segments>
+                        </segmentedCell>
+                        <connections>
+                            <action selector="stockActionsSegmentedControlClicked:" target="-2" id="l7n-qo-rOu"/>
+                        </connections>
+                    </segmentedControl>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xfh-WL-bOu">
+                        <rect key="frame" x="352" y="19" width="428" height="23"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="211" id="Pi9-rr-3Ow"/>
+                            <constraint firstAttribute="height" constant="21" id="ArH-dl-Mmz"/>
                         </constraints>
-                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Enter a Part Number" usesSingleLineMode="YES" bezelStyle="round" id="cdA-Lq-gRS">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </searchFieldCell>
-                        <connections>
-                            <action selector="partNumberSearchFieldEdited:" target="-2" id="ReU-pW-h7f"/>
-                            <outlet property="delegate" destination="-2" id="j9M-OS-k13"/>
-                        </connections>
-                    </searchField>
-                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MS2-l8-0bU">
-                        <rect key="frame" x="18" y="526" width="245" height="25"/>
-                        <popUpButtonCell key="cell" type="push" title="Select a Component Type" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gG6-n6-DoX" id="EGY-7l-ami">
-                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
-                            <menu key="menu" id="8iv-GV-kdG">
-                                <items>
-                                    <menuItem title="Select a Component Type" state="on" id="gG6-n6-DoX"/>
-                                    <menuItem isSeparatorItem="YES" id="54F-jP-xOd"/>
-                                </items>
-                            </menu>
-                        </popUpButtonCell>
-                        <connections>
-                            <action selector="componentTypePopupSelected:" target="-2" id="UhG-d8-Ngk"/>
-                        </connections>
-                    </popUpButton>
-                    <button toolTip="Add New Part Number" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qYf-og-CRs">
-                        <rect key="frame" x="235" y="557" width="25" height="24"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="25" id="1g8-R5-KUD"/>
-                            <constraint firstAttribute="height" constant="22" id="UY7-V7-9hf"/>
-                        </constraints>
-                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="only" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pfJ-JG-SxZ">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OZZ-WR-efI">
+                            <behavior key="behavior" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
-                        <connections>
-                            <action selector="addPartNumberButtonClicked:" target="-2" id="ElK-Ef-EeG"/>
-                        </connections>
-                    </button>
-                    <button toolTip="Increase Stocked Amount" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qn4-gh-Pa8">
-                        <rect key="frame" x="268" y="19" width="23" height="23"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="23" id="FTX-m9-nlX"/>
-                            <constraint firstAttribute="height" constant="21" id="wY0-yq-bbd"/>
-                        </constraints>
-                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="only" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="5cq-A5-8xc">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="increaseSelectedStockButtonClicked:" target="-2" id="ybV-cl-3TP"/>
-                        </connections>
-                    </button>
-                    <button toolTip="Decrease Stocked Amount" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hwk-ja-TcH">
-                        <rect key="frame" x="290" y="19" width="23" height="23"/>
-                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G57-y4-eur">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="decreaseSelectedStockButtonClicked:" target="-2" id="usd-c8-rhy"/>
-                        </connections>
                     </button>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="xfh-WL-bOu" firstAttribute="leading" secondItem="Q4J-HJ-36W" secondAttribute="trailing" constant="-1" id="1Mj-4A-Pff"/>
                     <constraint firstItem="QHn-mM-Zae" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="1YJ-8i-I6R"/>
-                    <constraint firstAttribute="bottom" secondItem="HWV-TA-Rv9" secondAttribute="bottom" constant="20" id="Bnb-AG-8NR"/>
-                    <constraint firstItem="hwk-ja-TcH" firstAttribute="bottom" secondItem="Qn4-gh-Pa8" secondAttribute="bottom" id="CyH-9j-b4f"/>
                     <constraint firstItem="QHn-mM-Zae" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="GIO-T6-0fA"/>
-                    <constraint firstItem="qYf-og-CRs" firstAttribute="trailing" secondItem="PUG-Qt-961" secondAttribute="trailing" id="NuS-xJ-iFk"/>
-                    <constraint firstItem="Qn4-gh-Pa8" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="268" id="O5E-8O-Zhr"/>
-                    <constraint firstItem="hwk-ja-TcH" firstAttribute="leading" secondItem="Qn4-gh-Pa8" secondAttribute="trailing" constant="-1" id="TW4-jR-nRk"/>
-                    <constraint firstItem="RPm-Nz-fDE" firstAttribute="leading" secondItem="QHn-mM-Zae" secondAttribute="leading" id="VL2-Jd-msj"/>
+                    <constraint firstAttribute="bottom" secondItem="xfh-WL-bOu" secondAttribute="bottom" constant="20" id="Gtk-v6-xR3"/>
+                    <constraint firstAttribute="trailing" secondItem="xfh-WL-bOu" secondAttribute="trailing" constant="20" id="Hn0-k9-PQG"/>
+                    <constraint firstItem="Q4J-HJ-36W" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="268" id="OhI-5b-wU2"/>
+                    <constraint firstAttribute="bottom" secondItem="Q4J-HJ-36W" secondAttribute="bottom" constant="20" id="UOR-3N-RJD"/>
                     <constraint firstItem="MS2-l8-0bU" firstAttribute="leading" secondItem="QHn-mM-Zae" secondAttribute="leading" id="W14-wn-h8x"/>
-                    <constraint firstItem="RPm-Nz-fDE" firstAttribute="top" secondItem="MS2-l8-0bU" secondAttribute="bottom" constant="20" id="bcd-dp-U4n"/>
-                    <constraint firstAttribute="trailing" secondItem="HWV-TA-Rv9" secondAttribute="trailing" constant="20" id="bjk-ql-B0g"/>
-                    <constraint firstAttribute="bottom" secondItem="Qn4-gh-Pa8" secondAttribute="bottom" constant="20" id="eLq-hJ-JaW"/>
-                    <constraint firstItem="hwk-ja-TcH" firstAttribute="width" secondItem="Qn4-gh-Pa8" secondAttribute="width" id="gOc-uV-Rum"/>
-                    <constraint firstItem="hwk-ja-TcH" firstAttribute="top" secondItem="Qn4-gh-Pa8" secondAttribute="top" id="iTc-nH-zvQ"/>
-                    <constraint firstItem="PUG-Qt-961" firstAttribute="leading" secondItem="RPm-Nz-fDE" secondAttribute="trailing" constant="8" id="l8h-Iv-Mw1"/>
+                    <constraint firstItem="MS2-l8-0bU" firstAttribute="trailing" secondItem="QHn-mM-Zae" secondAttribute="trailing" id="edo-sY-fPD"/>
+                    <constraint firstItem="xfh-WL-bOu" firstAttribute="height" secondItem="Q4J-HJ-36W" secondAttribute="height" id="geK-TU-Mj2"/>
                     <constraint firstItem="MS2-l8-0bU" firstAttribute="top" secondItem="QHn-mM-Zae" secondAttribute="bottom" constant="8" id="ole-3G-3e3"/>
                     <constraint firstItem="qYf-og-CRs" firstAttribute="centerY" secondItem="QHn-mM-Zae" secondAttribute="centerY" id="qPM-UH-1cp"/>
                     <constraint firstItem="qYf-og-CRs" firstAttribute="leading" secondItem="QHn-mM-Zae" secondAttribute="trailing" constant="4" id="uS8-pH-Xz6"/>
-                    <constraint firstItem="qYf-og-CRs" firstAttribute="trailing" secondItem="MS2-l8-0bU" secondAttribute="trailing" id="wcO-AD-fTh"/>
-                    <constraint firstItem="PUG-Qt-961" firstAttribute="centerY" secondItem="RPm-Nz-fDE" secondAttribute="centerY" id="xTX-Ki-CIa"/>
                 </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="-1179" y="159"/>
+            <point key="canvasLocation" x="-1183" y="163"/>
         </window>
         <viewController nibName="StockIncrementViewController" id="VG5-us-wmV" userLabel="Popover View Controller" customClass="StockIncrementViewController">
             <connections>
@@ -787,7 +720,7 @@
                     <rect key="frame" x="20" y="243" width="480" height="178"/>
                     <clipView key="contentView" id="gmg-9q-C6J">
                         <rect key="frame" x="1" y="0.0" width="478" height="177"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="1Dg-i4-ONc" viewBased="YES" id="DGu-Fu-dlP">
                                 <rect key="frame" x="0.0" y="0.0" width="478" height="152"/>
@@ -954,7 +887,7 @@
                     <rect key="frame" x="20" y="20" width="480" height="178"/>
                     <clipView key="contentView" id="xiw-Tm-mtt">
                         <rect key="frame" x="1" y="0.0" width="478" height="177"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="Ltf-pP-r3s" viewBased="YES" id="hUS-dh-NBw">
                                 <rect key="frame" x="0.0" y="0.0" width="478" height="152"/>
@@ -1136,7 +1069,7 @@
                 <outlet property="view" destination="xPe-qj-mzk" id="jF0-Yw-xRf"/>
             </connections>
         </viewController>
-        <popover behavior="semitransient" id="m7b-tp-fjb">
+        <popover behavior="t" id="m7b-tp-fjb">
             <connections>
                 <outlet property="contentViewController" destination="Bsd-1E-aVn" id="vGw-09-t0S"/>
             </connections>
@@ -1246,6 +1179,7 @@
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="NSListViewTemplate" width="14" height="10"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
     </resources>
 </document>
