@@ -12,28 +12,25 @@
 #import "StockIncrementViewController.h"
 #import "StockDecrementViewController.h"
 
-// Para controles segmentados em rodapés de tabelas
-#define LIST_BUTTON_SEGMENT_INDEX   2
+// Para controles segmentados como aqueles nos rodapés das tabelas
+#define HISTORY_BUTTON_SEGMENT_INDEX   2
 
 @interface MainWindowController ()
 
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
-
+@property (weak) IBOutlet NSButton *addPartNumberButton;
 @property (weak) IBOutlet NSPopUpButton *componentTypeSelectionButton;
 
 @property (weak) IBOutlet NSPopover *selectedStockIncrementPopover;
 @property (weak) IBOutlet NSPopover *selectedStockDecrementPopover;
 @property (weak) IBOutlet NSPopover *selectedStockHistoryPopover;
+@property (weak) IBOutlet NSSegmentedControl *stockActionsSegmentedControl;
 
 @property (weak) IBOutlet NSTableView *searchResultsTableView;
 @property (weak) IBOutlet NSTableView *stockReplenishmentsTableView;
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
 
-@property (weak) IBOutlet NSButton *addPartNumberButton;
-
-@property (weak) IBOutlet NSSegmentedControl *stockActionsSegmentedControl;
-
-@property (weak) DatabaseController *databaseController; //... IBOutlet para dbCtlr de janelas e vistas filhas? Ou usar classe "singleton" para o gerenciador do banco de dados inicializado em AppDelegate
+@property (weak) DatabaseController *databaseController;
 @property RegistrationWindowController *registrationWindowController;
 @property NSMutableArray *searchResults;
 @property NSMutableArray *stockReplenishments;
@@ -118,7 +115,7 @@
         [_selectedStockDecrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
-    } else if (selectedIndex == LIST_BUTTON_SEGMENT_INDEX) {
+    } else if (selectedIndex == HISTORY_BUTTON_SEGMENT_INDEX) {
         NSInteger selectedRow = [_searchResultsTableView selectedRow];
         NSString *partNumber = _searchResults[selectedRow][@"part_number"];
         NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
@@ -329,11 +326,11 @@
     // Tabela de resultados de busca
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:LIST_BUTTON_SEGMENT_INDEX];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:HISTORY_BUTTON_SEGMENT_INDEX];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:PLUS_BUTTON_SEGMENT_INDEX];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:MINUS_BUTTON_SEGMENT_INDEX];
     } else {
-        [_stockActionsSegmentedControl setEnabled:YES forSegment:LIST_BUTTON_SEGMENT_INDEX];
+        [_stockActionsSegmentedControl setEnabled:YES forSegment:HISTORY_BUTTON_SEGMENT_INDEX];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:PLUS_BUTTON_SEGMENT_INDEX];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
         [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:MINUS_BUTTON_SEGMENT_INDEX];

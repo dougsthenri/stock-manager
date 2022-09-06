@@ -7,7 +7,6 @@
 //
 
 #import "StockDecrementViewController.h"
-#import "MainWindowController.h"
 #import "DatabaseController.h"
 
 @interface StockDecrementViewController ()

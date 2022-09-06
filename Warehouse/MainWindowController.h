@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 @class DatabaseController;
 
-// Para controles segmentados em rodapés de tabelas
+// Para controles segmentados como aqueles nos rodapés das tabelas
 #define PLUS_BUTTON_SEGMENT_INDEX   0
 #define MINUS_BUTTON_SEGMENT_INDEX  1
 
