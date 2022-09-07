@@ -80,10 +80,10 @@
 
 - (IBAction)ratingsSegmentedControlClicked:(id)sender {
     NSInteger selectedItem = [_ratingsSegmentedControl selectedSegment];
-    if (selectedItem == PLUS_BUTTON_SEGMENT_INDEX) {
+    if (selectedItem == 0) {
         NSPoint menuLocation = NSMakePoint(0, [sender frame].size.height);
         [_ratingsMenu popUpMenuPositioningItem:nil atLocation:menuLocation inView:sender];
-    } else if (selectedItem == MINUS_BUTTON_SEGMENT_INDEX) {
+    } else if (selectedItem == 1) {
         //... Remover rating selecionada
     }
 }
@@ -115,6 +115,7 @@
 
 
 - (void)clearInputForm {
+    _lastManufacturerInput = nil;
     [_manufacturerComboBox setStringValue:@""];
     [_componentTypeComboBox setStringValue:@""];
     [_packageCodeComboBox setStringValue:@""];

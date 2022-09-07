@@ -103,13 +103,13 @@
 
 - (IBAction)stockActionsSegmentedControlClicked:(id)sender {
     NSInteger selectedIndex = [_stockActionsSegmentedControl selectedSegment];
-    if (selectedIndex == PLUS_BUTTON_SEGMENT_INDEX) {
+    if (selectedIndex == 0) {
         NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
                                                                    segmentIndex:selectedIndex];
         [_selectedStockIncrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
-    } else if (selectedIndex == MINUS_BUTTON_SEGMENT_INDEX) {
+    } else if (selectedIndex == 1) {
         NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
                                                                    segmentIndex:selectedIndex];
         [_selectedStockDecrementPopover showRelativeToRect:bounds
@@ -326,14 +326,14 @@
     // Tabela de resultados de busca
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:HISTORY_BUTTON_SEGMENT_INDEX];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:PLUS_BUTTON_SEGMENT_INDEX];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:MINUS_BUTTON_SEGMENT_INDEX];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
     } else {
-        [_stockActionsSegmentedControl setEnabled:YES forSegment:HISTORY_BUTTON_SEGMENT_INDEX];
-        [_stockActionsSegmentedControl setEnabled:YES forSegment:PLUS_BUTTON_SEGMENT_INDEX];
+        [_stockActionsSegmentedControl setEnabled:YES forSegment:0];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
-        [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:MINUS_BUTTON_SEGMENT_INDEX];
+        [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:1];
+        [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
     }
 }
 
