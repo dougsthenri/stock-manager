@@ -480,13 +480,6 @@ static int FMDBDatabaseBusyHandler(void *f, int count) {
 
 #pragma mark Date routines
 
-+ (NSISO8601DateFormatter *)storeableDateFormatISO8601 {
-    NSISO8601DateFormatter *result = FMDBReturnAutoreleased([[NSISO8601DateFormatter alloc] init]);
-    result.timeZone = [NSTimeZone localTimeZone];
-    return result;
-}
-
-
 - (BOOL)hasDateFormatter {
     return _dateFormat != nil;
 }

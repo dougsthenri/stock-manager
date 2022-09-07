@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainWindowController : NSWindowController <NSControlTextEditingDelegate, NSTableViewDataSource, NSTableViewDelegate>
 
-- (instancetype)initWithDatabaseController:(DatabaseController *)controller;
 + (NSRect)relativeBoundsForSegmentedControl:(NSSegmentedControl *)control
                                segmentIndex:(NSInteger)index;
 

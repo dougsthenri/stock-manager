@@ -30,7 +30,6 @@
 @property (weak) IBOutlet NSTableView *stockReplenishmentsTableView;
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
 
-@property (weak) DatabaseController *databaseController;
 @property RegistrationWindowController *registrationWindowController;
 @property NSMutableArray *searchResults;
 @property NSMutableArray *stockReplenishments;
@@ -42,10 +41,9 @@
 
 @implementation MainWindowController
 
-- (instancetype)initWithDatabaseController:(DatabaseController *)controller {
+- (instancetype)init {
     self = [super initWithWindowNibName:@"MainWindowController"];
     if (self) {
-        _databaseController = controller;
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setDateStyle:NSDateFormatterMediumStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
@@ -60,11 +58,11 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
-    NSArray *componentTypes = [_databaseController componentTypes];
+    NSArray *componentTypes = [[DatabaseController sharedController] componentTypes];
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
     // Ocultar colunas anuláveis dos resultados de busca
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
-        if ([_databaseController isNullableColumn:[column identifier] table:@"stock"]) {
+        if ([[DatabaseController sharedController] isNullableColumn:[column identifier] table:@"stock"]) {
             [column setHidden:YES];
         }
     }
@@ -78,8 +76,8 @@
         [_addPartNumberButton setEnabled:YES];
         NSString *manufacturer; //... Será sempre "nil" aqui. A filtragem por "manufacturer" ocorre após a busca por Part#
         //... Verificar filtragem por fabricante, apenas. Limpar todos os [outros] filtros?
-        _searchResults = [_databaseController incrementalSearchResultsForPartNumber:partNumber
-                                                                       manufacturer:manufacturer];
+        _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber
+                                                                                         manufacturer:manufacturer];
         [self updateSearchResults];
     } else {
         [_addPartNumberButton setEnabled:NO];
@@ -95,8 +93,8 @@
     NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
     NSMutableDictionary *searchCriteria;
     //... Levantar critérios de filtragem
-    _searchResults = [_databaseController searchResultsForComponentType:componentType
-                                                               criteria:searchCriteria];
+    _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType
+                                                                                 criteria:searchCriteria];
     [self updateSearchResults];
 }
 
@@ -119,13 +117,13 @@
         NSInteger selectedRow = [_searchResultsTableView selectedRow];
         NSString *partNumber = _searchResults[selectedRow][@"part_number"];
         NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
-        _stockReplenishments = [_databaseController stockReplenishmentsForPartNumber:partNumber
-                                                                        manufacturer:manufacturer];
+        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForPartNumber:partNumber
+                                                                                          manufacturer:manufacturer];
         [_stockReplenishmentsTableView reloadData];
         [_stockReplenishmentsTableView deselectAll:nil];
         [_stockReplenishmentsTableView sizeToFit];
-        _stockWithdrawals = [_databaseController stockWithdrawalsForPartNumber:partNumber
-                                                                  manufacturer:manufacturer];
+        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForPartNumber:partNumber
+                                                                                    manufacturer:manufacturer];
         [_stockWithdrawalsTableView reloadData];
         [_stockWithdrawalsTableView deselectAll:nil];
         [_stockWithdrawalsTableView sizeToFit];
@@ -140,7 +138,7 @@
 
 - (IBAction)addPartNumberButtonClicked:(id)sender {
     if (!_registrationWindowController) {
-        _registrationWindowController = [[RegistrationWindowController alloc] initWithDatabaseController:_databaseController];
+        _registrationWindowController = [[RegistrationWindowController alloc] init];
     }
     [_registrationWindowController clearInputForm];
     [_registrationWindowController setPartNumber:[_partNumberSearchField stringValue]];
@@ -154,7 +152,7 @@
     // Ocultar colunas inteiramente vazias
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
         NSString *columnID = [column identifier];
-        if ([_databaseController isNullableColumn:columnID table:@"stock"]) {
+        if ([[DatabaseController sharedController] isNullableColumn:columnID table:@"stock"]) {
             [column setHidden:YES];
             for (NSDictionary *result in _searchResults) {
                 id value = result[columnID];

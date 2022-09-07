@@ -12,9 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DatabaseController : NSObject
 
+@property (class, readonly, strong) DatabaseController *sharedController; //Singleton
 @property (readonly) NSArray<NSString *> *dateColumns;
 
-- (instancetype)initWithDatabasePath:(NSString *)path;
+- (void)openDatabaseAtPath:(NSString *)path;
 - (void)closeDatabase;
 - (BOOL)isNullableColumn:(NSString *)column table:(NSString *)table;
 - (NSArray *)componentTypes;

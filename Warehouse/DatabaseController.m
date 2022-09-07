@@ -12,25 +12,27 @@
 @interface DatabaseController ()
 
 @property FMDatabase *database;
+@property NSISO8601DateFormatter *dateFormatter;
 @property (readwrite) NSArray<NSString *> *dateColumns;
 
 @end
 
 @implementation DatabaseController
 
-- (instancetype)initWithDatabasePath:(NSString *)path {
++ (instancetype)sharedController {
+    static DatabaseController *controller = nil;
+    if (!controller) {
+        controller = [[DatabaseController alloc] init];
+    }
+    return controller;
+}
+
+
+- (instancetype)init {
     self = [super init];
     if (self) {
-        _database = [FMDatabase databaseWithPath:path];
-        NSISO8601DateFormatter *dateFormatter = [FMDatabase storeableDateFormatISO8601];
-        [_database setDateFormat:dateFormatter];
-        if (![_database open]) {
-            return nil;
-        }
-        if (![self enableCaseSensitiveLike]) {
-            [_database close];
-            return nil;
-        }
+        _dateFormatter = [[NSISO8601DateFormatter alloc] init];
+        [_dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
         _dateColumns = @[
             @"date_acquired",
             @"date_spent"
@@ -40,16 +42,30 @@
 }
 
 
-- (BOOL)enableCaseSensitiveLike {
-    FMResultSet *resultSet = [_database executeQuery:@"PRAGMA case_sensitive_like=ON"];
-    BOOL querySucceeded = resultSet && ![_database hadError];
-    [resultSet close];
-    return querySucceeded;
+- (void)openDatabaseAtPath:(NSString *)path {
+    _database = [FMDatabase databaseWithPath:path];
+    [_database setDateFormat:_dateFormatter];
+    if (![_database open]) {
+        NSLog(@"Controller failed to open database file '%@'.", path);
+    }
+    if (![self enableCaseSensitiveLike]) {
+        [_database close];
+        NSLog(@"Controller failed to set case sensitive LIKE for database.");
+    }
 }
 
 
 - (void)closeDatabase {
     [_database close];
+    _database = nil;
+}
+
+
+- (BOOL)enableCaseSensitiveLike {
+    FMResultSet *resultSet = [_database executeQuery:@"PRAGMA case_sensitive_like=ON"];
+    BOOL querySucceeded = resultSet && ![_database hadError];
+    [resultSet close];
+    return querySucceeded;
 }
 
 

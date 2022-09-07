@@ -13,7 +13,6 @@
 
 @interface AppDelegate ()
 
-@property (strong) DatabaseController *databaseController;
 @property (strong) MainWindowController *mainWindowController;
 @property (strong) PreferencesWindowController *preferencesWindowController;
 
@@ -21,24 +20,23 @@
 
 @implementation AppDelegate
 
+/*
+ Chaves opcionais para persistência de estado do aplicativo:
+ kLastAcquisitionDate
+ kLastAcquisitionOrigin
+ kLastExpenditureDate
+ kLastExpenditureDestination
+ */
 + (void)initialize {
     // Resgistrar configuração
     NSDictionary *defaultValues = @{ @"kDBFileLocation" : @"" };
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
-    
-    /*
-     Chaves opcionais para persistência de estado do aplicativo:
-     kLastAcquisitionDate
-     kLastAcquisitionOrigin
-     kLastExpenditureDate
-     kLastExpenditureDestination
-     */
 }
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
-    _databaseController = [[DatabaseController alloc] initWithDatabasePath:dbFilePath];
+    [[DatabaseController sharedController] openDatabaseAtPath:dbFilePath];
     [self showMainWindow];
 }
 
@@ -49,9 +47,7 @@
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (_databaseController) {
-        [_databaseController closeDatabase];
-    }
+    [[DatabaseController sharedController] closeDatabase];
 }
 
 
@@ -65,7 +61,7 @@
 
 - (void)showMainWindow {
     if (!_mainWindowController) {
-        _mainWindowController = [[MainWindowController alloc] initWithDatabaseController:_databaseController];
+        _mainWindowController = [[MainWindowController alloc] init];
     }
     [_mainWindowController showWindow:nil];
 }

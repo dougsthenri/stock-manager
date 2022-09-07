@@ -12,8 +12,6 @@
 
 @interface RegistrationWindowController ()
 
-@property (weak) DatabaseController *databaseController;
-
 @property (weak) IBOutlet NSComboBox *manufacturerComboBox;
 @property (weak) IBOutlet NSComboBox *componentTypeComboBox;
 @property (weak) IBOutlet NSComboBox *packageCodeComboBox;
@@ -35,10 +33,9 @@
 
 @implementation RegistrationWindowController
 
-- (instancetype)initWithDatabaseController:(DatabaseController *)controller {
+- (instancetype)init {
     self = [super initWithWindowNibName:@"RegistrationWindowController"];
     if (self) {
-        _databaseController = controller;
         _ratingMenuTitles = @[
             @"Voltage",
             @"Current",
@@ -56,11 +53,11 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
-    NSArray *componentTypes = [_databaseController componentTypes];
+    NSArray *componentTypes = [[DatabaseController sharedController] componentTypes];
     [_componentTypeComboBox addItemsWithObjectValues:componentTypes];
-    NSArray *manufacturers = [_databaseController manufacturers];
+    NSArray *manufacturers = [[DatabaseController sharedController] manufacturers];
     [_manufacturerComboBox addItemsWithObjectValues:manufacturers];
-    NSArray *packageCodes = [_databaseController packageCodes];
+    NSArray *packageCodes = [[DatabaseController sharedController] packageCodes];
     [_packageCodeComboBox addItemsWithObjectValues:packageCodes];
     [_quantityStepper setMaxValue:FLT_MAX];
     [self buildRatingsMenu];
@@ -165,7 +162,7 @@
 
 
 - (void)checkExistingPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
-    if ([_databaseController isRegisteredPartNumber:_partNumber manufacturer:manufacturer]) {
+    if ([[DatabaseController sharedController] isRegisteredPartNumber:_partNumber manufacturer:manufacturer]) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setAlertStyle:NSAlertStyleInformational];
         [alert setMessageText:[NSString stringWithFormat:@"%@ from manufacturer %@ is already on the database.", _partNumber, manufacturer]];

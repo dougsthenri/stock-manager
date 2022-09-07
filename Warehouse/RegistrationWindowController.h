@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSString *partNumber;
 
-- (instancetype)initWithDatabaseController:(DatabaseController *)controller;
 - (void)clearInputForm;
 
 @end
