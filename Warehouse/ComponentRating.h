@@ -21,11 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ComponentRating : NSObject <ComponentRating>
 
 @property (readonly) NSNumber *engineeringValue;
-@property (readonly) NSInteger magnitude;
+@property (readonly) NSInteger orderOfMagnitude;
 
 + (NSString *)prefixForMagnitude:(NSInteger)magnitude;
 + (NSArray *)ratingNames;
 - (instancetype)initWithValue:(double)value;
+- (double)value;
 
 @end
 

@@ -59,10 +59,15 @@
         } else if (value < 0.0) {
             orderOfThreeMagnitudes = floor(log10(fabs(value)) / 3);
         }
-        _magnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
-        _engineeringValue = [NSNumber numberWithDouble:value / pow(10.0, _magnitude)];
+        _orderOfMagnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
+        _engineeringValue = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
     }
     return self;
+}
+
+
+- (double)value {
+    return [_engineeringValue doubleValue] * pow(10.0, _orderOfMagnitude);
 }
 
 
@@ -98,7 +103,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -119,7 +124,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -140,7 +145,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -161,7 +166,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -182,7 +187,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -203,7 +208,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -224,7 +229,7 @@
 
 
 - (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super magnitude]];
+    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
     return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
@@ -245,8 +250,7 @@
 
 
 - (NSNumber *)engineeringValue {
-    double percentage = [[super engineeringValue] doubleValue] * pow(10.0, [super magnitude]);
-    return [NSNumber numberWithDouble: percentage];
+    return [NSNumber numberWithDouble: [super value]];
 }
 
 

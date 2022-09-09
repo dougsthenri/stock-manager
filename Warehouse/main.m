@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]) {
         ComponentRating *aRating;
         VoltageRating *anotherRating = [[VoltageRating alloc] initWithValue:2222.0];
         aRating = anotherRating;
-        NSLog(@"%@ = %@ %@", [aRating name], [aRating engineeringValue], [aRating engineeringUnit]);
+        NSLog(@"%@ = %@ %@ or %f %@", [aRating name], [aRating engineeringValue], [aRating engineeringUnit], [aRating value], [aRating unitSymbol]);
         
         VoltageRating *rating1 = [[VoltageRating alloc] initWithValue:0.0];
         NSLog(@"%@ = %@ %@", [rating1 name], [rating1 engineeringValue], [rating1 engineeringUnit]);
@@ -30,7 +30,7 @@ int main(int argc, const char * argv[]) {
         rating1 = [[VoltageRating alloc] initWithValue:0.006];
         NSLog(@"%@ = %@ %@", [rating1 name], [rating1 engineeringValue], [rating1 engineeringUnit]);
         rating1 = [[VoltageRating alloc] initWithValue:5032000];
-        NSLog(@"%@ = %@ %@", [rating1 name], [rating1 engineeringValue], [rating1 engineeringUnit]);
+        NSLog(@"%@ = %@ %@ or %f %@", [rating1 name], [rating1 engineeringValue], [rating1 engineeringUnit], [rating1 value], [rating1 unitSymbol]);
         rating1 = [[VoltageRating alloc] initWithValue:-999.0];
         NSLog(@"%@ = %@ %@", [rating1 name], [rating1 engineeringValue], [rating1 engineeringUnit]);
         rating1 = [[VoltageRating alloc] initWithValue:-0.6];
