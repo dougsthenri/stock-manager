@@ -22,11 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)manufacturers;
 - (NSArray *)packageCodes;
 
-- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
-                                                             manufacturer:(nullable NSString *)manufacturer;
+- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber;
 
-- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type
-                                                         criteria:(nullable NSDictionary *)criteria;
+- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type;
 
 - (NSMutableArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
                                                         manufacturer:(NSString *)manufacturer;
@@ -35,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                      manufacturer:(NSString *)manufacturer;
 
 - (BOOL)isRegisteredPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer;
+- (void)stockReplenishmentWithParameters:(NSDictionary *)parameters;
+- (void)stockWithdrawalWithParameters:(NSDictionary *)parameters;
+
++ (NSDate *)dateWithClearedTimeComponentsFromDate:(NSDate *)date;
 
 @end
 

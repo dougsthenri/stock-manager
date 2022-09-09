@@ -74,10 +74,7 @@
     NSString *partNumber = [[_partNumberSearchField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
         [_addPartNumberButton setEnabled:YES];
-        NSString *manufacturer; //... Será sempre "nil" aqui. A filtragem por "manufacturer" ocorre após a busca por Part#
-        //... Verificar filtragem por fabricante, apenas. Limpar todos os [outros] filtros?
-        _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber
-                                                                                         manufacturer:manufacturer];
+        _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
         [self updateSearchResults];
     } else {
         [_addPartNumberButton setEnabled:NO];
@@ -91,32 +88,38 @@
     [_partNumberSearchField abortEditing];
     [_partNumberSearchField setStringValue:@""];
     NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
-    NSMutableDictionary *searchCriteria;
-    //... Levantar critérios de filtragem
-    _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType
-                                                                                 criteria:searchCriteria];
+    _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType];
     [self updateSearchResults];
 }
 
 
 - (IBAction)stockActionsSegmentedControlClicked:(id)sender {
-    NSInteger selectedIndex = [_stockActionsSegmentedControl selectedSegment];
-    if (selectedIndex == 0) {
+    NSInteger selectedRow = [_searchResultsTableView selectedRow];
+    NSString *partNumber = _searchResults[selectedRow][@"part_number"];
+    NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
+    NSInteger selectedSegmentIndex = [_stockActionsSegmentedControl selectedSegment];
+    if (selectedSegmentIndex == 0) {
+        // Incremento de estoque
+        StockIncrementViewController *popoverViewController = (StockIncrementViewController *)[_selectedStockIncrementPopover contentViewController];
+        [popoverViewController setSelectedPartNumber:partNumber];
+        [popoverViewController setSelectedManufacturer:manufacturer];
         NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedIndex];
+                                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockIncrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
-    } else if (selectedIndex == 1) {
+    } else if (selectedSegmentIndex == 1) {
+        // Decremento de estoque
+        StockDecrementViewController *popoverViewController = (StockDecrementViewController *)[_selectedStockDecrementPopover contentViewController];
+        [popoverViewController setSelectedPartNumber:partNumber];
+        [popoverViewController setSelectedManufacturer:manufacturer];
         NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedIndex];
+                                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockDecrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
-    } else if (selectedIndex == HISTORY_BUTTON_SEGMENT_INDEX) {
-        NSInteger selectedRow = [_searchResultsTableView selectedRow];
-        NSString *partNumber = _searchResults[selectedRow][@"part_number"];
-        NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
+    } else if (selectedSegmentIndex == HISTORY_BUTTON_SEGMENT_INDEX) {
+        // Histórico de movimentações de estoque
         _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForPartNumber:partNumber
                                                                                           manufacturer:manufacturer];
         [_stockReplenishmentsTableView reloadData];
@@ -128,7 +131,7 @@
         [_stockWithdrawalsTableView deselectAll:nil];
         [_stockWithdrawalsTableView sizeToFit];
         NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedIndex];
+                                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockHistoryPopover showRelativeToRect:bounds
                                                   ofView:sender
                                            preferredEdge:NSMinYEdge];
@@ -147,8 +150,10 @@
 
 
 - (void)updateSearchResults {
-    [_searchResultsTableView reloadData];
     [_searchResultsTableView deselectAll:nil];
+    [self disableStockActions];
+    //... Aplicar filtros selecionados
+    [_searchResultsTableView reloadData];
     // Ocultar colunas inteiramente vazias
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
         NSString *columnID = [column identifier];
@@ -171,12 +176,26 @@
     }
 }
 
+
+- (void)clearSearchResults {
+    //...
+}
+
+
+- (void)disableStockActions {
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
+}
+
 #pragma mark - NSControlTextEditingDelegate
 
 -(void)controlTextDidBeginEditing:(NSNotification *)obj {
     NSString *controlID = [[obj object] identifier];
     if ([controlID isEqualToString:[_partNumberSearchField identifier]]) {
         [_componentTypeSelectionButton selectItemAtIndex:0];
+        _searchResults = nil;
+        [self updateSearchResults];
     }
 }
 
@@ -289,7 +308,7 @@
         if ([columnID isEqualToString:@"date_acquired"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : [_dateFormatter stringFromDate:value]];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"UNKNOWN" : [_dateFormatter stringFromDate:value]];
         } else if ([columnID isEqualToString:@"quantity"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
@@ -297,14 +316,14 @@
         } else if ([columnID isEqualToString:@"origin"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
+            [textField setStringValue:value];
         }
     } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
         id value = _stockWithdrawals[row][columnID];
         if ([columnID isEqualToString:@"date_spent"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : [_dateFormatter stringFromDate:value]];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"UNKNOWN" : [_dateFormatter stringFromDate:value]];
         } else if ([columnID isEqualToString:@"quantity"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
@@ -312,7 +331,7 @@
         } else if ([columnID isEqualToString:@"destination"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
+            [textField setStringValue:value];
         }
     }
     return cellView;
@@ -324,9 +343,7 @@
     // Tabela de resultados de busca
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
+        [self disableStockActions];
     } else {
         [_stockActionsSegmentedControl setEnabled:YES forSegment:0];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];

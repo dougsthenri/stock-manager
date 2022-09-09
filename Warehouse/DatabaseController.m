@@ -48,10 +48,12 @@
     if (![_database open]) {
         NSLog(@"Controller failed to open database file '%@'.", path);
     }
+    // Configurar o banco de dados
     if (![self enableCaseSensitiveLike]) {
         [_database close];
         NSLog(@"Controller failed to set case sensitive LIKE for database.");
     }
+    //... Experimentar modo WAL
 }
 
 
@@ -114,14 +116,9 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber
-                                                             manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
-    NSMutableString *query = [NSMutableString stringWithFormat:@"SELECT * FROM stock WHERE part_number LIKE '%@%%'", partNumber];
-    if (manufacturer) {
-        [query appendFormat:@" AND manufacturer = '%@'", manufacturer];
-    }
-    FMResultSet *resultSet = [_database executeQuery:query];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number LIKE ?", [partNumber stringByAppendingString:@"%"]];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [searchResults addObject:result];
@@ -131,16 +128,9 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type
-                                                         criteria:(NSDictionary *)criteria {
+- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type {
     NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
-    NSMutableString *query = [[NSMutableString alloc] initWithFormat:@"SELECT * FROM stock WHERE component_type = '%@'", type];
-    if (criteria) {
-        for (NSString *columnName in criteria) {
-            [query appendFormat:@" AND %@ %@", columnName, criteria[columnName]]; //... Critério deve incluir operador relacional! e.g.: "voltage_rating <= 90". Cogitar um objeto SearchCriteria
-        }
-    }
-    FMResultSet *resultSet = [_database executeQuery:query];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE component_type = ?", type];
     while ([resultSet next]) {
         NSDictionary *result = [resultSet resultDictionary];
         [searchResults addObject:result];
@@ -198,6 +188,44 @@
 }
 
 
-//... INSERT/UPDATE em múltiplas tabelas dentro de uma TRANSACTION
+- (void)stockReplenishmentWithParameters:(NSDictionary *)parameters {
+    [_database beginExclusiveTransaction];
+    NSNumber *quantity = [parameters objectForKey:@"quantity"];
+    NSString *partNumber = [parameters objectForKey:@"part_number"];
+    NSString *manufacturer = [parameters objectForKey:@"manufacturer"];
+    [_database executeUpdate:@"UPDATE stock SET quantity = quantity + ? WHERE part_number = ? AND manufacturer = ?", quantity, partNumber, manufacturer];
+    NSDate *dateAcquired = [parameters objectForKey:@"date_acquired"];
+    NSString *origin = [parameters objectForKey:@"origin"];
+    [_database executeUpdate:@"INSERT INTO acquisitions(part_number, manufacturer, quantity, date_acquired) VALUES(?, ?, ?, ?, ?)", partNumber, manufacturer, quantity, FMDB_SQL_NULLABLE(dateAcquired), FMDB_SQL_NULLABLE(origin)];
+    [_database commit];
+    //... Lançar notificação!
+}
+
+
+- (void)stockWithdrawalWithParameters:(NSDictionary *)parameters {
+    [_database beginExclusiveTransaction];
+    NSString *updateCommand = @"UPDATE stock SET quantity = quantity - ? WHERE part_number = ? AND manufacturer = ?";
+    NSNumber *quantity = [parameters objectForKey:@"quantity"];
+    NSString *partNumber = [parameters objectForKey:@"part_number"];
+    NSString *manufacturer = [parameters objectForKey:@"manufacturer"];
+    [_database executeUpdate:updateCommand, quantity, partNumber, manufacturer];
+    NSDate *dateSpent = [parameters objectForKey:@"date_spent"];
+    NSString *destination = [parameters objectForKey:@"destination"];
+    [_database executeUpdate:@"INSERT INTO expenditures VALUES(?, ?, ?, ?, ?)", partNumber, manufacturer, quantity,  FMDB_SQL_NULLABLE(dateSpent), FMDB_SQL_NULLABLE(destination)];
+    [_database commit];
+    //... Lançar notificação!
+}
+
+
++ (NSDate *)dateWithClearedTimeComponentsFromDate:(NSDate *)date {
+    NSCalendar *calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierISO8601];
+    NSTimeZone *timeZone = [NSTimeZone localTimeZone];
+    NSDateComponents *dateComponents = [calendar componentsInTimeZone:timeZone fromDate:date];
+    [dateComponents setHour:0];
+    [dateComponents setMinute:0];
+    [dateComponents setSecond:0];
+    [dateComponents setNanosecond:0];
+    return [calendar dateFromComponents:dateComponents];
+}
 
 @end

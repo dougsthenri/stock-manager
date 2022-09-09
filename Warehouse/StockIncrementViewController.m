@@ -52,7 +52,21 @@
 
 
 - (IBAction)addToStockButtonClicked:(id)sender {
-    //... SQL UPDATE
+    NSNumber *quantity = [NSNumber numberWithInteger:[_quantityTextField integerValue]];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+                                       _selectedPartNumber, @"part_number",
+                                       _selectedManufacturer, @"manufacturer",
+                                       quantity, @"quantity",
+                                       nil];
+    NSString *origin = [[_originTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([origin length] > 0) {
+        [parameters setObject:origin forKey:@"origin"];
+    }
+    if ([_dateUnknownCheckbox state] == NSControlStateValueOff) {
+        NSDate *dateAcquired = [DatabaseController dateWithClearedTimeComponentsFromDate:[_acquisitionDatePicker dateValue]];
+        [parameters setObject:dateAcquired forKey:@"date_acquired"];
+    }
+    [[DatabaseController sharedController] stockReplenishmentWithParameters:parameters];
     [self persistLastAcquisitionInput]; //Para adição sequencial de componentes de uma mesma origem
     [_popover close];
 }

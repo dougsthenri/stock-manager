@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface StockDecrementViewController : NSViewController <NSTextFieldDelegate>
 
+@property NSString *selectedPartNumber;
+@property NSString *selectedManufacturer;
+
 @end
 
 NS_ASSUME_NONNULL_END

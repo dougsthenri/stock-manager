@@ -81,7 +81,7 @@
         NSPoint menuLocation = NSMakePoint(0, [sender frame].size.height);
         [_ratingsMenu popUpMenuPositioningItem:nil atLocation:menuLocation inView:sender];
     } else if (selectedItem == 1) {
-        //... Remover rating selecionada
+        //... Remover característica selecionada
     }
 }
 
@@ -168,10 +168,10 @@
         [alert setMessageText:[NSString stringWithFormat:@"%@ from manufacturer %@ is already on the database.", _partNumber, manufacturer]];
         [alert setInformativeText:@"You may update its stock."];
         [alert runModal];
-        //... Preencher os dados retornados para o part# preexistente e mudar todos os campos (exceto fabricante e estoque) para somente leitura
+        //... Preencher os dados retornados para o part# preexistente e mudar todos os campos (exceto fabricante e estoque) para somente leitura (ou desabilitá-los)
         //... Ativar {popover de incremento | campo} de estoque da janela de registro
     } else {
-        //... Tornar editáveis todos os campos (exceto fabricante e estoque)
+        //... Tornar editáveis (ou reabilitar) todos os campos exceto fabricante e estoque
     }
 }
 

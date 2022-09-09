@@ -58,7 +58,21 @@
 
 
 - (IBAction)deductFromStockButtonClicked:(id)sender {
-    //... SQL UPDATE
+    NSNumber *quantity = [NSNumber numberWithInteger:[_quantityTextField integerValue]];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+                                       _selectedPartNumber, @"part_number",
+                                       _selectedManufacturer, @"manufacturer",
+                                       quantity, @"quantity",
+                                       nil];
+    NSString *destination = [[_destinationTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([destination length] > 0) {
+        [parameters setObject:destination forKey:@"destination"];
+    }
+    if ([_dateUnknownCheckbox state] == NSControlStateValueOff) {
+        NSDate *dateSpent = [DatabaseController dateWithClearedTimeComponentsFromDate:[_expenditureDatePicker dateValue]];
+        [parameters setObject:dateSpent forKey:@"date_spent"];
+    }
+    [[DatabaseController sharedController] stockWithdrawalWithParameters:parameters];
     [self persistLastExpenditureInput]; //Para retirada sequencial de componentes com uma mesma destinação
     [_popover close];
 }
