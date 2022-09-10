@@ -33,6 +33,7 @@
 @property NSMutableArray *stockWithdrawals;
 @property NSDateFormatter *dateFormatter;
 @property NSNumberFormatter *percentFormatter;
+@property NSNumber *selectedComponentID;
 
 @end
 
@@ -72,13 +73,12 @@
     if ([partNumber length] > 0) {
         [_addPartNumberButton setEnabled:YES];
         _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
-        [self updateSearchResults];
     } else {
         [_addPartNumberButton setEnabled:NO];
         [_partNumberSearchField setStringValue:@""];
         _searchResults = nil;
-        [self updateSearchResults];
     }
+    [self updateSearchResultsTable];
 }
 
 - (IBAction)componentTypePopupSelected:(id)sender {
@@ -86,18 +86,16 @@
     [_partNumberSearchField setStringValue:@""];
     NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
     _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType];
-    [self updateSearchResults];
+    [self updateSearchResultsTable];
 }
 
 
 - (IBAction)stockActionsSegmentedControlClicked:(id)sender {
-    NSInteger selectedRow = [_searchResultsTableView selectedRow];
-    NSNumber *componentID = _searchResults[selectedRow][@"component_id"];
     NSInteger selectedSegmentIndex = [_stockActionsSegmentedControl selectedSegment];
     if (selectedSegmentIndex == 0) {
         // Incremento de estoque
         StockIncrementViewController *popoverViewController = (StockIncrementViewController *)[_selectedStockIncrementPopover contentViewController];
-        [popoverViewController setSelectedComponentID:componentID];
+        [popoverViewController setSelectedComponentID:_selectedComponentID];
         NSRect bounds = [self relativeBoundsForSegmentedControl:sender
                                                    segmentIndex:selectedSegmentIndex];
         [_selectedStockIncrementPopover showRelativeToRect:bounds
@@ -106,7 +104,7 @@
     } else if (selectedSegmentIndex == 1) {
         // Decremento de estoque
         StockDecrementViewController *popoverViewController = (StockDecrementViewController *)[_selectedStockDecrementPopover contentViewController];
-        [popoverViewController setSelectedComponentID:componentID];
+        [popoverViewController setSelectedComponentID:_selectedComponentID];
         NSRect bounds = [self relativeBoundsForSegmentedControl:sender
                                                    segmentIndex:selectedSegmentIndex];
         [_selectedStockDecrementPopover showRelativeToRect:bounds
@@ -114,11 +112,11 @@
                                              preferredEdge:NSMinYEdge];
     } else if (selectedSegmentIndex == 2) {
         // Histórico de movimentações de estoque
-        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForComponentID:componentID];
+        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForComponentID:_selectedComponentID];
         [_stockReplenishmentsTableView reloadData];
         [_stockReplenishmentsTableView deselectAll:nil];
         [_stockReplenishmentsTableView sizeToFit];
-        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForComponentID:componentID];
+        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForComponentID:_selectedComponentID];
         [_stockWithdrawalsTableView reloadData];
         [_stockWithdrawalsTableView deselectAll:nil];
         [_stockWithdrawalsTableView sizeToFit];
@@ -141,12 +139,17 @@
 }
 
 
-- (void)updateSearchResults {
+- (void)updateSearchResultsTable {
+    NSNumber *selectedComponentID = _selectedComponentID;
     [_searchResultsTableView deselectAll:nil];
-    [self disableStockActions];
-    //... Aplicar filtros selecionados
+    if (_searchResults) {
+        //... Aplicar filtros selecionados aos resultados de busca
+        //... Habilitar seleção de filtros?
+    } else {
+        //... Limpar todos os filtros [e desabilitar seleção deles]?
+    }
     [_searchResultsTableView reloadData];
-    // Ocultar colunas inteiramente vazias
+    // Ocultar colunas opcionais inteiramente vazias
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
         NSString *columnID = [column identifier];
         if ([[DatabaseController sharedController] isNullableColumn:columnID table:@"stock"]) {
@@ -161,23 +164,17 @@
         }
     }
     [_searchResultsTableView sizeToFit];
-    if (_searchResults) {
-        //... Habilitar seleção de filtros?
-    } else {
-        //... Limpar todos os filtros [e desabilitar seleção deles]?
+    if (selectedComponentID) {
+        // Reafirmar seleção se o componente ainda estiver presente
+        for (NSDictionary *searchResult in _searchResults) {
+            NSNumber *componentID = searchResult[@"component_id"];
+            if ([componentID isEqualTo:selectedComponentID]) {
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:[_searchResults indexOfObject:searchResult]];
+                [_searchResultsTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+                break;
+            }
+        }
     }
-}
-
-
-- (void)clearSearchResults {
-    //...
-}
-
-
-- (void)disableStockActions {
-    [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
-    [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
-    [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
 }
 
 
@@ -193,12 +190,8 @@
 #pragma mark - NSControlTextEditingDelegate
 
 -(void)controlTextDidBeginEditing:(NSNotification *)obj {
-    NSString *controlID = [[obj object] identifier];
-    if ([controlID isEqualToString:[_partNumberSearchField identifier]]) {
-        [_componentTypeSelectionButton selectItemAtIndex:0];
-        _searchResults = nil;
-        [self updateSearchResults];
-    }
+    // Campo de busca por número de peça
+    [_componentTypeSelectionButton selectItemAtIndex:0];
 }
 
 #pragma mark - NSTableViewDataSource
@@ -218,13 +211,11 @@
 }
 
 
-/*
- Os identificadores das colunas e de suas respectivas vistas são idênticos e correspondem aos nomes das colunas no banco de dados
- */
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    NSString *tableID = [tableView identifier];
+    // Os identificadores das colunas e de suas respectivas vistas são idênticos e correspondem aos nomes das colunas no banco de dados
     NSString *columnID = [tableColumn identifier];
     NSTableCellView *cellView;
+    NSString *tableID = [tableView identifier];
     if ([tableID isEqualToString:[_searchResultsTableView identifier]]) {
         id value = _searchResults[row][columnID];
         if ([columnID isEqualToString:@"part_number"]) {
@@ -354,12 +345,17 @@
     // Tabela de resultados de busca
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
-        [self disableStockActions];
+        _selectedComponentID = nil;
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
+        [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
+        //... Fechar eventuais popovers?
     } else {
+        _selectedComponentID = _searchResults[selectedRow][@"component_id"];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:0];
+        [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
         [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:1];
-        [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
     }
 }
 
