@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DatabaseController : NSObject
 
-@property (class, readonly, strong) DatabaseController *sharedController; //Singleton
+@property (class, readonly, strong) DatabaseController *sharedController; //Instância singleton
 @property (readonly) NSArray<NSString *> *dateColumns;
 
 - (void)openDatabaseAtPath:(NSString *)path;
@@ -23,16 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)packageCodes;
 
 - (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber;
-
 - (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type;
-
-- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
-                                                        manufacturer:(NSString *)manufacturer;
-
-- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
-                                                     manufacturer:(NSString *)manufacturer;
-
-- (BOOL)isRegisteredPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer;
+- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForComponentID:(NSNumber *)component_id;
+- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForComponentID:(NSNumber *)component_id;
+- (nullable NSDictionary *)recordForPartNumber:(NSString *)partNumber
+                                  manufacturer:(nullable NSString *)manufacturer;
 - (void)stockReplenishmentWithParameters:(NSDictionary *)parameters;
 - (void)stockWithdrawalWithParameters:(NSDictionary *)parameters;
 

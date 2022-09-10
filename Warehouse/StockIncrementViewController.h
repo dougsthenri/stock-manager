@@ -12,8 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface StockIncrementViewController : NSViewController <NSTextFieldDelegate>
 
-@property NSString *selectedPartNumber;
-@property NSString *selectedManufacturer;
+@property NSNumber *selectedComponentID;
 
 @end
 

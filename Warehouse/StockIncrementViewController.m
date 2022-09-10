@@ -53,11 +53,10 @@
 
 - (IBAction)addToStockButtonClicked:(id)sender {
     NSNumber *quantity = [NSNumber numberWithInteger:[_quantityTextField integerValue]];
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                       _selectedPartNumber, @"part_number",
-                                       _selectedManufacturer, @"manufacturer",
-                                       quantity, @"quantity",
-                                       nil];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:@{
+        @"component_id" : _selectedComponentID,
+        @"quantity"     : quantity
+    }];
     NSString *origin = [[_originTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([origin length] > 0) {
         [parameters setObject:origin forKey:@"origin"];

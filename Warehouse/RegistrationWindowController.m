@@ -99,7 +99,7 @@
 
 
 - (IBAction)okButtonClicked:(id)sender {
-    //... Verificar campos obrigatórios
+    //... Verificar campos obrigatórios. O campo do fabricante pode ser deixado vazio (fabricante desconhecido, inserido como nulo)
     //... SQL INSERT
     [self persistLastAcquisitionInput];
     [self close];
@@ -162,11 +162,14 @@
 
 
 - (void)checkExistingPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
-    if ([[DatabaseController sharedController] isRegisteredPartNumber:_partNumber manufacturer:manufacturer]) {
+    NSDictionary *previousRecord = [[DatabaseController sharedController] recordForPartNumber:partNumber
+                                                                                 manufacturer:manufacturer];
+    if (previousRecord) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setAlertStyle:NSAlertStyleInformational];
         [alert setMessageText:[NSString stringWithFormat:@"%@ from manufacturer %@ is already on the database.", _partNumber, manufacturer]];
-        [alert setInformativeText:@"You may update its stock."];
+        NSInteger quantity = [[previousRecord objectForKey:@"quantity"] integerValue];
+        [alert setInformativeText:[NSString stringWithFormat:@"Its current stock is %ld unit%@.", quantity, quantity == 1 ? @"" : @"s"]];
         [alert runModal];
         //... Preencher os dados retornados para o part# preexistente e mudar todos os campos (exceto fabricante e estoque) para somente leitura (ou desabilitá-los)
         //... Ativar {popover de incremento | campo} de estoque da janela de registro

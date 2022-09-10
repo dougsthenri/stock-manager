@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name;
 - (NSString *)unitSymbol;
-- (NSString *)engineeringUnit;
+- (NSString *)engineeringValue;
 
 @end
 
 @interface ComponentRating : NSObject <ComponentRating>
 
-@property (readonly) NSNumber *engineeringValue;
+@property (readonly) NSNumber *significand;
 @property (readonly) NSInteger orderOfMagnitude;
 
 + (NSString *)prefixForMagnitude:(NSInteger)magnitude;

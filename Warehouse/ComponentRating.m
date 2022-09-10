@@ -60,14 +60,14 @@
             orderOfThreeMagnitudes = floor(log10(fabs(value)) / 3);
         }
         _orderOfMagnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
-        _engineeringValue = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
+        _significand = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
     }
     return self;
 }
 
 
 - (double)value {
-    return [_engineeringValue doubleValue] * pow(10.0, _orderOfMagnitude);
+    return [_significand doubleValue] * pow(10.0, _orderOfMagnitude);
 }
 
 
@@ -81,7 +81,7 @@
 }
 
 
-- (nonnull NSString *)engineeringUnit {
+- (nonnull NSString *)engineeringValue {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"You must override '%@' in a subclass", NSStringFromSelector(_cmd)] userInfo:nil];
 }
 
@@ -102,9 +102,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -123,9 +130,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -144,9 +158,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -165,9 +186,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -186,9 +214,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -207,9 +242,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -228,9 +270,16 @@
 }
 
 
-- (NSString *)engineeringUnit {
-    NSString *prefix = [ComponentRating prefixForMagnitude:[super orderOfMagnitude]];
-    return [prefix stringByAppendingString:[self unitSymbol]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [super significand],
+            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
+            [self unitSymbol]];
+}
+
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end
@@ -249,13 +298,15 @@
 }
 
 
-- (NSNumber *)engineeringValue {
-    return [NSNumber numberWithDouble: [super value]];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@%@",
+            [NSNumber numberWithDouble:[super value]],
+            [self unitSymbol]];
 }
 
 
-- (NSString *)engineeringUnit {
-    return [self unitSymbol];
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
 
 @end

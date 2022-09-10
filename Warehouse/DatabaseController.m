@@ -47,13 +47,14 @@
     [_database setDateFormat:_dateFormatter];
     if (![_database open]) {
         NSLog(@"Controller failed to open database file '%@'.", path);
+        _database = nil;
+        return;
     }
     // Configurar o banco de dados
     if (![self enableCaseSensitiveLike]) {
         [_database close];
         NSLog(@"Controller failed to set case sensitive LIKE for database.");
     }
-    //... Experimentar modo WAL
 }
 
 
@@ -140,19 +141,20 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForPartNumber:(NSString *)partNumber
-                                                        manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)stockReplenishmentsForComponentID:(NSNumber *)component_id {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_acquired, origin FROM acquisitions WHERE part_number = ? AND manufacturer = ? ORDER BY date_acquired DESC", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT id, quantity, date_acquired, origin FROM acquisitions WHERE fk_component_id = ? ORDER BY date_acquired DESC", component_id];
     while ([resultSet next]) {
+        NSNumber *acquisitionID = [NSNumber numberWithInteger:[resultSet longForColumn:@"id"]];
         NSNumber *quantity = [NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]];
         NSDate *dateAcquired = [resultSet dateForColumn:@"date_acquired"];
         NSString *origin = [resultSet stringForColumn:@"origin"];
-        NSDictionary *result = [NSDictionary dictionaryWithObjectsAndKeys:
-                                quantity, @"quantity",
-                                dateAcquired ?: [NSNull null], @"date_acquired",
-                                origin ?: [NSNull null], @"origin",
-                                nil];
+        NSDictionary *result = @{
+            @"id"               : acquisitionID,
+            @"quantity"         : quantity,
+            @"date_acquired"    : FMDB_SQL_NULLABLE(dateAcquired),
+            @"origin"           : FMDB_SQL_NULLABLE(origin)
+        };
         [queryResults addObject:result];
     }
     [resultSet close];
@@ -160,19 +162,20 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForPartNumber:(NSString *)partNumber
-                                                     manufacturer:(NSString *)manufacturer {
+- (NSMutableArray<NSDictionary *> *)stockWithdrawalsForComponentID:(NSNumber *)component_id {
     NSMutableArray<NSDictionary *> *queryResults = [[NSMutableArray alloc] init];
-    FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity, date_spent, destination FROM expenditures WHERE part_number = ? AND manufacturer = ? ORDER BY date_spent DESC", partNumber, manufacturer];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT id, quantity, date_spent, destination FROM expenditures WHERE fk_component_id = ? ORDER BY date_spent DESC", component_id];
     while ([resultSet next]) {
+        NSNumber *expenditureID = [NSNumber numberWithInteger:[resultSet longForColumn:@"id"]];
         NSNumber *quantity = [NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]];
         NSDate *dateSpent = [resultSet dateForColumn:@"date_spent"];
         NSString *destination = [resultSet stringForColumn:@"destination"];
-        NSDictionary *result = [NSDictionary dictionaryWithObjectsAndKeys:
-                                quantity, @"quantity",
-                                dateSpent ?: [NSNull null], @"date_spent",
-                                destination ?: [NSNull null], @"destination",
-                                nil];
+        NSDictionary *result = @{
+            @"id"           : expenditureID,
+            @"quantity"     : quantity,
+            @"date_spent"   : FMDB_SQL_NULLABLE(dateSpent),
+            @"destination"  : FMDB_SQL_NULLABLE(destination)
+        };
         [queryResults addObject:result];
     }
     [resultSet close];
@@ -180,23 +183,29 @@
 }
 
 
-- (BOOL)isRegisteredPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
-    FMResultSet *resultSet = [_database executeQuery:@"SELECT part_number FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer];
-    BOOL isRegistered = [resultSet next];
+- (nullable NSDictionary *)recordForPartNumber:(NSString *)partNumber
+                                  manufacturer:(nullable NSString *)manufacturer {
+    // Deve haver no máximo 1 registro com fabricante desconhecido (nulo) para um dado número de peça
+    //... Cogitar um trigger para reforçar a regra acima no próprio banco. Alternativamente aceitar a inserção de múltiplos fabricantes desconhecidos para um dado número de peça (nesse caso, reescrever esse método)
+    NSDictionary *result = nil;
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer ?: @"NULL"];
+    [resultSet next];
+    if ([resultSet columnCount]) {
+        result = [resultSet resultDictionary];
+    }
     [resultSet close];
-    return isRegistered;
+    return result;
 }
 
 
 - (void)stockReplenishmentWithParameters:(NSDictionary *)parameters {
     [_database beginExclusiveTransaction];
+    NSNumber *componentID = [parameters objectForKey:@"component_id"];
     NSNumber *quantity = [parameters objectForKey:@"quantity"];
-    NSString *partNumber = [parameters objectForKey:@"part_number"];
-    NSString *manufacturer = [parameters objectForKey:@"manufacturer"];
-    [_database executeUpdate:@"UPDATE stock SET quantity = quantity + ? WHERE part_number = ? AND manufacturer = ?", quantity, partNumber, manufacturer];
+    [_database executeUpdate:@"UPDATE OR ROLLBACK stock SET quantity = quantity + ? WHERE component_id = ?", quantity, componentID];
     NSDate *dateAcquired = [parameters objectForKey:@"date_acquired"];
     NSString *origin = [parameters objectForKey:@"origin"];
-    [_database executeUpdate:@"INSERT INTO acquisitions(part_number, manufacturer, quantity, date_acquired) VALUES(?, ?, ?, ?, ?)", partNumber, manufacturer, quantity, FMDB_SQL_NULLABLE(dateAcquired), FMDB_SQL_NULLABLE(origin)];
+    [_database executeUpdate:@"INSERT OR ROLLBACK INTO acquisitions(fk_component_id, quantity, date_acquired, origin) VALUES(?, ?, ?, ?)", componentID, quantity, FMDB_SQL_NULLABLE(dateAcquired), FMDB_SQL_NULLABLE(origin)];
     [_database commit];
     //... Lançar notificação!
 }
@@ -204,14 +213,12 @@
 
 - (void)stockWithdrawalWithParameters:(NSDictionary *)parameters {
     [_database beginExclusiveTransaction];
-    NSString *updateCommand = @"UPDATE stock SET quantity = quantity - ? WHERE part_number = ? AND manufacturer = ?";
+    NSNumber *componentID = [parameters objectForKey:@"component_id"];
     NSNumber *quantity = [parameters objectForKey:@"quantity"];
-    NSString *partNumber = [parameters objectForKey:@"part_number"];
-    NSString *manufacturer = [parameters objectForKey:@"manufacturer"];
-    [_database executeUpdate:updateCommand, quantity, partNumber, manufacturer];
+    [_database executeUpdate:@"UPDATE OR ROLLBACK stock SET quantity = quantity - ? WHERE component_id = ?", quantity, componentID];
     NSDate *dateSpent = [parameters objectForKey:@"date_spent"];
     NSString *destination = [parameters objectForKey:@"destination"];
-    [_database executeUpdate:@"INSERT INTO expenditures VALUES(?, ?, ?, ?, ?)", partNumber, manufacturer, quantity,  FMDB_SQL_NULLABLE(dateSpent), FMDB_SQL_NULLABLE(destination)];
+    [_database executeUpdate:@"INSERT OR ROLLBACK INTO expenditures(fk_component_id, quantity, date_spent, destination) VALUES(?, ?, ?, ?)", componentID, quantity, FMDB_SQL_NULLABLE(dateSpent), FMDB_SQL_NULLABLE(destination)];
     [_database commit];
     //... Lançar notificação!
 }

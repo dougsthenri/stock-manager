@@ -12,9 +12,6 @@
 #import "StockIncrementViewController.h"
 #import "StockDecrementViewController.h"
 
-// Para controles segmentados como aqueles nos rodapés das tabelas
-#define HISTORY_BUTTON_SEGMENT_INDEX   2
-
 @interface MainWindowController ()
 
 @property (weak) IBOutlet NSSearchField *partNumberSearchField;
@@ -95,43 +92,38 @@
 
 - (IBAction)stockActionsSegmentedControlClicked:(id)sender {
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
-    NSString *partNumber = _searchResults[selectedRow][@"part_number"];
-    NSString *manufacturer = _searchResults[selectedRow][@"manufacturer"];
+    NSNumber *componentID = _searchResults[selectedRow][@"component_id"];
     NSInteger selectedSegmentIndex = [_stockActionsSegmentedControl selectedSegment];
     if (selectedSegmentIndex == 0) {
         // Incremento de estoque
         StockIncrementViewController *popoverViewController = (StockIncrementViewController *)[_selectedStockIncrementPopover contentViewController];
-        [popoverViewController setSelectedPartNumber:partNumber];
-        [popoverViewController setSelectedManufacturer:manufacturer];
-        NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedSegmentIndex];
+        [popoverViewController setSelectedComponentID:componentID];
+        NSRect bounds = [self relativeBoundsForSegmentedControl:sender
+                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockIncrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
     } else if (selectedSegmentIndex == 1) {
         // Decremento de estoque
         StockDecrementViewController *popoverViewController = (StockDecrementViewController *)[_selectedStockDecrementPopover contentViewController];
-        [popoverViewController setSelectedPartNumber:partNumber];
-        [popoverViewController setSelectedManufacturer:manufacturer];
-        NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedSegmentIndex];
+        [popoverViewController setSelectedComponentID:componentID];
+        NSRect bounds = [self relativeBoundsForSegmentedControl:sender
+                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockDecrementPopover showRelativeToRect:bounds
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
-    } else if (selectedSegmentIndex == HISTORY_BUTTON_SEGMENT_INDEX) {
+    } else if (selectedSegmentIndex == 2) {
         // Histórico de movimentações de estoque
-        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForPartNumber:partNumber
-                                                                                          manufacturer:manufacturer];
+        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForComponentID:componentID];
         [_stockReplenishmentsTableView reloadData];
         [_stockReplenishmentsTableView deselectAll:nil];
         [_stockReplenishmentsTableView sizeToFit];
-        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForPartNumber:partNumber
-                                                                                    manufacturer:manufacturer];
+        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForComponentID:componentID];
         [_stockWithdrawalsTableView reloadData];
         [_stockWithdrawalsTableView deselectAll:nil];
         [_stockWithdrawalsTableView sizeToFit];
-        NSRect bounds = [MainWindowController relativeBoundsForSegmentedControl:sender
-                                                                   segmentIndex:selectedSegmentIndex];
+        NSRect bounds = [self relativeBoundsForSegmentedControl:sender
+                                                   segmentIndex:selectedSegmentIndex];
         [_selectedStockHistoryPopover showRelativeToRect:bounds
                                                   ofView:sender
                                            preferredEdge:NSMinYEdge];
@@ -188,6 +180,16 @@
     [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
 }
 
+
+- (NSRect)relativeBoundsForSegmentedControl:(NSSegmentedControl *)control
+                               segmentIndex:(NSInteger)index {
+    CGRect bounds = [control bounds];
+    CGFloat controlWidth = [control frame].size.width;
+    bounds.size.width = controlWidth / [control segmentCount];
+    bounds.origin.x += index * bounds.size.width;
+    return bounds;
+}
+
 #pragma mark - NSControlTextEditingDelegate
 
 -(void)controlTextDidBeginEditing:(NSNotification *)obj {
@@ -228,20 +230,21 @@
         if ([columnID isEqualToString:@"part_number"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:_searchResults[row][columnID]];
+            [textField setStringValue:value];
         } else if ([columnID isEqualToString:@"manufacturer"]) {
-            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-            NSTextField *textField = [cellView textField];
-            [textField setStringValue:_searchResults[row][columnID]];
+            if (![value isEqualTo:[NSNull null]]) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:value];
+            }
         } else if ([columnID isEqualToString:@"component_type"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:_searchResults[row][columnID]];
+            [textField setStringValue:value];
         } else if ([columnID isEqualToString:@"quantity"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            NSNumber *numericValue = _searchResults[row][columnID];
-            [textField setIntegerValue:[numericValue integerValue]];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
         } else if ([columnID isEqualToString:@"voltage_rating"]) {
             if (![value isEqualTo:[NSNull null]]) {
                 cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
@@ -305,10 +308,14 @@
         }
     } else if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
         id value = _stockReplenishments[row][columnID];
-        if ([columnID isEqualToString:@"date_acquired"]) {
+        if ([columnID isEqualToString:@"id"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"UNKNOWN" : [_dateFormatter stringFromDate:value]];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
+        } else if ([columnID isEqualToString:@"date_acquired"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : [_dateFormatter stringFromDate:value]];
         } else if ([columnID isEqualToString:@"quantity"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
@@ -316,14 +323,18 @@
         } else if ([columnID isEqualToString:@"origin"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:value];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
         }
     } else if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
         id value = _stockWithdrawals[row][columnID];
-        if ([columnID isEqualToString:@"date_spent"]) {
+        if ([columnID isEqualToString:@"id"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"UNKNOWN" : [_dateFormatter stringFromDate:value]];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
+        } else if ([columnID isEqualToString:@"date_spent"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : [_dateFormatter stringFromDate:value]];
         } else if ([columnID isEqualToString:@"quantity"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
@@ -331,7 +342,7 @@
         } else if ([columnID isEqualToString:@"destination"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
-            [textField setStringValue:value];
+            [textField setStringValue:[value isEqualTo:[NSNull null]] ? @"Unknown" : value];
         }
     }
     return cellView;
@@ -350,17 +361,6 @@
         [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:1];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
     }
-}
-
-#pragma mark - Utilities
-
-+ (NSRect)relativeBoundsForSegmentedControl:(NSSegmentedControl *)control
-                               segmentIndex:(NSInteger)index {
-    CGRect bounds = [control bounds];
-    CGFloat controlWidth = [control frame].size.width;
-    bounds.size.width = controlWidth / [control segmentCount];
-    bounds.origin.x += index * bounds.size.width;
-    return bounds;
 }
 
 @end

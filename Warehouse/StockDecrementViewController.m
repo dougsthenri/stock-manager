@@ -59,11 +59,10 @@
 
 - (IBAction)deductFromStockButtonClicked:(id)sender {
     NSNumber *quantity = [NSNumber numberWithInteger:[_quantityTextField integerValue]];
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                       _selectedPartNumber, @"part_number",
-                                       _selectedManufacturer, @"manufacturer",
-                                       quantity, @"quantity",
-                                       nil];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:@{
+        @"component_id" : _selectedComponentID,
+        @"quantity"     : quantity
+    }];
     NSString *destination = [[_destinationTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([destination length] > 0) {
         [parameters setObject:destination forKey:@"destination"];
