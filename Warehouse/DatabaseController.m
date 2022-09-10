@@ -117,11 +117,23 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber {
-    NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
+- (NSNumber *)stockForComponentID:(NSNumber *)componentID {
+    NSNumber *stock = nil;
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT quantity FROM stock WHERE component_id = ?", componentID];
+    [resultSet next];
+    if ([resultSet columnCount]) {
+        stock = [NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]];
+    }
+    [resultSet close];
+    return stock;
+}
+
+
+- (NSMutableArray<NSMutableDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber {
+    NSMutableArray<NSMutableDictionary *> *searchResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number LIKE ?", [partNumber stringByAppendingString:@"%"]];
     while ([resultSet next]) {
-        NSDictionary *result = [resultSet resultDictionary];
+        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:[resultSet resultDictionary]];
         [searchResults addObject:result];
     }
     [resultSet close];
@@ -129,11 +141,11 @@
 }
 
 
-- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type {
-    NSMutableArray<NSDictionary *> *searchResults = [[NSMutableArray alloc] init];
+- (NSMutableArray<NSMutableDictionary *> *)searchResultsForComponentType:(NSString *)type {
+    NSMutableArray<NSMutableDictionary *> *searchResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE component_type = ?", type];
     while ([resultSet next]) {
-        NSDictionary *result = [resultSet resultDictionary];
+        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:[resultSet resultDictionary]];
         [searchResults addObject:result];
     }
     [resultSet close];
@@ -187,14 +199,14 @@
                                   manufacturer:(nullable NSString *)manufacturer {
     // Deve haver no máximo 1 registro com fabricante desconhecido (nulo) para um dado número de peça
     //... Cogitar um trigger para reforçar a regra acima no próprio banco. Alternativamente aceitar a inserção de múltiplos fabricantes desconhecidos para um dado número de peça (nesse caso, reescrever esse método)
-    NSDictionary *result = nil;
+    NSDictionary *record = nil;
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer ?: @"NULL"];
     [resultSet next];
     if ([resultSet columnCount]) {
-        result = [resultSet resultDictionary];
+        record = [resultSet resultDictionary];
     }
     [resultSet close];
-    return result;
+    return record;
 }
 
 
@@ -207,7 +219,11 @@
     NSString *origin = [parameters objectForKey:@"origin"];
     [_database executeUpdate:@"INSERT OR ROLLBACK INTO acquisitions(fk_component_id, quantity, date_acquired, origin) VALUES(?, ?, ?, ?)", componentID, quantity, FMDB_SQL_NULLABLE(dateAcquired), FMDB_SQL_NULLABLE(origin)];
     [_database commit];
-    //... Lançar notificação!
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DBCStockUpdatedNotification"
+                                                        object:self
+                                                      userInfo:@{
+                                                          @"UpdatedComponentID" : componentID
+                                                      }];
 }
 
 
@@ -220,7 +236,11 @@
     NSString *destination = [parameters objectForKey:@"destination"];
     [_database executeUpdate:@"INSERT OR ROLLBACK INTO expenditures(fk_component_id, quantity, date_spent, destination) VALUES(?, ?, ?, ?)", componentID, quantity, FMDB_SQL_NULLABLE(dateSpent), FMDB_SQL_NULLABLE(destination)];
     [_database commit];
-    //... Lançar notificação!
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DBCStockUpdatedNotification"
+                                                        object:self
+                                                      userInfo:@{
+                                                          @"UpdatedComponentID" : componentID
+                                                      }];
 }
 
 

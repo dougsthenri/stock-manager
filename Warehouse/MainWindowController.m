@@ -28,7 +28,7 @@
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
 
 @property RegistrationWindowController *registrationWindowController;
-@property NSMutableArray *searchResults;
+@property NSMutableArray<NSMutableDictionary *> *searchResults;
 @property NSMutableArray *stockReplenishments;
 @property NSMutableArray *stockWithdrawals;
 @property NSDateFormatter *dateFormatter;
@@ -49,6 +49,10 @@
         _percentFormatter = [[NSNumberFormatter alloc] init];
         [_percentFormatter setNumberStyle:NSNumberFormatterPercentStyle];
         [_percentFormatter setMultiplier:@1.0];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(stockUpdatedNotification:)
+                                                     name:@"DBCStockUpdatedNotification"
+                                                   object:nil];
     }
     return self;
 }
@@ -166,7 +170,7 @@
     [_searchResultsTableView sizeToFit];
     if (selectedComponentID) {
         // Reafirmar seleção se o componente ainda estiver presente
-        for (NSDictionary *searchResult in _searchResults) {
+        for (NSMutableDictionary *searchResult in _searchResults) {
             NSNumber *componentID = searchResult[@"component_id"];
             if ([componentID isEqualTo:selectedComponentID]) {
                 NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:[_searchResults indexOfObject:searchResult]];
@@ -356,6 +360,21 @@
         [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
         [_stockActionsSegmentedControl setEnabled:selectedQuantity > 0 forSegment:1];
+    }
+}
+
+#pragma mark - StockUpdatedNotification
+
+- (void)stockUpdatedNotification:(NSNotification *)notification {
+    NSNumber *updatedComponentID = [[notification userInfo] objectForKey:@"UpdatedComponentID"];
+    NSNumber *updatedQuantity = [[DatabaseController sharedController] stockForComponentID:updatedComponentID];
+    for (NSDictionary *searchResult in _searchResults) {
+        NSNumber *componentID = searchResult[@"component_id"];
+        if ([componentID isEqualTo:updatedComponentID]) {
+            [searchResult setValue:updatedQuantity forKey:@"quantity"];
+            [self updateSearchResultsTable];
+            break;
+        }
     }
 }
 

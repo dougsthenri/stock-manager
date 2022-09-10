@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)componentTypes;
 - (NSArray *)manufacturers;
 - (NSArray *)packageCodes;
-
-- (NSMutableArray<NSDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber;
-- (NSMutableArray<NSDictionary *> *)searchResultsForComponentType:(NSString *)type;
+- (NSNumber *)stockForComponentID:(NSNumber *)componentID;
+- (NSMutableArray<NSMutableDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber;
+- (NSMutableArray<NSMutableDictionary *> *)searchResultsForComponentType:(NSString *)type;
 - (NSMutableArray<NSDictionary *> *)stockReplenishmentsForComponentID:(NSNumber *)component_id;
 - (NSMutableArray<NSDictionary *> *)stockWithdrawalsForComponentID:(NSNumber *)component_id;
 - (nullable NSDictionary *)recordForPartNumber:(NSString *)partNumber
@@ -32,12 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stockWithdrawalWithParameters:(NSDictionary *)parameters;
 
 + (NSDate *)dateWithClearedTimeComponentsFromDate:(NSDate *)date;
-
-@end
-
-@protocol DatabaseObserver <NSObject>
-
-//... Notificação de atualização do banco
 
 @end
 
