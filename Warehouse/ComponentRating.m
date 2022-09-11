@@ -14,6 +14,7 @@
     static NSArray *prefixes = nil;
     if (!prefixes) {
         prefixes = @[
+            @"f",   //10^-15
             @"p",   //10^-12
             @"n",   //10^-9
             @"µ",   //10^-6
@@ -22,13 +23,14 @@
             @"k",   //10^3
             @"M",   //10^6
             @"G",   //10^9
-            @"T"    //10^12
+            @"T",   //10^12
+            @"P"    //10^15
         ];
     }
-    if (magnitude < -12 || magnitude > 12) {
+    if (magnitude < -15 || magnitude > 15) {
         return [NSString stringWithFormat:@"(x10^%ld)", magnitude];
     }
-    return prefixes[magnitude / 3 + 4];
+    return prefixes[magnitude / 3 + 5];
 }
 
 
@@ -47,6 +49,18 @@
         ];
     }
     return names;
+}
+
+
++ (NSNumberFormatter *)numberFormatter {
+    static NSNumberFormatter *formatter = nil;
+    if (!formatter) {
+        formatter = [[NSNumberFormatter alloc] init];
+        [formatter setLocalizesFormat:YES];
+        [formatter setMaximumIntegerDigits:3];
+        [formatter setMaximumFractionDigits:3];
+    }
+    return formatter;
 }
 
 
@@ -104,7 +118,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -132,7 +146,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -160,7 +174,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -188,7 +202,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -216,7 +230,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -244,7 +258,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }
@@ -272,7 +286,7 @@
 
 - (NSString *)engineeringValue {
     return [NSString stringWithFormat:@"%@ %@%@",
-            [super significand],
+            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
             [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
             [self unitSymbol]];
 }

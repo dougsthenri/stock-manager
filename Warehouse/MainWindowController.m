@@ -8,6 +8,7 @@
 
 #import "MainWindowController.h"
 #import "DatabaseController.h"
+#import "ComponentRating.h"
 #import "RegistrationWindowController.h"
 #import "StockIncrementViewController.h"
 #import "StockDecrementViewController.h"
@@ -160,7 +161,7 @@
             [column setHidden:YES];
             for (NSDictionary *result in _searchResults) {
                 id value = result[columnID];
-                if (![value isEqual:[NSNull null]]) {
+                if (value) {
                     [column setHidden:NO];
                     break;
                 }
@@ -169,10 +170,10 @@
     }
     [_searchResultsTableView sizeToFit];
     if (selectedComponentID) {
-        // Reafirmar seleção se o componente ainda estiver presente
+        // Reiterar seleção se o componente ainda estiver presente
         for (NSMutableDictionary *searchResult in _searchResults) {
             NSNumber *componentID = searchResult[@"component_id"];
-            if ([componentID isEqualTo:selectedComponentID]) {
+            if ([componentID isEqualToNumber:selectedComponentID]) {
                 NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:[_searchResults indexOfObject:searchResult]];
                 [_searchResultsTableView selectRowIndexes:indexSet byExtendingSelection:NO];
                 break;
@@ -218,87 +219,87 @@
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     // Os identificadores das colunas e de suas respectivas vistas são idênticos e correspondem aos nomes das colunas no banco de dados
     NSString *columnID = [tableColumn identifier];
-    NSTableCellView *cellView;
+    NSTableCellView *cellView = nil;
     NSString *tableID = [tableView identifier];
     if ([tableID isEqualToString:[_searchResultsTableView identifier]]) {
         id value = _searchResults[row][columnID];
-        if ([columnID isEqualToString:@"part_number"]) {
+        if ([columnID isEqualToString:@"quantity"]) {
+            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+            NSTextField *textField = [cellView textField];
+            [textField setIntegerValue:[(NSNumber *)value integerValue]];
+        } else if ([columnID isEqualToString:@"part_number"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
             [textField setStringValue:value];
-        } else if ([columnID isEqualToString:@"manufacturer"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setStringValue:value];
-            }
         } else if ([columnID isEqualToString:@"component_type"]) {
             cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
             NSTextField *textField = [cellView textField];
             [textField setStringValue:value];
-        } else if ([columnID isEqualToString:@"quantity"]) {
-            cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-            NSTextField *textField = [cellView textField];
-            [textField setIntegerValue:[(NSNumber *)value integerValue]];
-        } else if ([columnID isEqualToString:@"voltage_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
+        } else if ([columnID isEqualToString:@"manufacturer"]) {
+            if (value) {
                 cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
                 NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"current_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"power_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"resistance_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"inductance_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"capacitance_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"frequency_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setDoubleValue:[(NSNumber *)value doubleValue]];
-            }
-        } else if ([columnID isEqualToString:@"tolerance_rating"]) {
-            if (![value isEqualTo:[NSNull null]]) {
-                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
-                NSTextField *textField = [cellView textField];
-                [textField setStringValue:[_percentFormatter stringFromNumber:(NSNumber *)value]];
+                [textField setStringValue:value];
             }
         } else if ([columnID isEqualToString:@"package_code"]) {
-            if (![value isEqualTo:[NSNull null]]) {
+            if (value) {
                 cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
                 NSTextField *textField = [cellView textField];
                 [textField setStringValue:value];
             }
         } else if ([columnID isEqualToString:@"comments"]) {
-            if (![value isEqualTo:[NSNull null]]) {
+            if (value) {
                 cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
                 NSTextField *textField = [cellView textField];
                 [textField setStringValue:value];
+            }
+        } else if ([columnID isEqualToString:@"voltage_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(VoltageRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"current_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(CurrentRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"power_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(PowerRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"resistance_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(ResistanceRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"inductance_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(InductanceRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"capacitance_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(CapacitanceRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"frequency_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(FrequencyRating *)value engineeringValue]];
+            }
+        } else if ([columnID isEqualToString:@"tolerance_rating"]) {
+            if (value) {
+                cellView = [tableView makeViewWithIdentifier:columnID owner:nil];
+                NSTextField *textField = [cellView textField];
+                [textField setStringValue:[(ToleranceRating *)value engineeringValue]];
             }
         }
     } else if ([tableID isEqualToString:[_stockReplenishmentsTableView identifier]]) {
@@ -353,7 +354,6 @@
         [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
-        //... Fechar eventuais popovers?
     } else {
         _selectedComponentID = _searchResults[selectedRow][@"component_id"];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:0];
@@ -368,10 +368,10 @@
 - (void)stockUpdatedNotification:(NSNotification *)notification {
     NSNumber *updatedComponentID = [[notification userInfo] objectForKey:@"UpdatedComponentID"];
     NSNumber *updatedQuantity = [[DatabaseController sharedController] stockForComponentID:updatedComponentID];
-    for (NSDictionary *searchResult in _searchResults) {
+    for (NSMutableDictionary *searchResult in _searchResults) {
         NSNumber *componentID = searchResult[@"component_id"];
-        if ([componentID isEqualTo:updatedComponentID]) {
-            [searchResult setValue:updatedQuantity forKey:@"quantity"];
+        if ([componentID isEqualToNumber:updatedComponentID]) {
+            [searchResult setObject:updatedQuantity forKey:@"quantity"];
             [self updateSearchResultsTable];
             break;
         }

@@ -8,6 +8,7 @@
 
 #import "DatabaseController.h"
 #import "FMDB.h"
+#import "ComponentRating.h"
 
 @interface DatabaseController ()
 
@@ -129,12 +130,70 @@
 }
 
 
+- (NSMutableDictionary *)componentFromResultSet:(FMResultSet *)resultSet {
+    NSMutableDictionary *component = [[NSMutableDictionary alloc] init];
+    [component setObject:[NSNumber numberWithInteger:[resultSet longForColumn:@"component_id"]] forKey:@"component_id"];
+    [component setObject:[NSNumber numberWithInteger:[resultSet longForColumn:@"quantity"]] forKey:@"quantity"];
+    [component setObject:[resultSet stringForColumn:@"part_number"] forKey:@"part_number"];
+    [component setObject:[resultSet stringForColumn:@"component_type"] forKey:@"component_type"];
+    if (![resultSet columnIsNull:@"manufacturer"]) {
+        [component setObject:[resultSet stringForColumn:@"manufacturer"] forKey:@"manufacturer"];
+    }
+    if (![resultSet columnIsNull:@"package_code"]) {
+        [component setObject:[resultSet stringForColumn:@"package_code"] forKey:@"package_code"];
+    }
+    if (![resultSet columnIsNull:@"comments"]) {
+        [component setObject:[resultSet stringForColumn:@"comments"] forKey:@"comments"];
+    }
+    if (![resultSet columnIsNull:@"voltage_rating"]) {
+        double voltage = [resultSet doubleForColumn:@"voltage_rating"];
+        VoltageRating *voltageRating = [[VoltageRating alloc] initWithValue:voltage];
+        [component setObject:voltageRating forKey:@"voltage_rating"];
+    }
+    if (![resultSet columnIsNull:@"current_rating"]) {
+        double current = [resultSet doubleForColumn:@"current_rating"];
+        CurrentRating *currentRating = [[CurrentRating alloc] initWithValue:current];
+        [component setObject:currentRating forKey:@"current_rating"];
+    }
+    if (![resultSet columnIsNull:@"power_rating"]) {
+        double power = [resultSet doubleForColumn:@"power_rating"];
+        PowerRating *powerRating = [[PowerRating alloc] initWithValue:power];
+        [component setObject:powerRating forKey:@"power_rating"];
+    }
+    if (![resultSet columnIsNull:@"resistance_rating"]) {
+        double resistance = [resultSet doubleForColumn:@"resistance_rating"];
+        ResistanceRating *resistanceRating = [[ResistanceRating alloc] initWithValue:resistance];
+        [component setObject:resistanceRating forKey:@"resistance_rating"];
+    }
+    if (![resultSet columnIsNull:@"inductance_rating"]) {
+        double inductance = [resultSet doubleForColumn:@"inductance_rating"];
+        InductanceRating *inductanceRating = [[InductanceRating alloc] initWithValue:inductance];
+        [component setObject:inductanceRating forKey:@"inductance_rating"];
+    }
+    if (![resultSet columnIsNull:@"capacitance_rating"]) {
+        double capacitance = [resultSet doubleForColumn:@"capacitance_rating"];
+        CapacitanceRating *capacitanceRating = [[CapacitanceRating alloc] initWithValue:capacitance];
+        [component setObject:capacitanceRating forKey:@"capacitance_rating"];
+    }
+    if (![resultSet columnIsNull:@"frequency_rating"]) {
+        double frequency = [resultSet doubleForColumn:@"frequency_rating"];
+        FrequencyRating *frequencyRating = [[FrequencyRating alloc] initWithValue:frequency];
+        [component setObject:frequencyRating forKey:@"frequency_rating"];
+    }
+    if (![resultSet columnIsNull:@"tolerance_rating"]) {
+        double tolerance = [resultSet doubleForColumn:@"tolerance_rating"];
+        ToleranceRating *toleranceRating = [[ToleranceRating alloc] initWithValue:tolerance];
+        [component setObject:toleranceRating forKey:@"tolerance_rating"];
+    }
+    return component;
+}
+
+
 - (NSMutableArray<NSMutableDictionary *> *)incrementalSearchResultsForPartNumber:(NSString *)partNumber {
     NSMutableArray<NSMutableDictionary *> *searchResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number LIKE ?", [partNumber stringByAppendingString:@"%"]];
     while ([resultSet next]) {
-        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:[resultSet resultDictionary]];
-        [searchResults addObject:result];
+        [searchResults addObject:[self componentFromResultSet:resultSet]];
     }
     [resultSet close];
     return searchResults;
@@ -145,8 +204,7 @@
     NSMutableArray<NSMutableDictionary *> *searchResults = [[NSMutableArray alloc] init];
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE component_type = ?", type];
     while ([resultSet next]) {
-        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:[resultSet resultDictionary]];
-        [searchResults addObject:result];
+        [searchResults addObject:[self componentFromResultSet:resultSet]];
     }
     [resultSet close];
     return searchResults;

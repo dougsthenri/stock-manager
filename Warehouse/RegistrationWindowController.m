@@ -172,7 +172,7 @@
         [alert setInformativeText:[NSString stringWithFormat:@"Its current stock is %ld unit%@.", quantity, quantity == 1 ? @"" : @"s"]];
         [alert runModal];
         //... Preencher os dados retornados para o part# preexistente e mudar todos os campos (exceto fabricante e estoque) para somente leitura (ou desabilitá-los)
-        //... Ativar {popover de incremento | campo} de estoque da janela de registro
+        //... Ativar campo de estoque
     } else {
         //... Tornar editáveis (ou reabilitar) todos os campos exceto fabricante e estoque
     }

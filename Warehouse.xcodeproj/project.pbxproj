@@ -22,7 +22,6 @@
 		A51F8F3E28BA5EA800B792DE /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */; };
 		A51F8F3F28BA5EA800B792DE /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = A51F8F3828BA5EA800B792DE /* FMResultSet.m */; };
 		A51F8F4028BA5EA800B792DE /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A51F8F3928BA5EA800B792DE /* LICENSE.txt */; };
-		A55CA5AB28CBB3310080EC6E /* StockedComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = A55CA5AA28CBB3310080EC6E /* StockedComponent.m */; };
 		A55CA5AD28CC44240080EC6E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A55CA5AC28CC44240080EC6E /* Credits.rtf */; };
 		A5B14D6D28C8DF2D009DC6BF /* ComponentRating.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B14D6C28C8DF2D009DC6BF /* ComponentRating.m */; };
 		A5E94A4C28BE78AC00CE2ADD /* DatabaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E94A4B28BE78AC00CE2ADD /* DatabaseController.m */; };
@@ -62,8 +61,6 @@
 		A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
 		A51F8F3828BA5EA800B792DE /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		A51F8F3928BA5EA800B792DE /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		A55CA5A928CBB3310080EC6E /* StockedComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockedComponent.h; sourceTree = "<group>"; };
-		A55CA5AA28CBB3310080EC6E /* StockedComponent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StockedComponent.m; sourceTree = "<group>"; };
 		A55CA5AC28CC44240080EC6E /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		A5B14D6B28C8DF2D009DC6BF /* ComponentRating.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ComponentRating.h; sourceTree = "<group>"; };
 		A5B14D6C28C8DF2D009DC6BF /* ComponentRating.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ComponentRating.m; sourceTree = "<group>"; };
@@ -116,8 +113,6 @@
 				A51F8E4528B8038800B792DE /* AppDelegate.m */,
 				A5E94A4A28BE78AC00CE2ADD /* DatabaseController.h */,
 				A5E94A4B28BE78AC00CE2ADD /* DatabaseController.m */,
-				A55CA5A928CBB3310080EC6E /* StockedComponent.h */,
-				A55CA5AA28CBB3310080EC6E /* StockedComponent.m */,
 				A5B14D6B28C8DF2D009DC6BF /* ComponentRating.h */,
 				A5B14D6C28C8DF2D009DC6BF /* ComponentRating.m */,
 				A51F8ED528BA550000B792DE /* User Interface */,
@@ -270,7 +265,6 @@
 				A51F8F3C28BA5EA800B792DE /* FMDatabaseAdditions.m in Sources */,
 				A5E94A4C28BE78AC00CE2ADD /* DatabaseController.m in Sources */,
 				A51F8F3B28BA5EA800B792DE /* FMDatabaseQueue.m in Sources */,
-				A55CA5AB28CBB3310080EC6E /* StockedComponent.m in Sources */,
 				A5E94A5028C0150700CE2ADD /* StockIncrementViewController.m in Sources */,
 				A51F8F3D28BA5EA800B792DE /* FMDatabase.m in Sources */,
 			);
