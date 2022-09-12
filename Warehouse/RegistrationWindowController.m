@@ -9,6 +9,7 @@
 #import "RegistrationWindowController.h"
 #import "MainWindowController.h"
 #import "DatabaseController.h"
+#import "ComponentRating.h"
 
 @interface RegistrationWindowController ()
 
@@ -16,6 +17,7 @@
 @property (weak) IBOutlet NSComboBox *componentTypeComboBox;
 @property (weak) IBOutlet NSComboBox *packageCodeComboBox;
 @property (weak) IBOutlet NSTextField *commentsTextField;
+@property (weak) IBOutlet NSTableView *ratingsTableView;
 @property (weak) IBOutlet NSView *noRatingsPlaceholderView;
 @property (weak) IBOutlet NSSegmentedControl *ratingsSegmentedControl;
 
@@ -26,8 +28,8 @@
 @property (weak) IBOutlet NSButton *dateUnknownCheckbox;
 
 @property NSString *lastManufacturerInput;
-@property NSArray *ratingMenuTitles;
-@property NSMenu *ratingsMenu;
+@property NSMenu *ratingAdditionMenu;
+@property NSMutableArray *componentRatingsListing;
 
 @end
 
@@ -36,16 +38,7 @@
 - (instancetype)init {
     self = [super initWithWindowNibName:@"RegistrationWindowController"];
     if (self) {
-        _ratingMenuTitles = @[
-            @"Voltage",
-            @"Current",
-            @"Power",
-            @"Resistance",
-            @"Inductance",
-            @"Capacitance",
-            @"Frequency",
-            @"Tolerance"
-        ];
+        _componentRatingsListing = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -75,13 +68,29 @@
 }
 
 
+- (IBAction)ratingValueEdited:(NSTextField *)sender {
+    NSInteger selectedRow = [_ratingsTableView rowForView:sender];
+    //... registrar valor
+    NSLog(@"Editou na linha %ld", selectedRow); //***
+}
+
+
+- (IBAction)ratingUnitSelected:(NSPopUpButton *)sender {
+    NSInteger selectedRow = [_ratingsTableView rowForView:sender];
+    //... registrar magnitude
+    NSLog(@"Selecionou na linha %ld", selectedRow); //***
+}
+
+
 - (IBAction)ratingsSegmentedControlClicked:(id)sender {
     NSInteger selectedItem = [_ratingsSegmentedControl selectedSegment];
     if (selectedItem == 0) {
         NSPoint menuLocation = NSMakePoint(0, [sender frame].size.height);
-        [_ratingsMenu popUpMenuPositioningItem:nil atLocation:menuLocation inView:sender];
+        [_ratingAdditionMenu popUpMenuPositioningItem:nil atLocation:menuLocation inView:sender];
     } else if (selectedItem == 1) {
-        //... Remover característica selecionada
+        [self removeSelectedRatings];
+    } else if (selectedItem == 2) {
+        [_ratingsTableView deselectAll:nil];
     }
 }
 
@@ -98,7 +107,7 @@
 }
 
 
-- (IBAction)okButtonClicked:(id)sender {
+- (IBAction)registerButtonClicked:(id)sender {
     //... Verificar campos obrigatórios. O campo do fabricante pode ser deixado vazio (fabricante desconhecido, inserido como nulo)
     //... SQL INSERT
     [self persistLastAcquisitionInput];
@@ -125,39 +134,37 @@
 }
 
 
-- (void)addSelectedRating:(id)sender {
-    NSMenuItem *menuItem = sender;
-    
-    NSLog(@"Add %@ rating!", _ratingMenuTitles[[menuItem tag]]); //***
-    
-    switch ([menuItem tag]) {
-        case 0: //Tensão
-            //...
-            break;
-        case 1: //Corrente
-            //...
-            break;
-        case 2: //Potência
-            //...
-            break;
-        case 3: //Resistência
-            //...
-            break;
-        case 4: //Indutância
-            //...
-            break;
-        case 5: //Capacitância
-            //...
-            break;
-        case 6: //Frequência
-            //...
-            break;
-        case 7: //Tolerância
-            //...
-            break;
-        default:
-            break;
+- (void)addSelectedRating:(NSMenuItem *)menuItem {
+    NSMutableDictionary *ratingTableRow = nil;
+    ratingTableRow = [[NSMutableDictionary alloc] initWithDictionary:@{
+        @"RatingName"       : [[ComponentRating ratingNames] objectAtIndex:[menuItem tag]],
+        @"RatingValue"      : @0, //***
+        @"RatingMagnitude"  : @0  //***
+    }];
+    [_componentRatingsListing insertObject:ratingTableRow atIndex:0];
+    [_noRatingsPlaceholderView setHidden:YES];
+    [_ratingsTableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:0]
+                             withAnimation:NSTableViewAnimationSlideDown];
+    [menuItem setHidden:YES];
+    if ([_componentRatingsListing count] == [[ComponentRating ratingNames] count]) {
+        [_ratingsSegmentedControl setEnabled:NO forSegment:0];
     }
+}
+
+
+- (void)removeSelectedRatings {
+    NSIndexSet *selectedRows = [_ratingsTableView selectedRowIndexes];
+    [_ratingsTableView removeRowsAtIndexes:selectedRows withAnimation:NSTableViewAnimationSlideUp];
+    [selectedRows enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *menuTitle = _componentRatingsListing[idx][@"RatingName"];
+        NSMenuItem *menuItem = [self->_ratingAdditionMenu itemWithTitle:menuTitle];
+        [menuItem setHidden:NO];
+    }];
+    [_componentRatingsListing removeObjectsAtIndexes:selectedRows];
+    if ([_componentRatingsListing count] == 0) {
+        [_noRatingsPlaceholderView setHidden:NO];
+    }
+    [_ratingsSegmentedControl setEnabled:YES forSegment:0];
 }
 
 
@@ -180,14 +187,15 @@
 
 
 - (void)buildRatingsMenu {
-    _ratingsMenu = [[NSMenu alloc] initWithTitle:@""];
-    for (int i = 0; i < [_ratingMenuTitles count]; i++) {
-        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:_ratingMenuTitles[i]
+    _ratingAdditionMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray *ratingNames = [ComponentRating ratingNames];
+    for (int i = 0; i < [ratingNames count]; i++) {
+        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:ratingNames[i]
                                                           action:@selector(addSelectedRating:)
                                                    keyEquivalent:@""];
         [menuItem setTag:i];
         [menuItem setTarget:self];
-        [_ratingsMenu addItem:menuItem];
+        [_ratingAdditionMenu addItem:menuItem];
     }
 }
 
@@ -235,6 +243,37 @@
     // Campo de texto de quantidade
     int quantity = [_quantityTextField intValue];
     [_quantityStepper setIntValue:quantity];
+}
+
+
+-(void)tableViewSelectionDidChange:(NSNotification *)notification {
+    NSInteger selectedRow = [_ratingsTableView selectedRow];
+    if (selectedRow < 0) {
+        [_ratingsSegmentedControl setEnabled:NO forSegment:1];
+    } else {
+        [_ratingsSegmentedControl setEnabled:YES forSegment:1];
+    }
+}
+
+#pragma mark - NSTableViewDataSource
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    return [_componentRatingsListing count];
+}
+
+
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    // Os identificadores das colunas e de suas respectivas vistas são idênticos
+    NSString *columnID = [tableColumn identifier];
+    NSTableCellView *cellView = [tableView makeViewWithIdentifier:columnID owner:self];
+    if ([columnID isEqualToString:@"RatingName"]) {
+        NSString *ratingName = _componentRatingsListing[row][@"RatingName"];
+        NSTextField *textField = [cellView textField];
+        [textField setStringValue:ratingName];
+    } else if ([columnID isEqualToString:@"RatingValue"]) {
+        //...
+    }
+    return cellView;
 }
 
 @end

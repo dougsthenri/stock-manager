@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RegistrationWindowController : NSWindowController <NSTextFieldDelegate>
+@interface RegistrationWindowController : NSWindowController <NSTextFieldDelegate, NSTableViewDataSource, NSTabViewDelegate>
 
 @property NSString *partNumber;
 

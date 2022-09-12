@@ -19,6 +19,7 @@
                 <outlet property="quantityStepper" destination="rqe-nj-cYx" id="hhb-uv-S6n"/>
                 <outlet property="quantityTextField" destination="tKE-2F-rrw" id="xOL-hn-DPQ"/>
                 <outlet property="ratingsSegmentedControl" destination="EZy-va-SR3" id="KJT-dz-qVj"/>
+                <outlet property="ratingsTableView" destination="mHl-jW-A5J" id="h2Y-Go-Bxs"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -89,55 +90,117 @@
                             <rect key="frame" x="1" y="1" width="224" height="76"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" autosaveColumns="NO" id="mHl-jW-A5J">
+                                <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="mHl-jW-A5J">
                                     <rect key="frame" x="0.0" y="0.0" width="224" height="76"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn width="80" minWidth="80" maxWidth="80" id="ud5-HB-hYa">
-                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Component Rating">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                            </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Rating" id="dMP-Ct-tkm">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </tableColumn>
-                                        <tableColumn width="60" minWidth="60" maxWidth="72" id="0mm-G7-YjL">
-                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="right" title="Value">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                            </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="right" title="0" id="qVg-Nf-r6o">
-                                                <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Ace-XN-1lH"/>
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </tableColumn>
-                                        <tableColumn width="55" minWidth="55" maxWidth="75" id="ypE-ie-Q44">
-                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Unit">
+                                        <tableColumn identifier="RatingName" width="80" minWidth="80" maxWidth="80" id="O2O-ZO-gRf">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Name">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </tableHeaderCell>
-                                            <popUpButtonCell key="dataCell" type="roundTextured" title="Unit" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="XjT-IN-aYv" id="dIb-df-A6y">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="xkn-uO-ahM">
                                                 <font key="font" metaFont="system"/>
-                                                <menu key="menu" id="ytd-aO-YdS">
-                                                    <items>
-                                                        <menuItem title="Unit" state="on" id="XjT-IN-aYv"/>
-                                                    </items>
-                                                </menu>
-                                            </popUpButtonCell>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <prototypeCellViews>
+                                                <tableCellView identifier="RatingName" id="C5M-zC-HUq">
+                                                    <rect key="frame" x="1" y="1" width="80" height="17"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="VGH-ze-eVk">
+                                                            <rect key="frame" x="0.0" y="1" width="80" height="16"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Rating" id="oy2-DW-WOv">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="VGH-ze-eVk" firstAttribute="leading" secondItem="C5M-zC-HUq" secondAttribute="leading" constant="2" id="Syg-Iu-je9"/>
+                                                        <constraint firstItem="VGH-ze-eVk" firstAttribute="centerY" secondItem="C5M-zC-HUq" secondAttribute="centerY" id="hwz-aZ-RQT"/>
+                                                        <constraint firstAttribute="trailing" secondItem="VGH-ze-eVk" secondAttribute="trailing" constant="2" id="tQ9-J8-CWR"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <outlet property="textField" destination="VGH-ze-eVk" id="lWA-6H-qqa"/>
+                                                    </connections>
+                                                </tableCellView>
+                                            </prototypeCellViews>
+                                        </tableColumn>
+                                        <tableColumn identifier="RatingValue" width="138" minWidth="115" maxWidth="138" id="Clw-vG-SnH">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Value">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="OAb-Rt-0Lk">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <prototypeCellViews>
+                                                <tableCellView identifier="RatingValue" id="YZu-HY-4Ga">
+                                                    <rect key="frame" x="84" y="1" width="138" height="17"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="zyX-ba-203">
+                                                            <rect key="frame" x="86" y="-1" width="50" height="20"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="V3S-Tu-rkH"/>
+                                                            </constraints>
+                                                            <popUpButtonCell key="cell" type="bevel" title="Unit" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="txq-j1-ppV" id="MoF-qa-Xh4">
+                                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                                <menu key="menu" id="3jH-8I-iE4">
+                                                                    <items>
+                                                                        <menuItem title="Unit" state="on" id="txq-j1-ppV"/>
+                                                                        <menuItem title="Item 2" id="T5P-vR-1Bj"/>
+                                                                        <menuItem title="Item 3" id="kV8-R5-tqW"/>
+                                                                    </items>
+                                                                </menu>
+                                                            </popUpButtonCell>
+                                                            <connections>
+                                                                <action selector="ratingUnitSelected:" target="-2" id="YCK-aB-hzX"/>
+                                                            </connections>
+                                                        </popUpButton>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="cry-8f-a2V">
+                                                            <rect key="frame" x="0.0" y="1" width="86" height="16"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="right" placeholderString="0.0" id="f0e-A3-2Hr">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <action selector="ratingValueEdited:" target="-2" id="amP-Iu-fTd"/>
+                                                            </connections>
+                                                        </textField>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="zyX-ba-203" secondAttribute="trailing" constant="2" id="G0H-ra-t3j"/>
+                                                        <constraint firstItem="zyX-ba-203" firstAttribute="centerY" secondItem="YZu-HY-4Ga" secondAttribute="centerY" id="JdE-sk-7OP"/>
+                                                        <constraint firstItem="zyX-ba-203" firstAttribute="leading" secondItem="cry-8f-a2V" secondAttribute="trailing" constant="2" id="KNK-qN-BhS"/>
+                                                        <constraint firstItem="cry-8f-a2V" firstAttribute="leading" secondItem="YZu-HY-4Ga" secondAttribute="leading" constant="2" id="NmG-bj-DLA"/>
+                                                        <constraint firstItem="cry-8f-a2V" firstAttribute="centerY" secondItem="YZu-HY-4Ga" secondAttribute="centerY" id="r7w-8O-rLD"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <outlet property="textField" destination="cry-8f-a2V" id="f8C-Pe-pO6"/>
+                                                    </connections>
+                                                </tableCellView>
+                                            </prototypeCellViews>
                                         </tableColumn>
                                     </tableColumns>
+                                    <connections>
+                                        <outlet property="dataSource" destination="-2" id="pAx-Nv-wNe"/>
+                                        <outlet property="delegate" destination="-2" id="Pb0-xh-raD"/>
+                                    </connections>
                                 </tableView>
                             </subviews>
                         </clipView>
@@ -145,7 +208,7 @@
                             <constraint firstAttribute="height" constant="78" id="jRu-gr-pPV"/>
                         </constraints>
                         <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="cqJ-3J-hwE">
-                            <rect key="frame" x="1" y="62" width="276" height="15"/>
+                            <rect key="frame" x="1" y="62" width="224" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="8EL-66-5dW">
@@ -166,15 +229,12 @@
                         <constraints>
                             <constraint firstAttribute="width" constant="88" id="3x4-aZ-3NY"/>
                         </constraints>
-                        <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tel-mx-ZUY">
+                        <buttonCell key="cell" type="push" title="Register" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tel-mx-ZUY">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
                         </buttonCell>
                         <connections>
-                            <action selector="okButtonClicked:" target="-2" id="6aD-oD-Uwc"/>
+                            <action selector="registerButtonClicked:" target="-2" id="6aD-oD-Uwc"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="28T-6i-20z">
@@ -314,6 +374,22 @@ Gw
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EZy-va-SR3">
+                        <rect key="frame" x="132" y="179" width="226" height="23"/>
+                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="TQL-dJ-o9H">
+                            <font key="font" metaFont="system"/>
+                            <segments>
+                                <segment image="NSAddTemplate"/>
+                                <segment image="NSRemoveTemplate" enabled="NO" tag="1"/>
+                                <segment width="168">
+                                    <nil key="label"/>
+                                </segment>
+                            </segments>
+                        </segmentedCell>
+                        <connections>
+                            <action selector="ratingsSegmentedControlClicked:" target="-2" id="LaY-k1-E4e"/>
+                        </connections>
+                    </segmentedControl>
                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yeg-zl-jY0">
                         <rect key="frame" x="132" y="200" width="226" height="78"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -329,22 +405,6 @@ Gw
                             </textField>
                         </subviews>
                     </customView>
-                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EZy-va-SR3">
-                        <rect key="frame" x="132" y="179" width="226" height="23"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="TQL-dJ-o9H">
-                            <font key="font" metaFont="system"/>
-                            <segments>
-                                <segment image="NSAddTemplate"/>
-                                <segment image="NSRemoveTemplate" enabled="NO" tag="1"/>
-                                <segment width="168" enabled="NO">
-                                    <nil key="label"/>
-                                </segment>
-                            </segments>
-                        </segmentedCell>
-                        <connections>
-                            <action selector="ratingsSegmentedControlClicked:" target="-2" id="LaY-k1-E4e"/>
-                        </connections>
-                    </segmentedControl>
                 </subviews>
                 <constraints>
                     <constraint firstItem="hJW-MR-8TZ" firstAttribute="leading" secondItem="lZB-m8-6ng" secondAttribute="trailing" constant="8" id="058-9o-uNL"/>
@@ -419,7 +479,7 @@ Gw
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="267" y="137"/>
+            <point key="canvasLocation" x="436" y="-265"/>
         </window>
     </objects>
     <resources>
