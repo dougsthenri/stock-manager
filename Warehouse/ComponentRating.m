@@ -64,6 +64,16 @@
 }
 
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _significand = @0;
+        _orderOfMagnitude = 0.0;
+    }
+    return self;
+}
+
+
 - (instancetype)initWithValue:(double)value {
     self = [super init];
     if (self) {

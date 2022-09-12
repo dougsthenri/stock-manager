@@ -29,7 +29,7 @@
 
 @property NSString *lastManufacturerInput;
 @property NSMenu *ratingAdditionMenu;
-@property NSMutableArray *componentRatingsListing;
+@property NSMutableArray *componentRatings; //UNDO MARK
 
 @end
 
@@ -38,7 +38,7 @@
 - (instancetype)init {
     self = [super initWithWindowNibName:@"RegistrationWindowController"];
     if (self) {
-        _componentRatingsListing = [[NSMutableArray alloc] init];
+        _componentRatings = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -135,18 +135,41 @@
 
 
 - (void)addSelectedRating:(NSMenuItem *)menuItem {
-    NSMutableDictionary *ratingTableRow = nil;
-    ratingTableRow = [[NSMutableDictionary alloc] initWithDictionary:@{
-        @"RatingName"       : [[ComponentRating ratingNames] objectAtIndex:[menuItem tag]],
-        @"RatingValue"      : @0, //***
-        @"RatingMagnitude"  : @0  //***
-    }];
-    [_componentRatingsListing insertObject:ratingTableRow atIndex:0];
+    ComponentRating *rating = nil;
+    switch ([menuItem tag]) {
+        case 0:
+            rating = [[VoltageRating alloc] init];
+            break;
+        case 1:
+            rating = [[CurrentRating alloc] init];
+            break;
+        case 2:
+            rating = [[PowerRating alloc] init];
+            break;
+        case 3:
+            rating = [[ResistanceRating alloc] init];
+            break;
+        case 4:
+            rating = [[InductanceRating alloc] init];
+            break;
+        case 5:
+            rating = [[CapacitanceRating alloc] init];
+            break;
+        case 6:
+            rating = [[FrequencyRating alloc] init];
+            break;
+        case 7:
+            rating = [[ToleranceRating alloc] init];
+            break;
+        default:
+            break;
+    }
+    [_componentRatings insertObject:rating atIndex:0];
     [_noRatingsPlaceholderView setHidden:YES];
     [_ratingsTableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:0]
                              withAnimation:NSTableViewAnimationSlideDown];
     [menuItem setHidden:YES];
-    if ([_componentRatingsListing count] == [[ComponentRating ratingNames] count]) {
+    if ([_componentRatings count] == [[ComponentRating ratingNames] count]) {
         [_ratingsSegmentedControl setEnabled:NO forSegment:0];
     }
 }
@@ -156,12 +179,13 @@
     NSIndexSet *selectedRows = [_ratingsTableView selectedRowIndexes];
     [_ratingsTableView removeRowsAtIndexes:selectedRows withAnimation:NSTableViewAnimationSlideUp];
     [selectedRows enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *menuTitle = _componentRatingsListing[idx][@"RatingName"];
+        ComponentRating *rating = _componentRatings[idx];
+        NSString *menuTitle = [rating name];
         NSMenuItem *menuItem = [self->_ratingAdditionMenu itemWithTitle:menuTitle];
         [menuItem setHidden:NO];
     }];
-    [_componentRatingsListing removeObjectsAtIndexes:selectedRows];
-    if ([_componentRatingsListing count] == 0) {
+    [_componentRatings removeObjectsAtIndexes:selectedRows];
+    if ([_componentRatings count] == 0) {
         [_noRatingsPlaceholderView setHidden:NO];
     }
     [_ratingsSegmentedControl setEnabled:YES forSegment:0];
@@ -258,18 +282,18 @@
 #pragma mark - NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return [_componentRatingsListing count];
+    return [_componentRatings count];
 }
 
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     // Os identificadores das colunas e de suas respectivas vistas são idênticos
+    ComponentRating *rating = _componentRatings[row];
     NSString *columnID = [tableColumn identifier];
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:columnID owner:self];
     if ([columnID isEqualToString:@"RatingName"]) {
-        NSString *ratingName = _componentRatingsListing[row][@"RatingName"];
         NSTextField *textField = [cellView textField];
-        [textField setStringValue:ratingName];
+        [textField setStringValue:[rating name]];
     } else if ([columnID isEqualToString:@"RatingValue"]) {
         //...
     }
