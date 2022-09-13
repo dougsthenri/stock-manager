@@ -253,15 +253,15 @@
 }
 
 
-- (nullable NSDictionary *)recordForPartNumber:(NSString *)partNumber
+- (nullable NSMutableDictionary *)recordForPartNumber:(NSString *)partNumber
                                   manufacturer:(nullable NSString *)manufacturer {
     // Deve haver no máximo 1 registro com fabricante desconhecido (nulo) para um dado número de peça
     //... Cogitar um trigger para reforçar a regra acima no próprio banco. Alternativamente aceitar a inserção de múltiplos fabricantes desconhecidos para um dado número de peça (nesse caso, reescrever esse método)
-    NSDictionary *record = nil;
+    NSMutableDictionary *record = nil;
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer ?: @"NULL"];
     [resultSet next];
     if ([resultSet columnCount]) {
-        record = [resultSet resultDictionary];
+        record = [self componentFromResultSet:resultSet];
     }
     [resultSet close];
     return record;

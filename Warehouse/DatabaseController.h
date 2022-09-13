@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSMutableArray<NSMutableDictionary *> *)searchResultsForComponentType:(NSString *)type;
 - (NSMutableArray<NSDictionary *> *)stockReplenishmentsForComponentID:(NSNumber *)component_id;
 - (NSMutableArray<NSDictionary *> *)stockWithdrawalsForComponentID:(NSNumber *)component_id;
-- (nullable NSDictionary *)recordForPartNumber:(NSString *)partNumber
-                                  manufacturer:(nullable NSString *)manufacturer;
+- (nullable NSMutableDictionary *)recordForPartNumber:(NSString *)partNumber
+                                         manufacturer:(nullable NSString *)manufacturer;
 - (void)stockReplenishmentWithParameters:(NSDictionary *)parameters;
 - (void)stockWithdrawalWithParameters:(NSDictionary *)parameters;
 

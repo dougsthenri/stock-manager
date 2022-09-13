@@ -147,7 +147,7 @@
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
-                                                <tableCellView identifier="RatingValue" id="YZu-HY-4Ga">
+                                                <tableCellView identifier="RatingValue" id="YZu-HY-4Ga" customClass="RatingValueTableCellView">
                                                     <rect key="frame" x="84" y="1" width="138" height="17"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
@@ -156,14 +156,14 @@
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="50" id="V3S-Tu-rkH"/>
                                                             </constraints>
-                                                            <popUpButtonCell key="cell" type="bevel" title="Unit" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="txq-j1-ppV" id="MoF-qa-Xh4">
+                                                            <popUpButtonCell key="cell" type="bevel" title="U" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" imageScaling="proportionallyDown" inset="2" selectedItem="XV7-gu-Yal" id="MoF-qa-Xh4">
                                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
+                                                                <font key="font" metaFont="menu"/>
                                                                 <menu key="menu" id="3jH-8I-iE4">
                                                                     <items>
-                                                                        <menuItem title="Unit" state="on" id="txq-j1-ppV"/>
-                                                                        <menuItem title="Item 2" id="T5P-vR-1Bj"/>
-                                                                        <menuItem title="Item 3" id="kV8-R5-tqW"/>
+                                                                        <menuItem title="U" id="XV7-gu-Yal">
+                                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                                        </menuItem>
                                                                     </items>
                                                                 </menu>
                                                             </popUpButtonCell>
@@ -191,6 +191,7 @@
                                                         <constraint firstItem="cry-8f-a2V" firstAttribute="centerY" secondItem="YZu-HY-4Ga" secondAttribute="centerY" id="r7w-8O-rLD"/>
                                                     </constraints>
                                                     <connections>
+                                                        <outlet property="popUpButton" destination="zyX-ba-203" id="GBB-5U-9ET"/>
                                                         <outlet property="textField" destination="cry-8f-a2V" id="f8C-Pe-pO6"/>
                                                     </connections>
                                                 </tableCellView>

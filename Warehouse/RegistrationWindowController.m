@@ -7,7 +7,6 @@
 //
 
 #import "RegistrationWindowController.h"
-#import "MainWindowController.h"
 #import "DatabaseController.h"
 #import "ComponentRating.h"
 
@@ -29,7 +28,7 @@
 
 @property NSString *lastManufacturerInput;
 @property NSMenu *ratingAdditionMenu;
-@property NSMutableArray *componentRatings; //UNDO MARK
+@property NSMutableArray<ComponentRating *> *componentRatings;
 
 @end
 
@@ -70,15 +69,40 @@
 
 - (IBAction)ratingValueEdited:(NSTextField *)sender {
     NSInteger selectedRow = [_ratingsTableView rowForView:sender];
-    //... registrar valor
-    NSLog(@"Editou na linha %ld", selectedRow); //***
+    ComponentRating *rating = [_componentRatings objectAtIndex:selectedRow];
+    NSInteger valueColumn = [_ratingsTableView columnWithIdentifier:@"RatingValue"];
+    RatingValueTableCellView *selectedValueView = [_ratingsTableView viewAtColumn:valueColumn
+                                                                              row:selectedRow
+                                                                  makeIfNecessary:NO];
+    NSTextField *textField = [selectedValueView textField];
+    double newSignificand = [textField doubleValue];
+    NSInteger magnitude = [rating orderOfMagnitude];
+    [rating setValue: newSignificand * pow(10.0, magnitude)];
+    // Sincronizar exibição com o valor gerado
+    [textField setDoubleValue:[[rating significand] doubleValue]];
+    NSPopUpButton *popUpButton = [selectedValueView popUpButton];
+    [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
 }
 
 
 - (IBAction)ratingUnitSelected:(NSPopUpButton *)sender {
     NSInteger selectedRow = [_ratingsTableView rowForView:sender];
-    //... registrar magnitude
-    NSLog(@"Selecionou na linha %ld", selectedRow); //***
+    ComponentRating *rating = [_componentRatings objectAtIndex:selectedRow];
+    NSInteger valueColumn = [_ratingsTableView columnWithIdentifier:@"RatingValue"];
+    RatingValueTableCellView *selectedValueView = [_ratingsTableView viewAtColumn:valueColumn
+                                                                              row:selectedRow
+                                                                  makeIfNecessary:NO];
+    NSPopUpButton *popUpButton = [selectedValueView popUpButton];
+    NSString *selectedTitle = [popUpButton titleOfSelectedItem];
+    NSString *selectedPrefix = [selectedTitle stringByReplacingOccurrencesOfString:[rating unitSymbol]
+                                                                        withString:@""];
+    NSInteger newMagnitude;
+    if ([ComponentRating magnitude:&newMagnitude forPrefix:selectedPrefix]) {
+        double significand = [[rating significand] doubleValue];
+        [rating setValue: significand * pow(10.0, newMagnitude)];
+        // Sincronizar seleção com o valor gerado
+        [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
+    }
 }
 
 
@@ -126,11 +150,23 @@
     [_componentTypeComboBox setStringValue:@""];
     [_packageCodeComboBox setStringValue:@""];
     [_commentsTextField setStringValue:@""];
-    //... Limpar tabela de características
+    [self clearRatingsTable];
     [self loadPersistedInput];
     [_quantityStepper setIntValue:1];
     [_quantityTextField setIntValue:1];
     [[self window] makeFirstResponder:_manufacturerComboBox];
+}
+
+
+- (void)clearRatingsTable {
+    [_componentRatings removeAllObjects];
+    [_ratingsTableView deselectAll:nil];
+    [_ratingsTableView reloadData];
+    [_noRatingsPlaceholderView setHidden:NO];
+    for (NSMenuItem *menuItem in [_ratingAdditionMenu itemArray]) {
+        [menuItem setHidden:NO];
+    }
+    [_ratingsSegmentedControl setEnabled:YES forSegment:0];
 }
 
 
@@ -295,9 +331,20 @@
         NSTextField *textField = [cellView textField];
         [textField setStringValue:[rating name]];
     } else if ([columnID isEqualToString:@"RatingValue"]) {
-        //...
+        NSTextField *textField = [cellView textField];
+        [textField setDoubleValue:[[rating significand] doubleValue]];
+        NSPopUpButton *popUpButton = [(RatingValueTableCellView *)cellView popUpButton];
+        [popUpButton removeAllItems]; //Caso a vista esteja sendo reutilizada
+        [popUpButton addItemsWithTitles:[rating allPrefixedUnitSymbols]];
+        [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
     }
     return cellView;
 }
+
+@end
+
+#pragma mark - RatingValueTableCellView
+
+@implementation RatingValueTableCellView
 
 @end

@@ -19,4 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface RatingValueTableCellView : NSTableCellView
+
+@property (nullable, assign) IBOutlet NSPopUpButton *popUpButton;
+
+@end
+
 NS_ASSUME_NONNULL_END

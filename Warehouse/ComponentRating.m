@@ -8,31 +8,15 @@
 
 #import "ComponentRating.h"
 
+@interface ComponentRating ()
+
+@property (readwrite) NSNumber *significand;
+@property (readwrite) NSString *name;
+@property (readwrite) NSString *unitSymbol;
+
+@end
+
 @implementation ComponentRating
-
-+ (NSString *)prefixForMagnitude:(NSInteger)magnitude {
-    static NSArray *prefixes = nil;
-    if (!prefixes) {
-        prefixes = @[
-            @"f",   //10^-15
-            @"p",   //10^-12
-            @"n",   //10^-9
-            @"µ",   //10^-6
-            @"m",   //10^-3
-            @"",    //10^0
-            @"k",   //10^3
-            @"M",   //10^6
-            @"G",   //10^9
-            @"T",   //10^12
-            @"P"    //10^15
-        ];
-    }
-    if (magnitude < -15 || magnitude > 15) {
-        return [NSString stringWithFormat:@"(x10^%ld)", magnitude];
-    }
-    return prefixes[magnitude / 3 + 5];
-}
-
 
 + (NSArray *)ratingNames {
     static NSArray *names = nil;
@@ -52,13 +36,54 @@
 }
 
 
++ (NSArray *)prefixes {
+    static NSArray *prefixes = nil;
+    if (!prefixes) {
+        prefixes = @[
+            @"f",   //10^-15
+            @"p",   //10^-12
+            @"n",   //10^-9
+            @"µ",   //10^-6
+            @"m",   //10^-3
+            @"",    //10^0
+            @"k",   //10^3
+            @"M",   //10^6
+            @"G",   //10^9
+            @"T",   //10^12
+            @"P"    //10^15
+        ];
+    }
+    return prefixes;
+}
+
+
++ (NSString *)prefixForMagnitude:(NSInteger)magnitude {
+    NSInteger prefixCount = [[ComponentRating prefixes] count];
+    NSInteger prefixingRange = (prefixCount - 1) / 2;
+    if (magnitude < -3 * prefixingRange || magnitude > 3 * prefixingRange) {
+        return [NSString stringWithFormat:@" x 10^%ld ", magnitude];
+    }
+    return [[ComponentRating prefixes] objectAtIndex: (long)magnitude / (long)3 + prefixingRange];
+}
+
+
++ (BOOL)magnitude:(NSInteger *)magnitude forPrefix:(NSString *)prefix {
+    NSInteger prefixIndex = [[ComponentRating prefixes] indexOfObject:prefix];
+    if (prefixIndex != NSNotFound) {
+        *magnitude = (6 * (double)prefixIndex - 3 * (double)[[ComponentRating prefixes] count] + 3) / 2;
+        return YES;
+    }
+    return NO;
+}
+
+
 + (NSNumberFormatter *)numberFormatter {
     static NSNumberFormatter *formatter = nil;
     if (!formatter) {
         formatter = [[NSNumberFormatter alloc] init];
         [formatter setLocalizesFormat:YES];
         [formatter setMaximumIntegerDigits:3];
-        [formatter setMaximumFractionDigits:3];
+        [formatter setMaximumFractionDigits:4];
     }
     return formatter;
 }
@@ -68,7 +93,7 @@
     self = [super init];
     if (self) {
         _significand = @0;
-        _orderOfMagnitude = 0.0;
+        _orderOfMagnitude = 0;
     }
     return self;
 }
@@ -77,16 +102,21 @@
 - (instancetype)initWithValue:(double)value {
     self = [super init];
     if (self) {
-        double orderOfThreeMagnitudes = 0.0;
-        if (value > 0.0) {
-            orderOfThreeMagnitudes = floor(log10(value) / 3);
-        } else if (value < 0.0) {
-            orderOfThreeMagnitudes = floor(log10(fabs(value)) / 3);
-        }
-        _orderOfMagnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
-        _significand = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
+        [self setValue:value];
     }
     return self;
+}
+
+
+- (void)setValue:(double)value {
+    double orderOfThreeMagnitudes = 0.0;
+    if (value > 0.0) {
+        orderOfThreeMagnitudes = floor(log10(value) / 3);
+    } else if (value < 0.0) {
+        orderOfThreeMagnitudes = floor(log10(fabs(value)) / 3);
+    }
+    _orderOfMagnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
+    _significand = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
 }
 
 
@@ -95,20 +125,33 @@
 }
 
 
-- (nonnull NSString *)name {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"You must override '%@' in a subclass", NSStringFromSelector(_cmd)] userInfo:nil];
+- (NSString *)engineeringValue {
+    return [NSString stringWithFormat:@"%@ %@%@",
+            [[ComponentRating numberFormatter] stringFromNumber:[self significand]],
+            [ComponentRating prefixForMagnitude:[self orderOfMagnitude]],
+            [self unitSymbol]];
 }
 
 
-- (nonnull NSString *)unitSymbol {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"You must override '%@' in a subclass", NSStringFromSelector(_cmd)] userInfo:nil];
+- (NSString *)prefixedUnitSymbol {
+    NSString *prefix = [ComponentRating prefixForMagnitude:[self orderOfMagnitude]];
+    return [prefix stringByAppendingString:[self unitSymbol]];
 }
 
 
-- (nonnull NSString *)engineeringValue {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"You must override '%@' in a subclass", NSStringFromSelector(_cmd)] userInfo:nil];
+- (NSArray *)allPrefixedUnitSymbols {
+    NSMutableArray *symbols = [[NSMutableArray alloc] initWithCapacity:[[ComponentRating prefixes] count]];
+    for (NSString *prefix in [ComponentRating prefixes]) {
+        NSString *prefixedSymbol = [prefix stringByAppendingString:[self unitSymbol]];
+        [symbols addObject:prefixedSymbol];
+    }
+    return symbols;
 }
 
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+}
 
 @end
 
@@ -116,26 +159,23 @@
 
 @implementation VoltageRating
 
-- (NSString *)name {
-    return @"Voltage";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Voltage"];
+        [super setUnitSymbol:@"V"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"V";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Voltage"];
+        [super setUnitSymbol:@"V"];
+    }
+    return self;
 }
 
 @end
@@ -144,26 +184,23 @@
 
 @implementation CurrentRating
 
-- (NSString *)name {
-    return @"Current";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Current"];
+        [super setUnitSymbol:@"A"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"A";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Current"];
+        [super setUnitSymbol:@"A"];
+    }
+    return self;
 }
 
 @end
@@ -172,26 +209,23 @@
 
 @implementation PowerRating
 
-- (NSString *)name {
-    return @"Power";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Power"];
+        [super setUnitSymbol:@"W"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"W";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Power"];
+        [super setUnitSymbol:@"W"];
+    }
+    return self;
 }
 
 @end
@@ -200,26 +234,23 @@
 
 @implementation ResistanceRating
 
-- (NSString *)name {
-    return @"Resistance";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Resistance"];
+        [super setUnitSymbol:@"Ω"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"Ω";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Resistance"];
+        [super setUnitSymbol:@"Ω"];
+    }
+    return self;
 }
 
 @end
@@ -228,26 +259,23 @@
 
 @implementation InductanceRating
 
-- (NSString *)name {
-    return @"Inductance";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Inductance"];
+        [super setUnitSymbol:@"H"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"H";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Inductance"];
+        [super setUnitSymbol:@"H"];
+    }
+    return self;
 }
 
 @end
@@ -256,26 +284,23 @@
 
 @implementation CapacitanceRating
 
-- (NSString *)name {
-    return @"Capacitance";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Capacitance"];
+        [super setUnitSymbol:@"F"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"F";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Capacitance"];
+        [super setUnitSymbol:@"F"];
+    }
+    return self;
 }
 
 @end
@@ -284,26 +309,23 @@
 
 @implementation FrequencyRating
 
-- (NSString *)name {
-    return @"Frequency";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Frequency"];
+        [super setUnitSymbol:@"Hz"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"Hz";
-}
-
-
-- (NSString *)engineeringValue {
-    return [NSString stringWithFormat:@"%@ %@%@",
-            [[ComponentRating numberFormatter] stringFromNumber:[super significand]],
-            [ComponentRating prefixForMagnitude:[super orderOfMagnitude]],
-            [self unitSymbol]];
-}
-
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Frequency"];
+        [super setUnitSymbol:@"Hz"];
+    }
+    return self;
 }
 
 @end
@@ -312,13 +334,29 @@
 
 @implementation ToleranceRating
 
-- (NSString *)name {
-    return @"Tolerance";
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [super setName:@"Tolerance"];
+        [super setUnitSymbol:@"%"];
+    }
+    return self;
 }
 
 
-- (NSString *)unitSymbol {
-    return @"%";
+- (instancetype)initWithValue:(double)value {
+    self = [super initWithValue:value];
+    if (self) {
+        [super setName:@"Tolerance"];
+        [super setUnitSymbol:@"%"];
+    }
+    return self;
+}
+
+
+- (void)setValue:(double)value {
+    [super setSignificand:[NSNumber numberWithDouble:value]];
+    // A ordem de magnitude nunca será alterada de zero
 }
 
 
@@ -329,8 +367,13 @@
 }
 
 
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
+- (NSString *)prefixedUnitSymbol {
+    return [self unitSymbol];
+}
+
+
+- (NSArray *)allPrefixedUnitSymbols {
+    return @[ @"%" ];
 }
 
 @end

@@ -33,7 +33,6 @@
 @property NSMutableArray *stockReplenishments;
 @property NSMutableArray *stockWithdrawals;
 @property NSDateFormatter *dateFormatter;
-@property NSNumberFormatter *percentFormatter;
 @property NSNumber *selectedComponentID;
 
 @end
@@ -47,9 +46,6 @@
         [_dateFormatter setDateStyle:NSDateFormatterMediumStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
         [_dateFormatter setDoesRelativeDateFormatting:YES];
-        _percentFormatter = [[NSNumberFormatter alloc] init];
-        [_percentFormatter setNumberStyle:NSNumberFormatterPercentStyle];
-        [_percentFormatter setMultiplier:@1.0];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(stockUpdatedNotification:)
                                                      name:@"DBCStockUpdatedNotification"

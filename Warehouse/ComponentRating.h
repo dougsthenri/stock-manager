@@ -10,23 +10,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ComponentRating <NSObject>
-
-- (NSString *)name;
-- (NSString *)unitSymbol;
-- (NSString *)engineeringValue;
-
-@end
-
-@interface ComponentRating : NSObject <ComponentRating>
+@interface ComponentRating : NSObject
 
 @property (readonly) NSNumber *significand;
 @property (readonly) NSInteger orderOfMagnitude;
+@property (readonly) NSString *name;
+@property (readonly) NSString *unitSymbol;
 
-+ (NSString *)prefixForMagnitude:(NSInteger)magnitude;
-+ (NSArray *)ratingNames;
++ (NSArray<NSString *> *)ratingNames;
++ (BOOL)magnitude:(NSInteger *)magnitude forPrefix:(NSString *)prefix;
+
 - (instancetype)initWithValue:(double)value;
+- (void)setValue:(double)value;
 - (double)value;
+- (NSString *)engineeringValue;
+- (NSString *)prefixedUnitSymbol;
+- (NSArray *)allPrefixedUnitSymbols;
 
 @end
 
