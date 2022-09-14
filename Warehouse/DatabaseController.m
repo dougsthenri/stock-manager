@@ -44,11 +44,11 @@
 
 
 - (void)openDatabaseAtPath:(NSString *)path {
-    _database = [FMDatabase databaseWithPath:path];
+    [self setDatabase:[FMDatabase databaseWithPath:path]];
     [_database setDateFormat:_dateFormatter];
     if (![_database open]) {
         NSLog(@"Controller failed to open database file '%@'.", path);
-        _database = nil;
+        [self setDatabase:nil];
         return;
     }
     // Configurar o banco de dados
@@ -61,7 +61,7 @@
 
 - (void)closeDatabase {
     [_database close];
-    _database = nil;
+    [self setDatabase:nil];
 }
 
 

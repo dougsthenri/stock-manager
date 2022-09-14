@@ -74,7 +74,7 @@
 - (IBAction)manufacturerComboBoxEdited:(id)sender {
     NSString *manufacturer = [[_manufacturerComboBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([manufacturer length] > 0 && ![manufacturer isEqualToString:_lastManufacturerInput]) {
-        _lastManufacturerInput = manufacturer;
+        [self setLastManufacturerInput:manufacturer];
         [self checkIfExistingPartNumber:_partNumber manufacturer:manufacturer];
     }
 }
@@ -235,7 +235,7 @@
     }
     if (!keepManufacturer) {
         [_manufacturerComboBox setStringValue:@""];
-        _lastManufacturerInput = nil;
+        [self setLastManufacturerInput:nil];
     }
     [_componentTypeComboBox setStringValue:@""];
     [_packageCodeComboBox setStringValue:@""];
@@ -394,7 +394,7 @@
 
 
 - (void)buildRatingsMenu {
-    _ratingAdditionMenu = [[NSMenu alloc] initWithTitle:@""];
+    [self setRatingAdditionMenu:[[NSMenu alloc] initWithTitle:@""]];
     NSArray *ratingNames = [ComponentRating ratingNames];
     for (int i = 0; i < [ratingNames count]; i++) {
         NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:ratingNames[i]

@@ -11,6 +11,7 @@
 @interface ComponentRating ()
 
 @property (readwrite) NSNumber *significand;
+@property (readwrite) NSInteger orderOfMagnitude;
 @property (readwrite) NSString *name;
 @property (readwrite) NSString *unitSymbol;
 
@@ -115,8 +116,8 @@
     } else if (value < 0.0) {
         orderOfThreeMagnitudes = floor(log10(fabs(value)) / 3);
     }
-    _orderOfMagnitude = 3 * (NSInteger)orderOfThreeMagnitudes;
-    _significand = [NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)];
+    [self setOrderOfMagnitude: 3 * (NSInteger)orderOfThreeMagnitudes];
+    [self setSignificand:[NSNumber numberWithDouble:value / pow(10.0, _orderOfMagnitude)]];
 }
 
 

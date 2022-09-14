@@ -77,10 +77,10 @@
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
     NSString *partNumber = [[self partNumberSearchTerm] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
-        _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
+        [self setSearchResults:[[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber]];
     } else {
         [self setPartNumberSearchTerm:@""];
-        _searchResults = nil;
+        [self setSearchResults:nil];
     }
     [self updateSearchResultsTable];
 }
@@ -89,7 +89,7 @@
     [_partNumberSearchField abortEditing];
     [self setPartNumberSearchTerm:@""];
     NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
-    _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType];
+    [self setSearchResults:[[DatabaseController sharedController] searchResultsForComponentType:componentType]];
     [self updateSearchResultsTable];
 }
 
@@ -116,11 +116,11 @@
                                              preferredEdge:NSMinYEdge];
     } else if (selectedSegmentIndex == 2) {
         // Histórico de movimentações de estoque
-        _stockReplenishments = [[DatabaseController sharedController] stockReplenishmentsForComponentID:_selectedComponentID];
+        [self setStockReplenishments:[[DatabaseController sharedController] stockReplenishmentsForComponentID:_selectedComponentID]];
         [_stockReplenishmentsTableView reloadData];
         [_stockReplenishmentsTableView deselectAll:nil];
         [_stockReplenishmentsTableView sizeToFit];
-        _stockWithdrawals = [[DatabaseController sharedController] stockWithdrawalsForComponentID:_selectedComponentID];
+        [self setStockWithdrawals:[[DatabaseController sharedController] stockWithdrawalsForComponentID:_selectedComponentID]];
         [_stockWithdrawalsTableView reloadData];
         [_stockWithdrawalsTableView deselectAll:nil];
         [_stockWithdrawalsTableView sizeToFit];
@@ -135,7 +135,7 @@
 
 - (IBAction)addPartNumberButtonClicked:(id)sender {
     if (!_registrationWindowController) {
-        _registrationWindowController = [[RegistrationWindowController alloc] init];
+        [self setRegistrationWindowController:[[RegistrationWindowController alloc] init]];
     }
     [_registrationWindowController clearInputForm];
     [_registrationWindowController setPartNumber:[self partNumberSearchTerm]];
@@ -349,12 +349,12 @@
     // Tabela de resultados de busca
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
-        _selectedComponentID = nil;
+        [self setSelectedComponentID:nil];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
         [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
     } else {
-        _selectedComponentID = _searchResults[selectedRow][@"component_id"];
+        [self setSelectedComponentID:_searchResults[selectedRow][@"component_id"]];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:0];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:2];
         NSInteger selectedQuantity = [(NSNumber *)_searchResults[selectedRow][@"quantity"] integerValue];
@@ -387,7 +387,7 @@
     NSString *partNumber = [[notification userInfo] objectForKey:@"PartNumber"];
     [_partNumberSearchField abortEditing];
     [self setPartNumberSearchTerm:partNumber];
-    _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
+    [self setSearchResults:[[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber]];
     [self updateSearchResultsTable];
 }
 

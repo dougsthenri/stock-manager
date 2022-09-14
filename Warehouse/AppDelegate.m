@@ -53,7 +53,7 @@
 
 - (IBAction)preferencesMenuItemClicked:(NSMenuItem *)sender {
     if (!_preferencesWindowController) {
-        _preferencesWindowController = [[PreferencesWindowController alloc] init];
+        [self setPreferencesWindowController:[[PreferencesWindowController alloc] init]];
     }
     [_preferencesWindowController showWindow:nil];
 }
@@ -61,7 +61,7 @@
 
 - (void)showMainWindow {
     if (!_mainWindowController) {
-        _mainWindowController = [[MainWindowController alloc] init];
+        [self setMainWindowController:[[MainWindowController alloc] init]];
     }
     [_mainWindowController showWindow:nil];
 }
