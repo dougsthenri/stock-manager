@@ -20,6 +20,7 @@
                 <outlet property="quantityTextField" destination="tKE-2F-rrw" id="xOL-hn-DPQ"/>
                 <outlet property="ratingsSegmentedControl" destination="EZy-va-SR3" id="KJT-dz-qVj"/>
                 <outlet property="ratingsTableView" destination="mHl-jW-A5J" id="h2Y-Go-Bxs"/>
+                <outlet property="registerButton" destination="Mwv-dJ-xUq" id="Elx-X8-kM3"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -43,7 +44,7 @@
                     </textField>
                     <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="l4P-dd-90N">
                         <rect key="frame" x="132" y="407" width="229" height="25"/>
-                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Manufacturer" drawsBackground="YES" numberOfVisibleItems="5" id="Xmb-Xj-6kO">
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Unknown" drawsBackground="YES" numberOfVisibleItems="5" id="Xmb-Xj-6kO">
                             <font key="font" metaFont="titleBar"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

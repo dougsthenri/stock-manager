@@ -29,6 +29,7 @@
 @property (weak) IBOutlet NSTableView *stockWithdrawalsTableView;
 
 @property RegistrationWindowController *registrationWindowController;
+@property NSString *partNumberSearchTerm;
 @property NSMutableArray<NSMutableDictionary *> *searchResults;
 @property NSMutableArray *stockReplenishments;
 @property NSMutableArray *stockWithdrawals;
@@ -46,10 +47,6 @@
         [_dateFormatter setDateStyle:NSDateFormatterMediumStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterNoStyle];
         [_dateFormatter setDoesRelativeDateFormatting:YES];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(stockUpdatedNotification:)
-                                                     name:@"DBCStockUpdatedNotification"
-                                                   object:nil];
     }
     return self;
 }
@@ -66,16 +63,22 @@
         }
     }
     [_searchResultsTableView sizeToFit];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(stockUpdatedNotification:)
+                                                 name:@"DBCStockUpdatedNotification"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(componentRegisteredNotification:)
+                                                 name:@"DBCComponentRegisteredNotification"
+                                               object:nil];
 }
 
 
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
     NSString *partNumber = [[_partNumberSearchField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
-        [_addPartNumberButton setEnabled:YES];
         _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
     } else {
-        [_addPartNumberButton setEnabled:NO];
         [_partNumberSearchField setStringValue:@""];
         _searchResults = nil;
     }
@@ -84,7 +87,7 @@
 
 - (IBAction)componentTypePopupSelected:(id)sender {
     [_partNumberSearchField abortEditing];
-    [_partNumberSearchField setStringValue:@""];
+    [self setPartNumberSearchTerm:@""];
     NSString *componentType = [_componentTypeSelectionButton titleOfSelectedItem];
     _searchResults = [[DatabaseController sharedController] searchResultsForComponentType:componentType];
     [self updateSearchResultsTable];
@@ -375,6 +378,16 @@
 }
 
 
-//... DBCComponentRegisteredNotification –> Repetir a última busca feita (por Part# ou tipo)
+- (void)componentRegisteredNotification:(NSNotification *)notification {
+    NSArray *componentTypes = [[DatabaseController sharedController] componentTypes];
+    for (NSInteger i = [_componentTypeSelectionButton numberOfItems] - 1; i > 1; i--) {
+        [_componentTypeSelectionButton removeItemAtIndex:i];
+    }
+    [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
+    NSString *partNumber = [[notification userInfo] objectForKey:@"PartNumber"];
+    [_partNumberSearchField setStringValue:partNumber];
+    _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
+    [self updateSearchResultsTable];
+}
 
 @end

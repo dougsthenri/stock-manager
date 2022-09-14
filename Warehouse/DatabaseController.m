@@ -254,9 +254,7 @@
 
 
 - (nullable NSMutableDictionary *)recordForPartNumber:(NSString *)partNumber
-                                  manufacturer:(nullable NSString *)manufacturer {
-    // Deve haver no máximo 1 registro com fabricante desconhecido (nulo) para um dado número de peça
-    //... Cogitar um trigger para reforçar a regra acima no próprio banco. Alternativamente aceitar a inserção de múltiplos fabricantes desconhecidos para um dado número de peça (nesse caso, reescrever esse método)
+                                         manufacturer:(NSString *)manufacturer {
     NSMutableDictionary *record = nil;
     FMResultSet *resultSet = [_database executeQuery:@"SELECT * FROM stock WHERE part_number = ? AND manufacturer = ?", partNumber, manufacturer ?: @"NULL"];
     [resultSet next];
@@ -298,6 +296,77 @@
                                                         object:self
                                                       userInfo:@{
                                                           @"UpdatedComponentID" : componentID
+                                                      }];
+}
+
+
+- (void)registerComponentWithParameters:(NSDictionary *)parameters {
+    [_database beginExclusiveTransaction];
+    NSNumber *quantity = [parameters objectForKey:@"quantity"];
+    NSString *partNumber = [parameters objectForKey:@"part_number"];
+    NSString *componentType = [parameters objectForKey:@"component_type"];
+    NSString *manufacturer = [parameters objectForKey:@"manufacturer"];
+    NSString *packageCode = [parameters objectForKey:@"package_code"];
+    NSString *comments = [parameters objectForKey:@"comments"];
+    NSNumber *voltageRating = nil;
+    ComponentRating *rating = [parameters objectForKey:@"voltage_rating"];
+    if (rating) {
+        voltageRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *currentRating = nil;
+    rating = [parameters objectForKey:@"current_rating"];
+    if (rating) {
+        currentRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *powerRating = nil;
+    rating = [parameters objectForKey:@"power_rating"];
+    if (rating) {
+        powerRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *resistanceRating = nil;
+    rating = [parameters objectForKey:@"resistance_rating"];
+    if (rating) {
+        resistanceRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *inductanceRating = nil;
+    rating = [parameters objectForKey:@"inductance_rating"];
+    if (rating) {
+        inductanceRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *capacitanceRating = nil;
+    rating = [parameters objectForKey:@"capacitance_rating"];
+    if (rating) {
+        capacitanceRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *frequencyRating = nil;
+    rating = [parameters objectForKey:@"frequency_rating"];
+    if (rating) {
+        frequencyRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    NSNumber *toleranceRating = nil;
+    rating = [parameters objectForKey:@"tolerance_rating"];
+    if (rating) {
+        toleranceRating = [NSNumber numberWithDouble:[rating value]];
+    }
+    [_database executeUpdate:@"INSERT OR ROLLBACK INTO stock(quantity, part_number, component_type, manufacturer, package_code, comments, voltage_rating, current_rating, power_rating, resistance_rating, inductance_rating, capacitance_rating, frequency_rating, tolerance_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", quantity, partNumber, componentType, FMDB_SQL_NULLABLE(manufacturer), FMDB_SQL_NULLABLE(packageCode), FMDB_SQL_NULLABLE(comments), FMDB_SQL_NULLABLE(voltageRating), FMDB_SQL_NULLABLE(currentRating), FMDB_SQL_NULLABLE(powerRating), FMDB_SQL_NULLABLE(resistanceRating), FMDB_SQL_NULLABLE(inductanceRating), FMDB_SQL_NULLABLE(capacitanceRating), FMDB_SQL_NULLABLE(frequencyRating), FMDB_SQL_NULLABLE(toleranceRating)];
+    FMResultSet *resultSet = [_database executeQuery:@"SELECT last_insert_rowid() AS new_component_id"];
+    [resultSet next];
+    if (![resultSet columnCount]) {
+        NSLog(@"Controller failed to retrieve last inserted row ID.");
+        [resultSet close];
+        return;
+    }
+    NSNumber *newComponentID = [NSNumber numberWithInteger:[resultSet longForColumn:@"new_component_id"]];
+    [resultSet close];
+    NSDate *dateAcquired = [parameters objectForKey:@"date_acquired"];
+    NSString *origin = [parameters objectForKey:@"origin"];
+    [_database executeUpdate:@"INSERT OR ROLLBACK INTO acquisitions(fk_component_id, quantity, date_acquired, origin) VALUES(?, ?, ?, ?)", newComponentID, quantity, FMDB_SQL_NULLABLE(dateAcquired), FMDB_SQL_NULLABLE(origin)];
+    [_database commit];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DBCComponentRegisteredNotification"
+                                                        object:self
+                                                      userInfo:@{
+                                                          @"ComponentID"  : newComponentID,
+                                                          @"PartNumber"   : partNumber
                                                       }];
 }
 

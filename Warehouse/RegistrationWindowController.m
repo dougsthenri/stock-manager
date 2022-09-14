@@ -26,9 +26,13 @@
 @property (weak) IBOutlet NSDatePicker *acquisitionDatePicker;
 @property (weak) IBOutlet NSButton *dateUnknownCheckbox;
 
+@property (weak) IBOutlet NSButton *registerButton;
+
 @property NSString *lastManufacturerInput;
 @property NSMenu *ratingAdditionMenu;
 @property NSMutableArray<ComponentRating *> *componentRatings;
+@property BOOL stockUpdateModeOn;
+@property NSNumber *preexistingComponentID;
 
 @end
 
@@ -38,6 +42,7 @@
     self = [super initWithWindowNibName:@"RegistrationWindowController"];
     if (self) {
         _componentRatings = [[NSMutableArray alloc] init];
+        _stockUpdateModeOn = NO;
     }
     return self;
 }
@@ -54,7 +59,15 @@
     [_quantityStepper setMaxValue:FLT_MAX];
     [self buildRatingsMenu];
     [self loadPersistedInput];
-    [self clearInputForm];
+    [self clearInputFieldsKeepManufacturer:NO];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(popUpButtonWillPopUpNotification:)
+                                                 name:@"NSPopUpButtonWillPopUpNotification"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(componentRegisteredNotification:)
+                                                 name:@"DBCComponentRegisteredNotification"
+                                               object:nil];
 }
 
 
@@ -62,7 +75,7 @@
     NSString *manufacturer = [[_manufacturerComboBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([manufacturer length] > 0 && ![manufacturer isEqualToString:_lastManufacturerInput]) {
         _lastManufacturerInput = manufacturer;
-        [self checkExistingPartNumber:_partNumber manufacturer:manufacturer];
+        [self checkIfExistingPartNumber:_partNumber manufacturer:manufacturer];
     }
 }
 
@@ -132,8 +145,60 @@
 
 
 - (IBAction)registerButtonClicked:(id)sender {
-    //... Verificar campos obrigatórios. O campo do fabricante pode ser deixado vazio (fabricante desconhecido, inserido como nulo)
-    //... SQL INSERT
+    if ([self stockUpdateModeOn]) {
+        NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:@{
+            @"component_id" : _preexistingComponentID
+        }];
+        [self addAcquisitionInfoToParameters:parameters];
+        [[DatabaseController sharedController] stockReplenishmentWithParameters:parameters];
+    } else {
+        NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:@{
+            @"part_number" : _partNumber
+        }];
+        NSString *manufacturer = [[_manufacturerComboBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if ([manufacturer length] > 0) {
+            [parameters setObject:manufacturer forKey:@"manufacturer"];
+        }
+        NSString *componentType = [[_componentTypeComboBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if (![componentType length]) {
+            NSAlert *alert = [[NSAlert alloc] init];
+            [alert setAlertStyle:NSAlertStyleInformational];
+            [alert setMessageText:@"The Component's Type Must Be Informed."];
+            [alert runModal];
+            [[self window] makeFirstResponder:_componentTypeComboBox];
+            return;
+        }
+        [parameters setObject:componentType forKey:@"component_type"];
+        NSString *packageCode = [[_packageCodeComboBox stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if ([packageCode length] > 0) {
+            [parameters setObject:packageCode forKey:@"package_code"];
+        }
+        NSString *comments = [[_commentsTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if ([comments length] > 0) {
+            [parameters setObject:comments forKey:@"comments"];
+        }
+        for (ComponentRating *rating in _componentRatings) {
+            if ([[rating name] isEqualToString:@"Voltage"]) {
+                [parameters setObject:rating forKey:@"voltage_rating"];
+            } else if ([[rating name] isEqualToString:@"Current"]) {
+                [parameters setObject:rating forKey:@"current_rating"];
+            } else if ([[rating name] isEqualToString:@"Power"]) {
+                [parameters setObject:rating forKey:@"power_rating"];
+            } else if ([[rating name] isEqualToString:@"Resistance"]) {
+                [parameters setObject:rating forKey:@"resistance_rating"];
+            } else if ([[rating name] isEqualToString:@"Inductance"]) {
+                [parameters setObject:rating forKey:@"inductance_rating"];
+            } else if ([[rating name] isEqualToString:@"Capacitance"]) {
+                [parameters setObject:rating forKey:@"capacitance_rating"];
+            } else if ([[rating name] isEqualToString:@"Frequency"]) {
+                [parameters setObject:rating forKey:@"frequency_rating"];
+            } else if ([[rating name] isEqualToString:@"Tolerance"]) {
+                [parameters setObject:rating forKey:@"tolerance_rating"];
+            }
+        }
+        [self addAcquisitionInfoToParameters:parameters];
+        [[DatabaseController sharedController] registerComponentWithParameters:parameters];
+    }
     [self persistLastAcquisitionInput];
     [self close];
 }
@@ -144,9 +209,34 @@
 }
 
 
-- (void)clearInputForm {
-    _lastManufacturerInput = nil;
-    [_manufacturerComboBox setStringValue:@""];
+- (void)addAcquisitionInfoToParameters:(NSMutableDictionary *)parameters {
+    NSUInteger quantity = [_quantityTextField integerValue];
+    [parameters setObject:[NSNumber numberWithInteger:quantity] forKey:@"quantity"];
+    NSString *origin = [[_originTextField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([origin length] > 0) {
+        [parameters setObject:origin forKey:@"origin"];
+    }
+    if ([_dateUnknownCheckbox state] == NSControlStateValueOff) {
+        NSDate *dateAcquired = [DatabaseController dateWithClearedTimeComponentsFromDate:[_acquisitionDatePicker dateValue]];
+        [parameters setObject:dateAcquired forKey:@"date_acquired"];
+    }
+}
+
+
+- (void)clearInputFieldsKeepManufacturer:(BOOL)keepManufacturer {
+    if ([self stockUpdateModeOn]) {
+        [self setStockUpdateModeOn:NO];
+        [[self window] setTitle:@"Register New Component"];
+        [[self registerButton] setTitle:@"Register"];
+        [_componentTypeComboBox setEnabled:YES];
+        [_packageCodeComboBox setEnabled:YES];
+        [_commentsTextField setEnabled:YES];
+        [_ratingsTableView setEnabled:YES];
+    }
+    if (!keepManufacturer) {
+        [_manufacturerComboBox setStringValue:@""];
+        _lastManufacturerInput = nil;
+    }
     [_componentTypeComboBox setStringValue:@""];
     [_packageCodeComboBox setStringValue:@""];
     [_commentsTextField setStringValue:@""];
@@ -200,8 +290,10 @@
         default:
             break;
     }
+    if ([_componentRatings count] == 0) {
+        [_noRatingsPlaceholderView setHidden:YES];
+    }
     [_componentRatings insertObject:rating atIndex:0];
-    [_noRatingsPlaceholderView setHidden:YES];
     [_ratingsTableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:0]
                              withAnimation:NSTableViewAnimationSlideDown];
     [menuItem setHidden:YES];
@@ -228,7 +320,7 @@
 }
 
 
-- (void)checkExistingPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
+- (void)checkIfExistingPartNumber:(NSString *)partNumber manufacturer:(NSString *)manufacturer {
     NSDictionary *previousRecord = [[DatabaseController sharedController] recordForPartNumber:partNumber
                                                                                  manufacturer:manufacturer];
     if (previousRecord) {
@@ -238,11 +330,66 @@
         NSInteger quantity = [[previousRecord objectForKey:@"quantity"] integerValue];
         [alert setInformativeText:[NSString stringWithFormat:@"Its current stock is %ld unit%@.", quantity, quantity == 1 ? @"" : @"s"]];
         [alert runModal];
-        //... Preencher os dados retornados para o part# preexistente e mudar todos os campos (exceto fabricante e estoque) para somente leitura (ou desabilitá-los)
-        //... Ativar campo de estoque
-    } else {
-        //... Tornar editáveis (ou reabilitar) todos os campos exceto fabricante e estoque
+        [self setPreexistingComponentID:[previousRecord objectForKey:@"component_id"]];
+        // Exibir os dados retornados para o componente preexistente
+        [self setStockUpdateModeOn:YES];
+        [[self window] setTitle:@"Update Component Stock"];
+        [[self registerButton] setTitle:@"Update"];
+        [_componentTypeComboBox setStringValue:[previousRecord objectForKey:@"component_type"] ?: @""];
+        [_componentTypeComboBox setEnabled:NO];
+        [_packageCodeComboBox setStringValue:[previousRecord objectForKey:@"package_code"] ?: @""];
+        [_packageCodeComboBox setEnabled:NO];
+        [_commentsTextField setStringValue:[previousRecord objectForKey:@"comments"] ?: @""];
+        [_commentsTextField setEnabled:NO];
+        [_ratingsTableView setEnabled:NO];
+        [self showRatingsOnRecord:previousRecord];
+        [_ratingsSegmentedControl setEnabled:NO forSegment:0];
+        [[self window] makeFirstResponder:_quantityTextField];
+    } else if ([self stockUpdateModeOn]) {
+        [self clearInputFieldsKeepManufacturer:YES];
     }
+}
+
+
+- (void)showRatingsOnRecord:(NSDictionary *)record {
+    [_componentRatings removeAllObjects];
+    ComponentRating *rating = [record objectForKey:@"voltage_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"current_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"power_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"resistance_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"inductance_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"capacitance_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"frequency_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    rating = [record objectForKey:@"tolerance_rating"];
+    if (rating) {
+        [_componentRatings addObject:rating];
+    }
+    if ([_componentRatings count] > 0) {
+        [_noRatingsPlaceholderView setHidden:YES];
+    }
+    [_ratingsTableView deselectAll:nil];
+    [_ratingsTableView reloadData];
 }
 
 
@@ -297,6 +444,11 @@
     [_originTextField setStringValue:lastOrigin ?: @""];
 }
 
+
+- (void)clearInputForm {
+    [self clearInputFieldsKeepManufacturer:NO];
+}
+
 #pragma mark - NSTextFieldDelegate
 
 -(void)controlTextDidChange:(NSNotification *)obj {
@@ -333,12 +485,34 @@
     } else if ([columnID isEqualToString:@"RatingValue"]) {
         NSTextField *textField = [cellView textField];
         [textField setDoubleValue:[[rating significand] doubleValue]];
+        [textField setEnabled:![self stockUpdateModeOn]];
         NSPopUpButton *popUpButton = [(RatingValueTableCellView *)cellView popUpButton];
         [popUpButton removeAllItems]; //Caso a vista esteja sendo reutilizada
         [popUpButton addItemsWithTitles:[rating allPrefixedUnitSymbols]];
         [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
+        [popUpButton setEnabled:![self stockUpdateModeOn]];
     }
     return cellView;
+}
+
+#pragma mark - Notification Handlers
+
+- (void)popUpButtonWillPopUpNotification:(NSNotification *)notification {
+    // Finalizar a edição em um campo de texto ao abrir o menu de um botão PopUp
+    [[self window] makeFirstResponder:_ratingsTableView];
+}
+
+
+- (void)componentRegisteredNotification:(NSNotification *)notification {
+    NSArray *componentTypes = [[DatabaseController sharedController] componentTypes];
+    [_componentTypeComboBox removeAllItems];
+    [_componentTypeComboBox addItemsWithObjectValues:componentTypes];
+    NSArray *manufacturers = [[DatabaseController sharedController] manufacturers];
+    [_manufacturerComboBox removeAllItems];
+    [_manufacturerComboBox addItemsWithObjectValues:manufacturers];
+    NSArray *packageCodes = [[DatabaseController sharedController] packageCodes];
+    [_packageCodeComboBox removeAllItems];
+    [_packageCodeComboBox addItemsWithObjectValues:packageCodes];
 }
 
 @end

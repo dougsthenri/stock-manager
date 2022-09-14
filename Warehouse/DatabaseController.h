@@ -27,9 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSMutableArray<NSDictionary *> *)stockReplenishmentsForComponentID:(NSNumber *)component_id;
 - (NSMutableArray<NSDictionary *> *)stockWithdrawalsForComponentID:(NSNumber *)component_id;
 - (nullable NSMutableDictionary *)recordForPartNumber:(NSString *)partNumber
-                                         manufacturer:(nullable NSString *)manufacturer;
+                                         manufacturer:(NSString *)manufacturer;
 - (void)stockReplenishmentWithParameters:(NSDictionary *)parameters;
 - (void)stockWithdrawalWithParameters:(NSDictionary *)parameters;
+- (void)registerComponentWithParameters:(NSDictionary *)parameters;
 
 + (NSDate *)dateWithClearedTimeComponentsFromDate:(NSDate *)date;
 

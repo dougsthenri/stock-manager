@@ -648,6 +648,7 @@
                         </searchFieldCell>
                         <connections>
                             <action selector="partNumberSearchFieldEdited:" target="-2" id="ReU-pW-h7f"/>
+                            <binding destination="-2" name="value" keyPath="self.partNumberSearchTerm" id="gHV-zS-Cjg"/>
                             <outlet property="delegate" destination="-2" id="j9M-OS-k13"/>
                         </connections>
                     </searchField>
@@ -663,6 +664,7 @@
                         </buttonCell>
                         <connections>
                             <action selector="addPartNumberButtonClicked:" target="-2" id="ElK-Ef-EeG"/>
+                            <binding destination="-2" name="enabled" keyPath="self.partNumberSearchTerm.length" id="0iD-uP-eeD"/>
                         </connections>
                     </button>
                 </subviews>
