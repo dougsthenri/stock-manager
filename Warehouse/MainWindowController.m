@@ -75,11 +75,11 @@
 
 
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
-    NSString *partNumber = [[_partNumberSearchField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *partNumber = [[self partNumberSearchTerm] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
         _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
     } else {
-        [_partNumberSearchField setStringValue:@""];
+        [self setPartNumberSearchTerm:@""];
         _searchResults = nil;
     }
     [self updateSearchResultsTable];
@@ -138,7 +138,7 @@
         _registrationWindowController = [[RegistrationWindowController alloc] init];
     }
     [_registrationWindowController clearInputForm];
-    [_registrationWindowController setPartNumber:[_partNumberSearchField stringValue]];
+    [_registrationWindowController setPartNumber:[self partNumberSearchTerm]];
     [_registrationWindowController showWindow:nil];
 }
 
@@ -385,7 +385,8 @@
     }
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
     NSString *partNumber = [[notification userInfo] objectForKey:@"PartNumber"];
-    [_partNumberSearchField setStringValue:partNumber];
+    [_partNumberSearchField abortEditing];
+    [self setPartNumberSearchTerm:partNumber];
     _searchResults = [[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber];
     [self updateSearchResultsTable];
 }
