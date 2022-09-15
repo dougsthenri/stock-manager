@@ -1,6 +1,6 @@
 //
 //  RegistrationWindowController.m
-//  Warehouse
+//  Stock Manager
 //
 //  Created by Douglas Almeida on 28/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.

@@ -1,6 +1,6 @@
 //
-//  StockIncrementViewController.h
-//  Warehouse
+//  StockDecrementViewController.h
+//  Stock Manager
 //
 //  Created by Douglas Almeida on 31/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface StockIncrementViewController : NSViewController <NSTextFieldDelegate>
+@interface StockDecrementViewController : NSViewController <NSTextFieldDelegate>
 
 @property NSNumber *selectedComponentID;
 

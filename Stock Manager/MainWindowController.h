@@ -1,6 +1,6 @@
 //
 //  MainWindowController.h
-//  Warehouse
+//  Stock Manager
 //
 //  Created by Douglas Almeida on 26/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.

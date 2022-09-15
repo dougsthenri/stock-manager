@@ -1,6 +1,6 @@
 //
 //  main.m
-//  Warehouse
+//  Stock Manager
 //
 //  Created by Douglas Almeida on 25/08/22.
 //  Copyright © 2022 Douglas Almeida. All rights reserved.
