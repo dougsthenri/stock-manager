@@ -597,6 +597,12 @@
                                     <action selector="performZoom:" target="-1" id="DIl-cC-cCs"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Wca-Rb-djL"/>
+                            <menuItem title="Stock" keyEquivalent="o" id="G0v-k9-ptl">
+                                <connections>
+                                    <action selector="stockMenuItemClicked:" target="Voe-Tx-rLC" id="F18-eV-OTq"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
                             <menuItem title="Bring All to Front" id="LE2-aR-0XJ">
                                 <modifierMask key="keyEquivalentModifierMask"/>

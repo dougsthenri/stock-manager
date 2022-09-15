@@ -14,7 +14,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="F0z-JX-Cv5">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="100"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
@@ -34,6 +34,9 @@
                     </textField>
                     <textField verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jh0-Nh-JJI">
                         <rect key="frame" x="20" y="35" width="345" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="345" id="xyh-nh-sZ2"/>
+                        </constraints>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="BVQ-zP-rfb">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -58,19 +61,22 @@
                     </button>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="5d4-Pf-Bxt" secondAttribute="trailing" constant="20" id="4BX-IN-V0s"/>
                     <constraint firstItem="2qW-lP-xQA" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" symbolic="YES" id="HXX-RC-EMv"/>
+                    <constraint firstAttribute="bottom" secondItem="jh0-Nh-JJI" secondAttribute="bottom" constant="35" id="OIy-k4-EnP"/>
                     <constraint firstItem="jh0-Nh-JJI" firstAttribute="top" secondItem="2qW-lP-xQA" secondAttribute="bottom" constant="8" symbolic="YES" id="PpP-NB-Thk"/>
                     <constraint firstItem="2qW-lP-xQA" firstAttribute="leading" secondItem="jh0-Nh-JJI" secondAttribute="leading" id="WYK-Xb-E4X"/>
                     <constraint firstItem="jh0-Nh-JJI" firstAttribute="baseline" secondItem="5d4-Pf-Bxt" secondAttribute="baseline" id="f1z-I9-q9G"/>
                     <constraint firstAttribute="trailing" secondItem="5d4-Pf-Bxt" secondAttribute="trailing" constant="20" symbolic="YES" id="gBA-GS-cRB"/>
                     <constraint firstItem="2qW-lP-xQA" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" symbolic="YES" id="k4m-ZA-lpC"/>
+                    <constraint firstItem="jh0-Nh-JJI" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="mkd-oj-Puc"/>
                     <constraint firstItem="5d4-Pf-Bxt" firstAttribute="leading" secondItem="jh0-Nh-JJI" secondAttribute="trailing" constant="8" symbolic="YES" id="xbY-Z8-YbN"/>
                 </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="140" y="147"/>
+            <point key="canvasLocation" x="192" y="66"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="31b-xg-gIy"/>
     </objects>

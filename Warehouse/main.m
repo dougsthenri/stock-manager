@@ -7,9 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-//***
-#import "ComponentRating.h"
-//***
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {

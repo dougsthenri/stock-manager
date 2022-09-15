@@ -66,6 +66,11 @@
 }
 
 
+- (IBAction)stockMenuItemClicked:(id)sender {
+    [self showMainWindow];
+}
+
+
 - (void)setUpMainWindow {
     NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
     if ([[DatabaseController sharedController] openDatabaseAtPath:dbFilePath]) {

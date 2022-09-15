@@ -390,6 +390,9 @@
     }
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
     NSString *partNumber = [[notification userInfo] objectForKey:@"PartNumber"];
+    if (![[self window] isVisible]) {
+        [self showWindow:nil];
+    }
     [_partNumberSearchField abortEditing];
     [self setPartNumberSearchTerm:partNumber];
     [self setSearchResults:[[DatabaseController sharedController] incrementalSearchResultsForPartNumber:partNumber]];
