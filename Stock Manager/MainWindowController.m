@@ -38,11 +38,6 @@
 @property NSDateFormatter *dateFormatter;
 @property NSNumber *selectedComponentID;
 
-//***
-@property NSMutableDictionary<NSString *, NSNumber *> *columnIntrinsicWidthSums;
-@property NSMutableDictionary<NSString *, NSNumber *> *columnFilledCellCounts;
-//***
-
 @end
 
 @implementation MainWindowController
@@ -147,16 +142,6 @@
 
 
 - (IBAction)addPartNumberButtonClicked:(id)sender {
-    
-    //***
-    NSLog(@"Average instrinsic content witdth for each column:");
-    for (NSString *columnID in [_columnIntrinsicWidthSums allKeys]) {
-        NSNumber *grandSum = [_columnIntrinsicWidthSums objectForKey:columnID];
-        NSNumber *grandCount = [_columnFilledCellCounts objectForKey:columnID];
-        NSLog(@"%@ avg(width) = %f", columnID, [grandSum doubleValue] / [grandCount integerValue]);
-    }
-    //***
-    
     if (!_registrationWindowController) {
         [self setRegistrationWindowController:[[RegistrationWindowController alloc] init]];
     }
@@ -397,78 +382,6 @@
     }
     return widthToFit;
 }
-
-
-//***
-/*
- Procedimento para o cálculo da largura média das colunas dado o conteúdo do banco:
- 1) Selecione um tipo de componente e em seguida clique no cabeçalho de qualquer coluna da tabela de resultados
- 2) Repita o passo 1 para todos os demais tipos de componente
- 3) Digite qualquer coisa no campo de busca para ativá-lo e clique no botão de adição de componente.
- Os resultados serão impressos no terminal
- 
- Para referência:
-  
- NSDictionary *minimumTableColumnWidths = @{
-     @"part_number"          : @90.0,
-     @"manufacturer"         : @90.0,
-     @"component_type"       : @95.0,
-     @"quantity"             : @50.0,
-     @"voltage_rating"       : @90.0,
-     @"current_rating"       : @90.0,
-     @"power_rating"         : @90.0,
-     @"resistance_rating"    : @90.0,
-     @"inductance_rating"    : @90.0,
-     @"capacitance_rating"   : @90.0,
-     @"frequency_rating"     : @90.0,
-     @"tolerance_rating"     : @90.0,
-     @"package_code"         : @90.0,
-     @"comments"             : @90.0
- }
- */
-- (void)tableView:(NSTableView *)tableView mouseDownInHeaderOfTableColumn:(NSTableColumn *)tableColumn {
-    // Calcular a largura intrínsica média de cada coluna da apresentação atual da tabela
-    for (NSInteger column = 0; column < [tableView numberOfColumns]; column++) {
-        NSString *columnID = [[[_searchResultsTableView tableColumns] objectAtIndex:column] identifier];
-        CGFloat intrinsicWidthSum = 0.0;
-        NSInteger nonEmptyRowCount = 0;
-        for (NSInteger row = 0; row < [tableView numberOfRows]; row++) {
-            NSTableCellView *cellView = [tableView viewAtColumn:column row:row makeIfNecessary:NO];
-            if (cellView) {
-                CGFloat intrinsicContentWidth = [[cellView textField] intrinsicContentSize].width;
-                intrinsicWidthSum += intrinsicContentWidth;
-                nonEmptyRowCount++;
-            }
-        }
-        if (nonEmptyRowCount) {
-            // Somar à grande soma de larguras instrínsicas
-            if (!_columnIntrinsicWidthSums) {
-                [self setColumnIntrinsicWidthSums:[[NSMutableDictionary alloc] init]];
-            }
-            NSNumber *grandSum = [_columnIntrinsicWidthSums objectForKey:columnID];
-            if (grandSum) {
-                double currentSum = [grandSum doubleValue];
-                grandSum = [NSNumber numberWithDouble: currentSum + intrinsicWidthSum];
-            } else {
-                grandSum = [NSNumber numberWithDouble:intrinsicWidthSum];
-            }
-            [_columnIntrinsicWidthSums setObject:grandSum forKey:columnID];
-            // Somar à grande contagem de células não vazias
-            if (!_columnFilledCellCounts) {
-                [self setColumnFilledCellCounts:[[NSMutableDictionary alloc] init]];
-            }
-            NSNumber *grandCount = [_columnFilledCellCounts objectForKey:columnID];
-            if (grandCount) {
-                NSInteger currentCount = [grandCount integerValue];
-                grandCount = [NSNumber numberWithInteger: currentCount + nonEmptyRowCount];
-            } else {
-                grandCount = [NSNumber numberWithInteger:nonEmptyRowCount];
-            }
-            [_columnFilledCellCounts setObject:grandCount forKey:columnID];
-        }
-    }
-}
-//***
 
 #pragma mark - Notification Handlers
 
