@@ -178,21 +178,21 @@
             [parameters setObject:comments forKey:@"comments"];
         }
         for (ComponentRating *rating in _componentRatings) {
-            if ([[rating name] isEqualToString:@"Voltage"]) {
+            if ([rating isKindOfClass:[VoltageRating class]]) {
                 [parameters setObject:rating forKey:@"voltage_rating"];
-            } else if ([[rating name] isEqualToString:@"Current"]) {
+            } else if ([rating isKindOfClass:[CurrentRating class]]) {
                 [parameters setObject:rating forKey:@"current_rating"];
-            } else if ([[rating name] isEqualToString:@"Power"]) {
+            } else if ([rating isKindOfClass:[PowerRating class]]) {
                 [parameters setObject:rating forKey:@"power_rating"];
-            } else if ([[rating name] isEqualToString:@"Resistance"]) {
+            } else if ([rating isKindOfClass:[ResistanceRating class]]) {
                 [parameters setObject:rating forKey:@"resistance_rating"];
-            } else if ([[rating name] isEqualToString:@"Inductance"]) {
+            } else if ([rating isKindOfClass:[InductanceRating class]]) {
                 [parameters setObject:rating forKey:@"inductance_rating"];
-            } else if ([[rating name] isEqualToString:@"Capacitance"]) {
+            } else if ([rating isKindOfClass:[CapacitanceRating class]]) {
                 [parameters setObject:rating forKey:@"capacitance_rating"];
-            } else if ([[rating name] isEqualToString:@"Frequency"]) {
+            } else if ([rating isKindOfClass:[FrequencyRating class]]) {
                 [parameters setObject:rating forKey:@"frequency_rating"];
-            } else if ([[rating name] isEqualToString:@"Tolerance"]) {
+            } else if ([rating isKindOfClass:[ToleranceRating class]]) {
                 [parameters setObject:rating forKey:@"tolerance_rating"];
             }
         }
