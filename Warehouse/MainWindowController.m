@@ -74,6 +74,12 @@
 }
 
 
+- (void)closeWindows {
+    [[_registrationWindowController window] close];
+    [[self window] close];
+}
+
+
 - (IBAction)partNumberSearchFieldEdited:(id)sender {
     NSString *partNumber = [[self partNumberSearchTerm] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([partNumber length] > 0) {
@@ -147,8 +153,7 @@
     NSNumber *selectedComponentID = _selectedComponentID;
     [_searchResultsTableView deselectAll:nil];
     if (_searchResults) {
-        //... Aplicar filtros selecionados aos resultados de busca
-        //... Habilitar seleção de filtros?
+        //... Aplicar filtros selecionados aos resultados de busca [e habilitar seleção deles]?
     } else {
         //... Limpar todos os filtros [e desabilitar seleção deles]?
     }

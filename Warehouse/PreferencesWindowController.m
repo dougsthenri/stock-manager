@@ -10,8 +10,7 @@
 
 @implementation PreferencesWindowController
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super initWithWindowNibName:@"PreferencesWindowController"];
     return self;
 }
@@ -24,15 +23,17 @@
 
 
 - (IBAction)changeButtonClicked:(id)sender {
+    NSString *currentFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
     NSOpenPanel *filePicker = [NSOpenPanel openPanel];
     [filePicker setCanChooseDirectories:NO];
     [filePicker setAllowsMultipleSelection:NO];
-    
     if ([filePicker runModal] == NSModalResponseOK) {
         NSString *filePath = [NSString stringWithUTF8String:[[filePicker URL] fileSystemRepresentation]];
-        [[NSUserDefaults standardUserDefaults] setObject:filePath forKey:@"kDBFileLocation"];
-        //... Conscientizar o aplicativo da mudança (registrar AppDelegate como observador de NSUserDefaultsDidChangeNotification com defaultCenter)
-        //... Usar NSURL e persistir referência a arquivo (vide https://developer.apple.com/documentation/foundation/nsuserdefaults)
+        if (![filePath isEqualToString:currentFilePath]) {
+            [[NSUserDefaults standardUserDefaults] setObject:filePath forKey:@"kDBFileLocation"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"APPDatabasePathDidChangeNotification"
+                                                                object:self];
+        }
     }
 }
 

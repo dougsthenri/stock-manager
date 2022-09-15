@@ -16,4 +16,5 @@ FOUNDATION_EXPORT const unsigned char FMDBVersionString[];
 #import "FMDatabaseQueue.h"
 #import "FMDatabasePool.h"
 
+#define SQLITE_OPEN_READWRITE 0x00000002
 #define FMDB_SQL_NULLABLE(OBJ) ((OBJ) ?: [NSNull null])

@@ -43,19 +43,24 @@
 }
 
 
-- (void)openDatabaseAtPath:(NSString *)path {
+- (BOOL)openDatabaseAtPath:(NSString *)path {
+    if ([_database isOpen]) {
+        [_database close];
+    }
     [self setDatabase:[FMDatabase databaseWithPath:path]];
-    [_database setDateFormat:_dateFormatter];
-    if (![_database open]) {
+    if (![_database openWithFlags:SQLITE_OPEN_READWRITE]) {
         NSLog(@"Controller failed to open database file '%@'.", path);
-        [self setDatabase:nil];
-        return;
+        return NO;
+    }
+    if (![_database goodConnection]) {
+        NSLog(@"Bad database file '%@'.", path);
+        [_database close];
+        return NO;
     }
     // Configurar o banco de dados
-    if (![self enableCaseSensitiveLike]) {
-        [_database close];
-        NSLog(@"Controller failed to set case sensitive LIKE for database.");
-    }
+    [_database setDateFormat:_dateFormatter];
+    [self enableCaseSensitiveLike];
+    return YES;
 }
 
 
@@ -65,11 +70,9 @@
 }
 
 
-- (BOOL)enableCaseSensitiveLike {
+- (void)enableCaseSensitiveLike {
     FMResultSet *resultSet = [_database executeQuery:@"PRAGMA case_sensitive_like=ON"];
-    BOOL querySucceeded = resultSet && ![_database hadError];
     [resultSet close];
-    return querySucceeded;
 }
 
 

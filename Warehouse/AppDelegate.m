@@ -34,10 +34,20 @@
 }
 
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(databasePathDidChangeNotification:)
+                                                     name:@"APPDatabasePathDidChangeNotification"
+                                                   object:nil];
+    }
+    return self;
+}
+
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
-    [[DatabaseController sharedController] openDatabaseAtPath:dbFilePath];
-    [self showMainWindow];
+    [self setUpMainWindow];
 }
 
 
@@ -52,10 +62,17 @@
 
 
 - (IBAction)preferencesMenuItemClicked:(NSMenuItem *)sender {
-    if (!_preferencesWindowController) {
-        [self setPreferencesWindowController:[[PreferencesWindowController alloc] init]];
+    [self showPreferencesWindow];
+}
+
+
+- (void)setUpMainWindow {
+    NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
+    if ([[DatabaseController sharedController] openDatabaseAtPath:dbFilePath]) {
+        [self showMainWindow];
+    } else {
+        [self missingDatabaseUserAlert];
     }
-    [_preferencesWindowController showWindow:nil];
 }
 
 
@@ -64,6 +81,39 @@
         [self setMainWindowController:[[MainWindowController alloc] init]];
     }
     [_mainWindowController showWindow:nil];
+}
+
+
+- (void)showPreferencesWindow {
+    if (!_preferencesWindowController) {
+        [self setPreferencesWindowController:[[PreferencesWindowController alloc] init]];
+    }
+    [_preferencesWindowController showWindow:nil];
+}
+
+
+- (void)missingDatabaseUserAlert {
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setAlertStyle:NSAlertStyleCritical];
+    [alert setMessageText:@"Could not access the database."];
+    NSString *dbFilePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"kDBFileLocation"];
+    [alert setInformativeText:[NSString stringWithFormat:@"File '%@' is unavailable or invalid. Provide a database file path on settings.", dbFilePath]];
+    [alert addButtonWithTitle:@"Settings..."];
+    [alert addButtonWithTitle:@"Quit"];
+    NSModalResponse response = [alert runModal];
+    if (response == NSAlertFirstButtonReturn) {
+        [self showPreferencesWindow];
+    } else {
+        [NSApp terminate:nil];
+    }
+}
+
+#pragma mark - Notification Handlers
+
+- (void)databasePathDidChangeNotification:(NSNotification *)notification {
+    [_mainWindowController closeWindows];
+    [self setMainWindowController:nil];
+    [self setUpMainWindow];
 }
 
 @end

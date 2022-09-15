@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainWindowController : NSWindowController <NSControlTextEditingDelegate, NSTableViewDataSource, NSTableViewDelegate>
 
+- (void)closeWindows;
+
 @end
 
 NS_ASSUME_NONNULL_END
