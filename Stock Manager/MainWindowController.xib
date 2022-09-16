@@ -564,7 +564,7 @@
                                                 </tableCellView>
                                             </prototypeCellViews>
                                         </tableColumn>
-                                        <tableColumn identifier="comments" width="185" minWidth="185" maxWidth="1000000" id="f5x-lR-ltm">
+                                        <tableColumn identifier="comments" width="185" minWidth="185" maxWidth="4294967296" id="f5x-lR-ltm">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Comments">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -610,7 +610,7 @@
                                 </tableView>
                             </subviews>
                         </clipView>
-                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="fJF-k4-B2f">
+                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="fJF-k4-B2f">
                             <rect key="frame" x="1" y="494" width="758" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
