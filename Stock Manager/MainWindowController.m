@@ -38,10 +38,6 @@
 @property NSDateFormatter *dateFormatter;
 @property NSNumber *selectedComponentID;
 
-//***
-@property NSMutableDictionary<NSString *, NSNumber *> *columnIntrinsicWidthMaximums;
-//***
-
 @end
 
 @implementation MainWindowController
@@ -151,15 +147,6 @@
 
 
 - (IBAction)addPartNumberButtonClicked:(id)sender {
-    
-    //***
-    NSLog(@"Maximum instrinsic content witdth for each column:");
-    for (NSString *columnID in [_columnIntrinsicWidthMaximums allKeys]) {
-        NSNumber *maximum = [_columnIntrinsicWidthMaximums objectForKey:columnID];
-        NSLog(@"%@ max(width) = %f", columnID, [maximum doubleValue]);
-    }
-    //***
-    
     if (!_registrationWindowController) {
         [self setRegistrationWindowController:[[RegistrationWindowController alloc] init]];
     }
@@ -416,64 +403,6 @@
     }
     return widthToFit;
 }
-
-
-//***
-/*
- Procedimento para o cálculo da largura máxima das colunas dado o conteúdo atual do banco:
- 1) Selecione um tipo de componente, deslize até o fim da tabela para carregar todas as células e em seguida clique no cabeçalho de qualquer coluna da tabela de resultados
- 2) Repita o passo 1 para todos os demais tipos de componente
- 3) Digite qualquer coisa no campo de busca para ativá-lo e clique no botão de adição de componente.
- Os resultados serão impressos no terminal
- 
- Para referência:
-  
- NSDictionary *minimumTableColumnWidths = @{
-     @"part_number"          : @90.0,
-     @"manufacturer"         : @90.0,
-     @"component_type"       : @95.0,
-     @"quantity"             : @50.0,
-     @"voltage_rating"       : @90.0,
-     @"current_rating"       : @90.0,
-     @"power_rating"         : @90.0,
-     @"resistance_rating"    : @90.0,
-     @"inductance_rating"    : @90.0,
-     @"capacitance_rating"   : @90.0,
-     @"frequency_rating"     : @90.0,
-     @"tolerance_rating"     : @90.0,
-     @"package_code"         : @90.0,
-     @"comments"             : @90.0
- }
- */
-- (void)tableView:(NSTableView *)tableView mouseDownInHeaderOfTableColumn:(NSTableColumn *)tableColumn {
-    for (NSInteger column = 0; column < [tableView numberOfColumns]; column++) {
-        NSString *columnID = [[[_searchResultsTableView tableColumns] objectAtIndex:column] identifier];
-        CGFloat intrinsicWidthMax = 0.0;
-        NSInteger nonEmptyRowCount = 0;
-        for (NSInteger row = 0; row < [tableView numberOfRows]; row++) {
-            NSTableCellView *cellView = [tableView viewAtColumn:column row:row makeIfNecessary:NO];
-            if (cellView) {
-                CGFloat intrinsicContentWidth = [[cellView textField] intrinsicContentSize].width;
-                intrinsicWidthMax = MAX(intrinsicWidthMax, intrinsicContentWidth);
-                nonEmptyRowCount++;
-            }
-        }
-        if (nonEmptyRowCount) {
-            if (!_columnIntrinsicWidthMaximums) {
-                [self setColumnIntrinsicWidthMaximums:[[NSMutableDictionary alloc] init]];
-            }
-            NSNumber *maximum = [_columnIntrinsicWidthMaximums objectForKey:columnID];
-            if (maximum) {
-                double currentMax = [maximum doubleValue];
-                maximum = [NSNumber numberWithDouble:MAX(currentMax, intrinsicWidthMax)];
-            } else {
-                maximum = [NSNumber numberWithDouble:intrinsicWidthMax];
-            }
-            [_columnIntrinsicWidthMaximums setObject:maximum forKey:columnID];
-        }
-    }
-}
-//***
 
 #pragma mark - Notification Handlers
 
