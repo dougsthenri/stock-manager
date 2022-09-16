@@ -141,6 +141,11 @@
 }
 
 
+- (IBAction)searchResultsTableFooterClicked:(id)sender {
+    [_searchResultsTableView deselectAll:nil];
+}
+
+
 - (IBAction)addPartNumberButtonClicked:(id)sender {
     if (!_registrationWindowController) {
         [self setRegistrationWindowController:[[RegistrationWindowController alloc] init]];
@@ -152,13 +157,7 @@
 
 
 - (void)updateSearchResultsTable {
-    NSNumber *selectedComponentID = _selectedComponentID;
-    [_searchResultsTableView deselectAll:nil];
-    if (_searchResults) {
-        //... Aplicar filtros selecionados aos resultados de busca [e habilitar seleção deles]?
-    } else {
-        //... Limpar todos os filtros [e desabilitar seleção deles]?
-    }
+    [_searchResultsTableView setSortDescriptors:@[]];
     [_searchResultsTableView reloadData];
     // Ocultar colunas opcionais inteiramente vazias
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
@@ -175,17 +174,32 @@
         }
     }
     [_searchResultsTableView sizeToFit];
-    if (selectedComponentID) {
-        // Reiterar seleção se o componente ainda estiver presente
+    [self reassertSearchResultSelection];
+}
+
+
+- (void)reassertSearchResultSelection {
+    if (_selectedComponentID) {
         for (NSMutableDictionary *searchResult in _searchResults) {
             NSNumber *componentID = searchResult[@"component_id"];
-            if ([componentID isEqualToNumber:selectedComponentID]) {
-                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:[_searchResults indexOfObject:searchResult]];
+            if ([componentID isEqualToNumber:_selectedComponentID]) {
+                NSInteger selectedRowIndex = [_searchResults indexOfObject:searchResult];
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRowIndex];
                 [_searchResultsTableView selectRowIndexes:indexSet byExtendingSelection:NO];
-                break;
+                [_searchResultsTableView scrollRowToVisible:selectedRowIndex];
+                return;
             }
         }
+        [self setSelectedComponentID:nil]; //O componente não está mais presente nos resultados
+        [self disableSelectedStockControls];
     }
+}
+
+
+- (void)disableSelectedStockControls {
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
+    [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
 }
 
 
@@ -350,6 +364,15 @@
     return cellView;
 }
 
+
+- (void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors {
+    // Tabela de resultados de busca
+    NSArray<NSSortDescriptor *> *sortDescriptors = [_searchResultsTableView sortDescriptors];
+    [_searchResults sortUsingDescriptors:sortDescriptors];
+    [_searchResultsTableView reloadData];
+    [self reassertSearchResultSelection];
+}
+
 #pragma mark - NSTableViewDelegate
 
 -(void)tableViewSelectionDidChange:(NSNotification *)notification {
@@ -357,9 +380,7 @@
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
         [self setSelectedComponentID:nil];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:0];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:1];
-        [_stockActionsSegmentedControl setEnabled:NO forSegment:2];
+        [self disableSelectedStockControls];
     } else {
         [self setSelectedComponentID:_searchResults[selectedRow][@"component_id"]];
         [_stockActionsSegmentedControl setEnabled:YES forSegment:0];

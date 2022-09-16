@@ -150,6 +150,17 @@
 }
 
 
+- (NSComparisonResult)compare:(ComponentRating *)otherObject {
+    if ([self value] < [otherObject value]) {
+        return NSOrderedAscending;
+    }
+    if ([self value] > [otherObject value]) {
+        return NSOrderedDescending;
+    }
+    return NSOrderedSame;
+}
+
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@ Rating: %@\n", [self name], [self engineeringValue]];
 }
