@@ -1,7 +1,7 @@
 /*
  FMDB v2.7
  
- Modificado para usar o formato ISO 8601 e fuso horário local para datas.
+ Modified to use ISO 8601 format and local time zone for data.
  Douglas Almeida - 01/09/2022
  */
 
