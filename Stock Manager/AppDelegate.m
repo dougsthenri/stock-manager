@@ -28,7 +28,7 @@
  kLastExpenditureDestination
  */
 + (void)initialize {
-    // Resgistrar configuração
+    // Register configuration
     NSDictionary *defaultValues = @{ @"kDBFileLocation" : @"" };
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }

@@ -58,7 +58,7 @@
     [super windowDidLoad];
     NSArray *componentTypes = [[DatabaseController sharedController] componentTypes];
     [_componentTypeSelectionButton addItemsWithTitles:componentTypes];
-    // Ocultar colunas anuláveis dos resultados de busca
+    // Hide nullable columns from search results
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
         if ([[DatabaseController sharedController] isNullableColumn:[column identifier] table:@"stock"]) {
             [column setHidden:YES];
@@ -105,7 +105,7 @@
 - (IBAction)stockActionsSegmentedControlClicked:(id)sender {
     NSInteger selectedSegmentIndex = [_stockActionsSegmentedControl selectedSegment];
     if (selectedSegmentIndex == 0) {
-        // Incremento de estoque
+        // Stock increment
         StockIncrementViewController *popoverViewController = (StockIncrementViewController *)[_selectedStockIncrementPopover contentViewController];
         [popoverViewController setSelectedComponentID:_selectedComponentID];
         NSRect bounds = [self relativeBoundsForSegmentedControl:sender
@@ -114,7 +114,7 @@
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
     } else if (selectedSegmentIndex == 1) {
-        // Decremento de estoque
+        // Stock decrement
         StockDecrementViewController *popoverViewController = (StockDecrementViewController *)[_selectedStockDecrementPopover contentViewController];
         [popoverViewController setSelectedComponentID:_selectedComponentID];
         NSRect bounds = [self relativeBoundsForSegmentedControl:sender
@@ -123,7 +123,7 @@
                                                     ofView:sender
                                              preferredEdge:NSMinYEdge];
     } else if (selectedSegmentIndex == 2) {
-        // Histórico de movimentações de estoque
+        // Stock history
         [self setStockReplenishments:[[DatabaseController sharedController] stockReplenishmentsForComponentID:_selectedComponentID]];
         [_stockReplenishmentsTableView reloadData];
         [_stockReplenishmentsTableView deselectAll:nil];
@@ -159,7 +159,7 @@
 - (void)updateSearchResultsTable {
     [_searchResultsTableView setSortDescriptors:@[]];
     [_searchResultsTableView reloadData];
-    // Ocultar colunas opcionais inteiramente vazias
+    // Hide entirely empty non-essential columns
     for (NSTableColumn *column in [_searchResultsTableView tableColumns]) {
         NSString *columnID = [column identifier];
         if ([[DatabaseController sharedController] isNullableColumn:columnID table:@"stock"]) {
@@ -190,7 +190,7 @@
                 return;
             }
         }
-        [self setSelectedComponentID:nil]; //O componente não está mais presente nos resultados
+        [self setSelectedComponentID:nil]; //Component no longer present among search results
         [self disableSelectedStockControls];
     }
 }
@@ -215,7 +215,7 @@
 #pragma mark - NSControlTextEditingDelegate
 
 -(void)controlTextDidBeginEditing:(NSNotification *)obj {
-    // Campo de busca por número de peça
+    // Part number search field
     [_componentTypeSelectionButton selectItemAtIndex:0];
 }
 
@@ -232,12 +232,12 @@
     if ([tableID isEqualToString:[_stockWithdrawalsTableView identifier]]) {
         return [_stockWithdrawals count];
     }
-    return 0; //Tabela desconhecida
+    return 0; //Unknown table
 }
 
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    // Os identificadores das colunas e de suas respectivas vistas são idênticos e correspondem aos nomes das colunas no banco de dados
+    // Column and view identifiers are identical and correspond to column names in the database
     NSString *columnID = [tableColumn identifier];
     NSTableCellView *cellView = nil;
     NSString *tableID = [tableView identifier];
@@ -366,7 +366,7 @@
 
 
 - (void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors {
-    // Tabela de resultados de busca
+    // Search results table
     NSArray<NSSortDescriptor *> *sortDescriptors = [_searchResultsTableView sortDescriptors];
     [_searchResults sortUsingDescriptors:sortDescriptors];
     [_searchResultsTableView reloadData];
@@ -376,7 +376,7 @@
 #pragma mark - NSTableViewDelegate
 
 -(void)tableViewSelectionDidChange:(NSNotification *)notification {
-    // Tabela de resultados de busca
+    // Search results table
     NSInteger selectedRow = [_searchResultsTableView selectedRow];
     if (selectedRow < 0) {
         [self setSelectedComponentID:nil];

@@ -91,7 +91,7 @@
     double newSignificand = [textField doubleValue];
     NSInteger magnitude = [rating orderOfMagnitude];
     [rating setValue: newSignificand * pow(10.0, magnitude)];
-    // Sincronizar exibição com o valor gerado
+    // Synchronize display with generated value
     [textField setDoubleValue:[[rating significand] doubleValue]];
     NSPopUpButton *popUpButton = [selectedValueView popUpButton];
     [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
@@ -113,7 +113,7 @@
     if ([ComponentRating magnitude:&newMagnitude forPrefix:selectedPrefix]) {
         double significand = [[rating significand] doubleValue];
         [rating setValue: significand * pow(10.0, newMagnitude)];
-        // Sincronizar seleção com o valor gerado
+        // Synchronize selection with generated value
         [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
     }
 }
@@ -331,7 +331,7 @@
         [alert setInformativeText:[NSString stringWithFormat:@"Its current stock is %ld unit%@.", quantity, quantity == 1 ? @"" : @"s"]];
         [alert runModal];
         [self setPreexistingComponentID:[previousRecord objectForKey:@"component_id"]];
-        // Exibir os dados retornados para o componente preexistente
+        // Display the data returned for the preexisting component
         [self setStockUpdateModeOn:YES];
         [[self window] setTitle:@"Update Component Stock"];
         [[self registerButton] setTitle:@"Update"];
@@ -437,7 +437,7 @@
         [_acquisitionDatePicker setDateValue:lastAcquisitionDate];
     } else {
         [_dateUnknownCheckbox setState:NSControlStateValueOn];
-        [_acquisitionDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+        [_acquisitionDatePicker setDateValue:[NSDate date]]; //Current date (GMT)
         [self setDatePicker:_acquisitionDatePicker enabled:NO];
     }
     NSString *lastOrigin = [userDefaults stringForKey:@"kLastAcquisitionOrigin"];
@@ -452,7 +452,7 @@
 #pragma mark - NSTextFieldDelegate
 
 -(void)controlTextDidChange:(NSNotification *)obj {
-    // Campo de texto de quantidade
+    // Quantity text field
     int quantity = [_quantityTextField intValue];
     [_quantityStepper setIntValue:quantity];
 }
@@ -475,7 +475,7 @@
 
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    // Os identificadores das colunas e de suas respectivas vistas são idênticos
+    // Column identifiers and their respective views are identical
     ComponentRating *rating = _componentRatings[row];
     NSString *columnID = [tableColumn identifier];
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:columnID owner:self];
@@ -487,7 +487,7 @@
         [textField setDoubleValue:[[rating significand] doubleValue]];
         [textField setEnabled:![self stockUpdateModeOn]];
         NSPopUpButton *popUpButton = [(RatingValueTableCellView *)cellView popUpButton];
-        [popUpButton removeAllItems]; //Caso a vista esteja sendo reutilizada
+        [popUpButton removeAllItems]; //In case the view is being reused
         [popUpButton addItemsWithTitles:[rating allPrefixedUnitSymbols]];
         [popUpButton selectItemWithTitle:[rating prefixedUnitSymbol]];
         [popUpButton setEnabled:![self stockUpdateModeOn]];
@@ -498,7 +498,7 @@
 #pragma mark - Notification Handlers
 
 - (void)popUpButtonWillPopUpNotification:(NSNotification *)notification {
-    // Finalizar a edição em um campo de texto ao abrir o menu de um botão PopUp
+    // Finish editing in a text field when opening a PopUp button menu
     [[self window] makeFirstResponder:_ratingsTableView];
 }
 

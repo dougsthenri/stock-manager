@@ -61,6 +61,7 @@
 		A51F8F3728BA5EA800B792DE /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
 		A51F8F3828BA5EA800B792DE /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		A51F8F3928BA5EA800B792DE /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		A520F029295A0053007707C3 /* electronic_components_stock_schema_v1.3.sql */ = {isa = PBXFileReference; lastKnownFileType = file; path = electronic_components_stock_schema_v1.3.sql; sourceTree = SOURCE_ROOT; };
 		A55CA5AC28CC44240080EC6E /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		A5B14D6B28C8DF2D009DC6BF /* ComponentRating.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ComponentRating.h; sourceTree = "<group>"; };
 		A5B14D6C28C8DF2D009DC6BF /* ComponentRating.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ComponentRating.m; sourceTree = "<group>"; };
@@ -147,6 +148,7 @@
 		A51F8ED928BA577600B792DE /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A520F029295A0053007707C3 /* electronic_components_stock_schema_v1.3.sql */,
 				A51F8E4C28B8038D00B792DE /* Info.plist */,
 				A51F8E4F28B8038D00B792DE /* Stock Manager.entitlements */,
 				A51F8E4728B8038D00B792DE /* Assets.xcassets */,

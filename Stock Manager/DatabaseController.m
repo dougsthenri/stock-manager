@@ -57,7 +57,7 @@
         [_database close];
         return NO;
     }
-    // Configurar o banco de dados
+    // Configure database
     [_database setDateFormat:_dateFormatter];
     [self enableCaseSensitiveLike];
     return YES;

@@ -368,7 +368,7 @@
 
 - (void)setValue:(double)value {
     [super setSignificand:[NSNumber numberWithDouble:value]];
-    // A ordem de magnitude nunca será alterada de zero
+    // Order of magnitude is always zero
 }
 
 

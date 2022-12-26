@@ -25,7 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [_variableHeightConstraint setConstant:20]; //Campo de data inicialmente escondido
+    [_variableHeightConstraint setConstant:20]; //Date field initially hidden
     [_quantityStepper setMaxValue:FLT_MAX];
     [self resetQuantity];
     [self loadPersistedInput];
@@ -66,7 +66,7 @@
         [parameters setObject:dateAcquired forKey:@"date_acquired"];
     }
     [[DatabaseController sharedController] stockReplenishmentWithParameters:parameters];
-    [self persistLastAcquisitionInput]; //Para adição sequencial de componentes de uma mesma origem
+    [self persistLastAcquisitionInput]; //For sequential addition of components from the same source
     [_popover close];
 }
 
@@ -113,7 +113,7 @@
         [self setAcquisitionDatePickerHidden:NO];
     } else {
         [_dateUnknownCheckbox setState:NSControlStateValueOn];
-        [_acquisitionDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+        [_acquisitionDatePicker setDateValue:[NSDate date]]; //Current date (GMT)
         [self setAcquisitionDatePickerHidden:YES];
     }
     NSString *lastOrigin = [userDefaults stringForKey:@"kLastAcquisitionOrigin"];
@@ -123,7 +123,7 @@
 #pragma mark - NSTextFieldDelegate
 
 -(void)controlTextDidChange:(NSNotification *)obj {
-    // Campo de texto de quantidade
+    // Quantity text field
     int quantity = [_quantityTextField intValue];
     [_quantityStepper setIntValue:quantity];
 }

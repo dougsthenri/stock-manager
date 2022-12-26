@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DatabaseController : NSObject
 
-@property (class, readonly, strong) DatabaseController *sharedController; //Instância singleton
+@property (class, readonly, strong) DatabaseController *sharedController; //Singleton instance
 @property (readonly) NSArray<NSString *> *dateColumns;
 
 - (BOOL)openDatabaseAtPath:(NSString *)path;

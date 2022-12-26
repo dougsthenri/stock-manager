@@ -25,7 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [_variableHeightConstraint setConstant:20]; //Campo de data inicialmente escondido
+    [_variableHeightConstraint setConstant:20]; //Date field initially hidden
     [_quantityStepper setMaxValue:FLT_MAX];
     [self resetQuantity];
     [self loadPersistedInput];
@@ -33,7 +33,7 @@
 
 
 - (void)viewWillAppear {
-    // Manter últimas entradas de destino e data para remover sequencialmente itens com mesma destinação
+    // Keep last destination and date entries to sequentially remove items with the same destination
     [self resetQuantity];
     [super viewWillAppear];
 }
@@ -72,7 +72,7 @@
         [parameters setObject:dateSpent forKey:@"date_spent"];
     }
     [[DatabaseController sharedController] stockWithdrawalWithParameters:parameters];
-    [self persistLastExpenditureInput]; //Para retirada sequencial de componentes com uma mesma destinação
+    [self persistLastExpenditureInput]; //For sequential removal of components with the same destination
     [_popover close];
 }
 
@@ -118,7 +118,7 @@
         [_expenditureDatePicker setDateValue:lastWithdrawalDate];
         [self setExpenditureDatePickerHidden:NO];
     } else {
-        [_expenditureDatePicker setDateValue:[NSDate date]]; //Data atual (GMT)
+        [_expenditureDatePicker setDateValue:[NSDate date]]; //Current date (GMT)
         [self setExpenditureDatePickerHidden:YES];
     }
     NSString *lastDestination = [userDefaults stringForKey:@"kLastExpenditureDestination"];
@@ -128,7 +128,7 @@
 #pragma mark - NSTextFieldDelegate
 
 -(void)controlTextDidChange:(NSNotification *)obj {
-    // Campo de texto de quantidade
+    // Quantity text field
     int quantity = [_quantityTextField intValue];
     [_quantityStepper setIntValue:quantity];
 }
